@@ -515,7 +515,8 @@ CREATE TABLE IF NOT EXISTS `lecon` (
 DROP TABLE IF EXISTS `matiere`;
 CREATE TABLE IF NOT EXISTS `matiere` (
   `id_matiere` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(100) DEFAULT NULL,
+  `nom_matiere` varchar(100) DEFAULT NULL,
+  `coefficient` varchar(100) DEFAULT NULL,
   `description` text,
   PRIMARY KEY (`id_matiere`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
