@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 require_once __DIR__."../../../config/Database.php";
 require_once __DIR__ ."../../../model/Evaluation/Resultat.php";
-class resultatDAO{
+class ResultatDAO{
     private static  $db;
 
     //etablir la connexion

@@ -30,6 +30,7 @@ class Inscription
     
     public function getIdClasse()  { return $this->id_classe; }
     public function getDateInscription()  { return $this->date_inscription; }
+
     public function getStatut()  { return $this->statut; }
 
     //setters functions
@@ -38,5 +39,6 @@ class Inscription
 
     public function setIdClasse($id_classe)  {  $this->id_classe = $id_classe; }
     public function setDateInscription($date_inscription)  {  $this->date_inscription = $date_inscription; }
+    
     public function setStatut($statut)  {  $this->statut = $statut; }
 }

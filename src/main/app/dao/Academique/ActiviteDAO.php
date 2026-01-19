@@ -52,10 +52,29 @@ class ActiviteDAO{
         );
     }
    }
+   /**
+    * findByUtilisateur
+    */
+    public static function findByUtilisateur($utilisateur){
+        $sql = "SELECT * FROM activite WHERE utilisateur = : utilisateur";
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute([":utilisateur" =>$utilisateur]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$row){
+            return null;
+        }else{
+            return new Activite(
+                $row['id_activite'],
+                $row['nom_activite'],
+                $row['[type'],
+                $row['instruction']
+            );
+        }
+    }
    //Afficher toutes les activites
    public static function getAllActivite(){
     $sql = "SELECT * FROM activite";
-    $stmt = self::$db->prepare($sql);
+    $stmt = self::$db->query($sql);
     $stmt->execute();
     $ListeActivite = [];
     while($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){

@@ -44,7 +44,49 @@ class ExerciceDAO{
             );
     }
     //Afficher un exercice
+    public static function getOneExercice($id_exrcice){
+        $sql = "SELECT FROM exercice WHERE id_exercice = :id_exercice";
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute([":id_exercice" =>$id_exrcice]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$row){
+            return NULL;
+        }else{
+            return new Exercice(
+                $row['id_exercice'],
+                $row['id_lecon'],
+                $row['question'],
+                $row['type'],
+                $row['niveau'],
+                $row['score']
+            );
+        }
+    }
+
+    //afficher beacoup d'exerice
+    public static function getALLExercice(){
+        $sql = "SELECT * FROM exercice";
+        $stmt = self::$db->query($sql);
+        $ListeExercice = [];
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $ListeExercice [] = new Exercice(
+                $row['id_exercice'],
+                $row['id_lecon'],
+                $row['question'],
+                $row['type'],
+                $row['niveau'],
+                $row['score']
+            );
+        }
+        return $ListeExercice;
+    }
     
+    //SUPPRIMER UN EXERCICE
+    public static function deleteExercice($id_exercice){
+        $sql = "DELETE FROM exercice WHERE id_exercice = :id_exercice";
+        $stmt = self::$db->prepare($sql);
+        return $stmt->execute([':id_exercice' =>$id_exercice]);
+    }
 }
 
 

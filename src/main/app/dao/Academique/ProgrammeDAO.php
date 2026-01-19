@@ -72,8 +72,8 @@ class ProgrammeDAO{
                 $row["description"],
                 $row["statut"],
             );
-            return $listeProgramme;
         }
+        return $listeProgramme;
     }
     // SUPPRIMER UN PROGRAMME
     public static function DeleteProgramme($id_programme){

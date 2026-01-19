@@ -38,4 +38,13 @@ class Exercice
 
     public function getType(){ return $this->type; }
     public function setType( $type): void { $this->type = $type; }
+
+    public function getNiveau(){ return $this->niveau; }
+    public function setNiveau( $niveau): void { $this->niveau = $niveau; }
+
+    public function getScore(){ return $this->score; }
+    public function setScore( $score): void { $this->score = $score; }
+
+    
 }
+

@@ -16,14 +16,15 @@ class InscriptionDAO{
    }
     //Ajouter une inscription
     public static function CreateInscription(Inscription $inscription){
-        $sql = "INSERT INTO inscription(id_inscription,id_utilisateur,id_classe,annee_scolaire) VALUES(:id_inscription,:id_utilisateur,:id_classe,:annee_scolaire)";
+        $sql = "INSERT INTO inscription(id_inscription,id_utilisateur,id_classe,date_inscription,statut) VALUES(:id_inscription,:id_utilisateur,:id_classe,:date_inscription,:statut)";
         $stmt = self::$db->prepare($sql);
          return $stmt->execute(
-            [
-                ":id_inscription" =>$inscription->getIdInscription(),
+            [   //NULL,
+                null,
                 ":id_utilisateur" =>$inscription->getIdUtilisateur(),
-                ":id_classe" =>$inscription->getIdClass(),
-                ":annee_scolaire"=>$inscription->getAnneeScolaire()
+                ":id_classe" =>$inscription->getIdClasse(),
+                ":date_inscription"=>$inscription->getDateInscription(),
+                ":statut"=>$inscription->getStatut()
             ]
             );
     }
@@ -40,7 +41,8 @@ class InscriptionDAO{
             $row['id_inscriptiom'],
             $row['id_utilisateur'],
             $row['id_classe'],
-            $row['annee_scolaire']);
+            $row['date_inscription'],
+            $row['statut']);
         }
     }
     //Afficher les inscriptions
@@ -53,7 +55,8 @@ class InscriptionDAO{
                 $row['id_inscription'],
                 $row['id_utilisateur'],
                 $row['id_classe'],
-                $row['annee_scolaire']
+                $row['date_inscription'],
+                $row['statut']
             );
         }
         return $listeInscription;
@@ -63,10 +66,11 @@ class InscriptionDAO{
         $sql = "UPDATE inscription SET id_utilisateur =:id_utilisateur,id_classe = :id_classe WHERE id_inscription = :id_inscription";
         $stmt = self::$db->prepare($sql);
         return $stmt->execute([
-            "id_inscription" =>$inscription->getIdInscription(),
-            "id_utilisateur" =>$inscription->getIdUtilisateur(),
-            "id_classe" =>$inscription->getIdClass(),
-            "annee_scolaire" =>$inscription->getAnneeScolaire()
+            null,
+            ":id_utilisateur" =>$inscription->getIdUtilisateur(),
+            ":id_classe" =>$inscription->getIdClasse(),
+            ":date_inscription" =>$inscription->getDateInscription(),
+            ":statut"=>$inscription->getStatut()
         ]);
     }
     //Supprimer une inscription

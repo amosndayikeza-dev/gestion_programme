@@ -1,10 +1,10 @@
 <?php
 class Database {
-    protected $host = "localhost";
-    protected $user = "root";
-    protected $pwd = "";
-    protected $database = "gestion_programme";
-    private $pdo = null;
+   protected $host = "localhost";
+   protected $user = "root";
+   protected $pwd = "";
+   protected $database = "gestion_programme";
+   private $pdo = null;
 
       // Constructeur
       public function __construct(){

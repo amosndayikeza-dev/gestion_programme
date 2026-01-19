@@ -64,6 +64,25 @@ class UtilisateurDAO{
             );
         }
     }
+    public function getOneUtilisateurByEmail($email){
+        $sql = "SELECT * FROM utilisateur WHERE email = :email";
+        $stmt = self::$bd->prepare($sql);
+        $stmt->execute([$email => 'email']);
+        $row = $stmt->fetchALL(PDO::FETCH_ASSOC);
+        if(!$row){
+            return NULL;
+        }else{
+            return new Utilisateur(
+                $row["id_utilisateur"],
+                $row["nom"],
+                $row["prenom"],
+                $row["email"],
+                $row["mot_de_passe"],
+                $row["role"],
+                $row["date_creation"]
+            );
+        }
+    }
     //afficher tout les utilisateur
     public static function getALLUtilisateur(){
         $sql = "SELECT * FROM utilisateur";
@@ -96,7 +115,17 @@ class UtilisateurDAO{
         $stmt->bindValue(":email",$email);
         $stmt->excute();
         return $stmt->fetchColumn() > 0;
-    }       
+    }   
+    
+    //fonction pour chercher un utilisateur
+    public function searchUtilisateur($keyword){
+        $sql = "SELECT * FROM utilisateur WHERE nom_utilisateur like :keyword or prenom_utilisateur like :keyword";
+        $stmt = self::$bd->prepare($sql);
+        $stmt->bindValue(":keyword","%" .$keyword. "%");
+        $stmt->excute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }
 
 

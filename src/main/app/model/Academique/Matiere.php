@@ -9,7 +9,6 @@ class Matiere
     private int $coefficient;
     private  $description;
 
-
     public function __construct(
          $id_matiere,
          $nom_matiere,

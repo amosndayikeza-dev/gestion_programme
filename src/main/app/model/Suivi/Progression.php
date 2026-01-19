@@ -29,6 +29,7 @@ class Progression
 
     public function getIdUtilisateur() { return $this->id_utilisateur; }
     public function setIdUtilisateur( $id) { $this->id_utilisateur = $id; }
+    
     public function getIdCours() { return $this->id_cours; }
     public function setIdCours( $id) { $this->id_cours = $id; }
 

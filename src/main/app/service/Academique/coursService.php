@@ -5,7 +5,14 @@ error_reporting(E_ALL);
 
 require_once __DIR__ ."../../../dao/Academique/CoursDAO.php";
 
+class coursService{
+    private CoursDAO $cours_dao;
 
+    public function __construct()
+    {
+       $cours_dao = new CoursDAO();
+    }
+}
 
 
 

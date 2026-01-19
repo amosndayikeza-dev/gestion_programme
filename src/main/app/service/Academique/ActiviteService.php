@@ -11,6 +11,38 @@ class ActiviteService{
     {
        $activitedao = new ActiviteDAO();
     }
+    /**
+     * enregistrer une activite utilisateur
+     */
+    public function enregistrerActivite(Activite $activite){
+        $this->activitedao->CreateActivite($activite);  
+    }
+
+    /**
+     * Lister les activites d'un utilisateur
+     */
+    public function ListerActiviteUtilisateur($id_utilisateur){
+        return $this->activitedao->findByUtilisateur($id_utilisateur);  
+    }
+
+    /**
+     * 
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
