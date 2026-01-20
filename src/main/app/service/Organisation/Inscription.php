@@ -21,41 +21,33 @@ class InscriptionService{
         $UtilisateurDAO = new UtilisateurDAO();
     }
 
-    public function InscrirEleve($idUtilisateur,$idClasse){
-        if(! $this->utilisateurDAO->getOneUtilisateur($idUtilisateur)){
+    public function InscrirEleve($id_utilisateur,$id_Classe){
+        if(! $this->utilisateurDAO->getOneUtilisateur($id_utilisateur)){
             throw new Exception("Utilisateur Introuvable");
         }
-        if(! $this->classeDAO->getOneClasse($idClasse)){
+        if(! $this->classeDAO->getOneClasse($id_Classe)){
             throw new Exception("Classe introuvable");
         }
-       if ($this->inscriptionDAO->existe($idUtilisateur, $idClasse)) {
+       if ($this->inscriptionDAO->existsInscription($id_utilisateur, $id_Classe)) {
             throw new Exception("Déjà inscrit");
         }
 
-        $inscription = new Inscription( null,$idUtilisateur,$idClasse,date('Y-m-d'),'ACTIVE');
+        $inscription = new Inscription( null,$id_utilisateur,$id_Classe,date('Y-m-d'),'ACTIVE');
 
         $this->inscriptionDAO->CreateInscription($inscription);
     }
 
-    public function desinscrireEleve($idUtilisateur,$idClasse){
-        $inscription = $this->inscriptionDAO->getByUtilisateurAndClasse($idUtilisateur,$idClasse);
-        if(!$inscription){
-            throw new Exception("Inscription introuvable");
-        }
+    public function desinscrireEleve($id_utilisateur,$id_Classe){
 
-        $this->inscriptionDAO->deleteInscription($inscription->getIdInscription());
+       $this->inscriptionDAO->DeleteInscription($id_utilisateur, $id_Classe);
     }
 
-    public function listerInscriptionsParClasse($idClasse){
-        return $this->inscriptionDAO->getByClasse($idClasse);
+    public function listerInscriptionsParClasse($id_Classe){
+        return $this->inscriptionDAO->getByClasse($id_Classe);
     }
 
-    public function verifierInscription($idUtilisateur,$idClasse){
-        return $this->inscriptionDAO->existe($idUtilisateur, $idClasse);
-    }
-
-    public function listerInscriptionsParUtilisateur($idUtilisateur){
-        return $this->inscriptionDAO->getByUtilisateur($idUtilisateur);
+    public function listerInscriptionsParUtilisateur($id_utilisateur){
+        return $this->inscriptionDAO->getByUtilisateur($id_utilisateur);
     }
 
 }

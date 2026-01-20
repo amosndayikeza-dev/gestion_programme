@@ -38,9 +38,44 @@ class InscriptionDAO{
             return NULL;
         }else{
             return new Inscription(
-            $row['id_inscriptiom'],
+            null,
             $row['id_utilisateur'],
             $row['id_classe'],
+            $row['date_inscription'],
+            $row['statut']);
+        }
+    }
+      //Afficher l'inscription par  utilisateur
+    public static function getByUtilisateur($id_utilisateur){
+        $sql = "SELECT * FROM inscription WHERE id_utilisateur = :id_utilisateur";
+        $stmt = self::$db->prepare($sql);
+        $stmt->exeute(["id_utilisateur" => $id_utilisateur]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$row){
+            return NULL;
+        }else{
+            return new Inscription(
+            null,
+            null,
+            $row['id_classe'],
+            $row['date_inscription'],
+            $row['statut']);
+        }
+    }
+
+      //Afficher l'inscription par  utilisateur
+    public static function getByClasse($id_classe){
+        $sql = "SELECT * FROM inscription WHERE id_classe = :id_classe";
+        $stmt = self::$db->prepare($sql);
+        $stmt->exeute(["id_classe" => $id_classe]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$row){
+            return NULL;
+        }else{
+            return new Inscription(
+            null,
+            $row['id_utilisateur'],
+            null,
             $row['date_inscription'],
             $row['statut']);
         }
@@ -78,6 +113,15 @@ class InscriptionDAO{
         $sql = "DELETE FROM inscription WHERE id_inscription = :id_inscription";
         $stmt = self::$db->prepare($sql);
         $stmt->bindValue(":id_inscription",$id_inscription);
+        return $stmt->execute();
+    }
+
+    //verifier si une inscription existe deja
+    public function existsInscription($id_utilisateur,$id_classe){
+        $sql = "SELECT COUNT(*) FROM  inscription WHERE id_utilisateur = :id_utilisateur AND id_classe = :id_classe";
+        $stmt = self::$db->prepare($sql);
+        $stmt->bindValue(":id_utilisateur",$id_utilisateur);
+        $stmt->bindValue(":id_classe",$id_classe);
         return $stmt->execute();
     }
 }

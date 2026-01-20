@@ -11,13 +11,13 @@ class BadgetObtenuDAO{
        $conn = new Database();
        $this->db = $conn->getConnexion();
     }
-    public function createBadgeObtenu(BadgeObtenu $badgeObtenu){
+    public function createBadgeObtenu(BadgeObtenu $badge_obtenu){
         $sql = "INSERT INTO badge_obtenu(id_utilisateur, id_badge, date_obtention) VALUES(:id_utilisateur, :id_badge, :date_obtention)";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ":id_utilisateur" => $badgeObtenu->getIdUtilisateur(),
-            ":id_badge" => $badgeObtenu->getIdBadge(),
-            ":date_obtention" => $badgeObtenu->getDateObtention()
+            ":id_utilisateur" => $badge_obtenu->getIdUtilisateur(),
+            ":id_badge" => $badge_obtenu->getIdBadge(),
+            ":date_obtention" => $badge_obtenu->getDateObtention()
         ]);
     }
     public function getBadgesObtenusByUserId($id_utilisateur){
@@ -51,14 +51,13 @@ class BadgetObtenuDAO{
             return NULL;
         }
     }
-    public function updateBadgeObtenu(BadgeObtenu $badgeObtenu){
+    public function updateBadgeObtenu(BadgeObtenu $badge_obtenu){
         $sql = "UPDATE badge_obtenu SET id_utilisateur = :id_utilisateur, id_badge = :id_badge, date_obtention = :date_obtention WHERE id_badge_obtenu = :id_badge_obtenu";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            ":id_badge_obtenu" => $badgeObtenu->getIdBadgeObtenu(),
-            ":id_utilisateur" => $badgeObtenu->getIdUtilisateur(),
-            ":id_badge" => $badgeObtenu->getIdBadge(),
-            ":date_obtention" => $badgeObtenu->getDateObtention()
+            ":id_utilisateur" => $badge_obtenu->getIdUtilisateur(),
+            ":id_badge" => $badge_obtenu->getIdBadge(),
+            ":date_obtention" => $badge_obtenu->getDateObtention()
         ]);
     }
     public static function AfficherToutBadgeObtenu(){
@@ -78,6 +77,15 @@ class BadgetObtenuDAO{
         $sql = "DELETE FROM badge_obtenu WHERE id_badge_obtenu = :id_badge_obtenu";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([":id_badge_obtenu" => $id_badge_obtenu]);
+    }
+
+    //verifier attribution badge
+    public function existsBadge($id_badge,$id_utilisateur){
+        $sql = "SELECT COUNT(*) FROM badge WHERE id_badge = :id_badge OR id_utilisateur = :id_utilisateur";
+        $stmt = self::$db->prepare($sql);
+        $stmt->bindValue(":id_badge",$id_badge);
+        $stmt->bindValue(":id_utilisateur",$id_utilisateur);
+        return $stmt->execute();
     }
 }
 

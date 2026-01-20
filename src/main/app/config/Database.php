@@ -12,7 +12,7 @@ class Database {
             $this->pdo = new PDO("mysql:host={$this->host};dbname={$this->database};charset=utf8",$this->user,$this->pwd);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
          }catch(PDOException $e){
-            echo "Fail to connect to database:".$e->getMessage();
+            echo "Fail to connect to the database:".$e->getMessage();
          }
       }
       

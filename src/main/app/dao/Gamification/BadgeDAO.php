@@ -27,7 +27,7 @@ class BadgeDAO{
             );
     }
     //Afficher un badge
-    public static function getOneBadge($id_badge){
+    public static function getBadgeById($id_badge){
         $sql = "SELECT * FROM badge WHERE id_badge = :id_badge";
         $stmt = self::$db->prepare($sql);
         $stmt->exeute(["id_badge" => $id_badge]);
@@ -71,6 +71,9 @@ class BadgeDAO{
         $stmt->bindValue(":id_badge",$id_badge,PDO::PARAM_STR);
         return $stmt->execute();
     }
+
+    //verifier  l'existanac de la badge
+    
 }
 
 
