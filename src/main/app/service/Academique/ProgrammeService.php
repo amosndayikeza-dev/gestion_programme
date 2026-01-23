@@ -41,15 +41,4 @@ class ProgrammeService {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
 ?>
