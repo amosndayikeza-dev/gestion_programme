@@ -24,14 +24,17 @@ class AuthService{
         if(empty($email) OR empty($mot_de_passe)){
             throw new Exception("Email ou le mot de passe sont obligatoire");
         }
+
         //recuperer un utilisateur par son email
         $utilisateur = $this->utilisateurDAO->getOneUtilisateurByEmail($email);
         if(!$utilisateur){
             throw new Exception("Utilisateur introuvable");
         }
+
         if(! password_verify($mot_de_passe,$utilisateur->getMotDePasse())){
             throw new Exception("Mot de passe incorrect");
         }
+
         //creer une session
         $_SESSION['utilisateur'] = [
             ":id_utilisateur"=>$utilisateur->getIdUtilisateur(),
@@ -71,6 +74,7 @@ class AuthService{
         if(! $this->verifierSession()){
             throw new Exception("Acces refuse : Utilisateur non connecte");
         }
+        
         //recuper le role depuis la session
         $roleUtilisateur = $_SESSION["utilisateur"]['role'];
 

@@ -20,12 +20,15 @@ clasS UtilisateurService{
         if(empty($email) OR empty($mot_de_passe)){
             throw new Exception("Le mot de passe ou l'email sont obligatoire");
         }
+
         if($this->utilisateurDao->EmailExists($email)){
             throw new Exception("L'email existe deja, veuillez utiliser un autre");
         }
+
         if(!in_array($role,['ELEVE','ENSEIGNANT','ADMIN'])){
             throw new Exception("Role invalide");
         }
+        
         //Valider l'utilisateur
         $utilisateur = new Utilisateur();
         $utilisateur->setIdUtilisateur(null);

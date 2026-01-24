@@ -59,6 +59,7 @@ class ProgrammeDAO{
             );
         }
     }
+
     //afficher tout les programme
     public static function getALLProgramme(){
         $sql = "SELECT * FROM programme";
@@ -75,6 +76,7 @@ class ProgrammeDAO{
         }
         return $listeProgramme;
     }
+    
     // SUPPRIMER UN PROGRAMME
     public static function DeleteProgramme($id_programme){
         $sql = "DELETE FROM programme WHERE id_programme =:id_programme";

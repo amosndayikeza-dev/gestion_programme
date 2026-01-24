@@ -27,7 +27,7 @@ class ExerciceService{
 
         //comparer la reponse de l'utilisateur avec pa bonne repinse
         $estCorrect = trim(strtolower($bonneReponse)) === trim(strtolower($exercice->getBonneReponse));
-        //enregistrer le resulat
+        //enregistrer le resulat ...
 
         $resultat = new Resultat(
             null,

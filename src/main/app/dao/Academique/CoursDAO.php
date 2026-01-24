@@ -46,6 +46,7 @@ class CoursDAO{
                                 ]
                             );
     }
+
     //Afficher un cours
     public static function Read($idCours){
         $sql = "SELECT * FROM cours WHERE idCours = :idCours";
@@ -80,6 +81,7 @@ class CoursDAO{
         }
         return null;
     }
+
     //Update cours
     public static function UpdateCours(Cours $cours){
         $sql = "UPDATE cours SET 
@@ -129,6 +131,7 @@ class CoursDAO{
             ":createur_id" =>$cours->getCreateurId(),
         ]);
     }
+    
     //Delete cours
     public static function DeleteCours($id_cours){
         $sql = "DELETE FROM cours WHERE id_cours = :id_cours";

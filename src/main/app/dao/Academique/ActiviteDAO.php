@@ -25,6 +25,7 @@ class ActiviteDAO{
         ":instructions" =>$activite->getInstruction()
     ]);
    }
+
    //MODIFIER UNE ACTIVITE
    public static function UpdateActivite(Activite $activite){
     $sql = "UPDATE activite SET  nom_activite = :nom_activite,type =:type,instructions = :instructions WHERE id_activite = :id_activite";
@@ -35,6 +36,7 @@ class ActiviteDAO{
         ":instructions" =>$activite->getInstruction()
     ]);
    }
+
    //Afficher une activite
    public static function GetoneActivite($id_activite){
     $sql  = "SELECT * FROM activite WHERE id_activite = :id_activite";
@@ -52,6 +54,7 @@ class ActiviteDAO{
         );
     }
    }
+
    /**
     * findByUtilisateur
     */
@@ -86,6 +89,7 @@ class ActiviteDAO{
         );
     }
    }
+   
    //Supprimer une activite
    public static function DeleteActivite($id_activite){
     $sql = "DELETE FROM activite WHERE id_activite = :id_activite";

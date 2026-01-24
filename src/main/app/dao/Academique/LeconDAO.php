@@ -15,6 +15,7 @@ class LeconDAO{
        $pdo = new Database();
        self::$db = $pdo->getConnexion();
     }
+
     //Ajouter une lecon
     public static function CreateLecon(Lecon $lecon){
         $sql = "INSERT INTO lecon(id_cours,titre,ordre,annee_estime,description,statut) VALUES(:id_cours,:titre,:ordre,:annee_estime,:description,:statut)";
@@ -30,6 +31,7 @@ class LeconDAO{
             ]
             );
     }
+
     //modifier une lecon
     public static function UpdateLecon(Lecon $lecon){
         $sql = "UPDATE lecon SET id_cours = :id_cours,titre = :titre,ordre = :ordre,annee_estime = :annee_Estime,description = :description,statut =:statut WHERE id_lecon = id_lecon";
@@ -45,6 +47,7 @@ class LeconDAO{
             ]
             );
     }
+
     //Afficher une lecon
     public static function getOneLecon($id_lecon){
         $sql = "SELECT * FROM lecon WHERE id_lecon = :id_lecon";
@@ -65,6 +68,7 @@ class LeconDAO{
             );
         }
     }
+
     //Afficher toutes les lecons
     public static function getAllLecon(){
         $sql = "SELECT * FROM lecon";
@@ -83,6 +87,7 @@ class LeconDAO{
         }
         return $ListeLecon; 
     }
+    
     //Supprimer une lecon
     public static function DeleteLecon($id_lecon){
         $sql = "DELETE FROM lecon WHERE id_lecon = :id_lecon";
