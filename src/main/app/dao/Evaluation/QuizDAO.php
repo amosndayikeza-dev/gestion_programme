@@ -16,52 +16,67 @@ class QuizDAO{
         self::$db = $pdo->getConnexion();
     }
     //AJouter UN quiZ 
-    public static function CreateResultat(Quiz $quiz){
-        $sql = "INSERT INTO quiz(id_lecon,titre,scoreMin) VALUES(:id_lecon,:titre,:scoreMin)";
-        $stmt = self::$db->prpare($sql);
-        return $stmt->execute(
-            [
-            ":id_quiz" =>$quiz->getIdQuiz(),
-            ":id_lecon" =>$quiz->getIdLecon(),
-            ":titre"=>$quiz->getTitre(),
-            ":scoreMin"=>$quiz->getScoreMin(),
-            ]
-            );
+    public static function CreateQuiz(Quiz $quiz){
+        try{
+            $sql = "INSERT INTO quiz(id_lecon,titre,scoreMin) VALUES(:id_lecon,:titre,:scoreMin)";
+            $stmt = self::$db->prpare($sql);
+            return $stmt->execute(
+                [
+                ":id_quiz" =>$quiz->getIdQuiz(),
+                ":id_lecon" =>$quiz->getIdLecon(),
+                ":titre"=>$quiz->getTitre(),
+                ":scoreMin"=>$quiz->getScoreMin(),
+                ]
+                );
+        }catch(PDOException $e){
+            echo "Erreur : insertion a echoue" .$e->getMessage();
+        }
     }
     //Afficher un quiz
     public static function getOneQuiz($id_quiz){
-        $sql = "SELECT * FROM quiz WHERE id_quiz = :id_quiz";
-        $stmt = self::$db->prepare($sql);
-        $stmt->excute(['id_quiz'=>$id_quiz]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if(!$row){
-            return NULL;
-        }else{
-            return new Quiz(
-                $row['id_quiz'],
-                $row['id_lecon'],
-                $row['titre'],
-                $row['scoreMin']
-            );
+        try{
+            $sql = "SELECT * FROM quiz WHERE id_quiz = :id_quiz";
+            $stmt = self::$db->prepare($sql);
+            $stmt->excute(['id_quiz'=>$id_quiz]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if(!$row){
+                return NULL;
+            }else{
+                return new Quiz(
+                    $row['id_quiz'],
+                    $row['id_lecon'],
+                    $row['titre'],
+                    $row['scoreMin']
+                );
+            }
+        }catch(PDOException $e){
+            echo "Erreur : lecture a echoue" .$e->getMessage();
         }
     }
     //Afficher Tout les quiz 
     public static function getAllQuiz(){
-        $sql = "SELECT * FROM quiz";
+       try{
+         $sql = "SELECT * FROM quiz";
         $stmt = self::$db->query($sql);
         $ListeQuiz = [];
         while($row = $stmt->fetchall(PDO::FETCH_ASSOC)){
-            return  $ListeQuiz [] =  new Quiz(
+              $ListeQuiz [] =  new Quiz(
                 $row['id_quiz'],
                 $row['id_lecon'],
                 $row['titre'],
                 $row['scoreMin']
             );
         }
+        return $ListeQuiz;
+       }catch(PDOException $e){
+        echo "Erreur : lecture a echoue" .$e->getMessage();
+       }
+    
     }
     //Afficher Modifier un Quiz 
-    public static function Update(Quiz $quiz){
-        $sql = "UPDATE quiz SET id_quiz = :id_quiz, id_lecon = :id_lecon,titre = :titre,scoreMin = :scoreMin";
+    public static function UpdateQuiz(Quiz $quiz){
+       try{
+         $sql = "UPDATE quiz SET id_quiz = :id_quiz, id_lecon = :id_lecon,titre = :titre,scoreMin = :scoreMin";
         $stmt = self::$db->prepare($sql);
         return $stmt->execute([
             ":id_quiz" => $quiz->getIdQuiz(),
@@ -69,13 +84,20 @@ class QuizDAO{
             ":titre" =>$quiz->getTitre(),
             ":scoreMin"=>$quiz->getScoreMin()
         ]);
+       }catch(PDOException $e){
+        echo "Erreur : modification a echoue" .$e->getMessage();
+       }
     }
     //SUPPRIMER un quiz
     public static function DeleteQuiz($id_quiz){
-        $sql = "DELETE FROM quiz WHERE id_quiz = :id_quiz";
+       try{
+         $sql = "DELETE FROM quiz WHERE id_quiz = :id_quiz";
         $stmt = self::$db->prepare($sql);
         $stmt->bindValue("id_quiz",$id_quiz);
         return $stmt->execute();
+       }catch(PDOException $e){
+        echo "Erreur : suppression a echoue" .$e->getMessage();
+       }
     }
 }
 

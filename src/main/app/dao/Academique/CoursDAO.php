@@ -18,8 +18,9 @@ class CoursDAO{
    }
     //Ajouter un cours
     public static function Create(Cours $cours){
-        $requette = "INSERT INTO cours(titre,description,idMatiere,idProgramme,idClasse,statut,ordre_progression,niveau_difficulte,duree_estimee,date_creation,modification,type_cours,objectif_apprentissage,prerequis,ressources_externes,nb_vues,taux_reussite,seuil_reussite,createur_id,visible,tags) VALUES(:titre,:description,:idMatiere,:idProgramme,:idClasse,:statut,:ordre_progression,:niveau_difficulte,:duree_estimee,:date_creation,:modification,:type_cours,:objectif_apprentissage,:prerequis,:ressources_externes,:nb_vues,:taux_reussite,:seuil_reussite,:createur_id,:visible,:tags)";
-                    $stmt = self::$bd->prepare($requette);
+       try{
+         $requette = "INSERT INTO cours(titre,description,idMatiere,idProgramme,idClasse,statut,ordre_progression,niveau_difficulte,duree_estimee,date_creation,modification,type_cours,objectif_apprentissage,prerequis,ressources_externes,nb_vues,taux_reussite,seuil_reussite,createur_id,visible,tags) VALUES(:titre,:description,:idMatiere,:idProgramme,:idClasse,:statut,:ordre_progression,:niveau_difficulte,:duree_estimee,:date_creation,:modification,:type_cours,:objectif_apprentissage,:prerequis,:ressources_externes,:nb_vues,:taux_reussite,:seuil_reussite,:createur_id,:visible,:tags)";
+        $stmt = self::$bd->prepare($requette);
                     return  $stmt->execute(
                                 [
                                     ":titre" =>$cours->getTitre(),
@@ -43,48 +44,57 @@ class CoursDAO{
                                     ":createur_id" =>$cours->getCreateurId(),
                                     ":visible" =>$cours->getVisible(),
                                     ":tags" =>$cours->getTags(),
-                                ]
-                            );
+                                ]);
+     
+       } catch(PDOException $e){
+        echo "Erreur : insertion a echoue" .$e->getMessage();
+
+       }                      
     }
 
     //Afficher un cours
     public static function Read($idCours){
-        $sql = "SELECT * FROM cours WHERE idCours = :idCours";
-        $stmt = self::$bd->prepare($sql);
-        $stmt->execute([":idCours" => $idCours]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if($row){
-            return new Cours(
-                $row['idCours'],
-                $row['titre'],
-                $row['description'],
-                $row['id_matiere'],
-                $row['id_programme'],
-                $row['id_classe'],
-                $row['statut'],
-                $row['ordre_progression'],
-                $row['niveau_difficulte'],
-                $row['duree_estimee'],
-                $row['date_creation'],
-                $row['modification'],
-                $row['type_cours'],
-                $row['objectif_apprentissage'],
-                $row['prerequis'],
-                $row['ressources_externes'],
-                $row['nb_vues'],
-                $row['taux_reussite'],
-                $row['seuil_reussite'],
-                $row['createur_id'],
-                $row['visible'],
-                $row['tags']
-            );
-        }
-        return null;
+        try{
+            $sql = "SELECT * FROM cours WHERE idCours = :idCours";
+            $stmt = self::$bd->prepare($sql);
+            $stmt->execute([":idCours" => $idCours]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if($row){
+                return new Cours(
+                    $row['idCours'],
+                    $row['titre'],
+                    $row['description'],
+                    $row['id_matiere'],
+                    $row['id_programme'],
+                    $row['id_classe'],
+                    $row['statut'],
+                    $row['ordre_progression'],
+                    $row['niveau_difficulte'],
+                    $row['duree_estimee'],
+                    $row['date_creation'],
+                    $row['modification'],
+                    $row['type_cours'],
+                    $row['objectif_apprentissage'],
+                    $row['prerequis'],
+                    $row['ressources_externes'],
+                    $row['nb_vues'],
+                    $row['taux_reussite'],
+                    $row['seuil_reussite'],
+                    $row['createur_id'],
+                    $row['visible'],
+                    $row['tags']
+                );
+            }
+        }catch(PDOException $e){
+            echo "Erreur : lecture a echoue" .$e->getMessage();
+            }
     }
+
 
     //Update cours
     public static function UpdateCours(Cours $cours){
-        $sql = "UPDATE cours SET 
+        try{
+            $sql = "UPDATE cours SET 
                     titre = :titre,
                     description = :description,
                     idMatiere = :idMatiere,
@@ -130,14 +140,22 @@ class CoursDAO{
             ":seuil_reussite" =>$cours->getSeuilReussite(),
             ":createur_id" =>$cours->getCreateurId(),
         ]);
+        }catch(PDOException $e){
+            echo "Erreur : modification a echoue" .$e->getMessage();
+        }
     }
     
     //Delete cours
     public static function DeleteCours($id_cours){
-        $sql = "DELETE FROM cours WHERE id_cours = :id_cours";
-        $stmt = self::$bd->prepare($sql);
-        $stmt->bindValue("id_cours",$id_cours);
-        return $stmt->execute([":id_cours" => $id_cours]);
+        try{
+            $sql = "DELETE FROM cours WHERE id_cours = :id_cours";
+            $stmt = self::$bd->prepare($sql);
+            $stmt->bindValue("id_cours",$id_cours);
+            return $stmt->execute([":id_cours" => $id_cours]);
+        }catch(PDOException $e){
+            echo "Erreur : suppression a echoue" .$e->getMessage();
+
+        }
     }
 
 }

@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `activite` (
   `instruction` text,
   PRIMARY KEY (`id_activite`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `activites` (
   `statut` varchar(50) DEFAULT 'Succès',
   PRIMARY KEY (`id_activite`),
   KEY `id_utilisateur` (`id_utilisateur`)
-) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `badges`;
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `badges` (
   `nom_badge` varchar(100) NOT NULL,
   `condition_obtention` text,
   PRIMARY KEY (`id_badge`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `badges_obtenus` (
   PRIMARY KEY (`id`),
   KEY `id_badge` (`id_badge`),
   KEY `id_utilisateur` (`id_utilisateur`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `classes` (
   `description` text COMMENT 'Description détaillée de la classe',
   PRIMARY KEY (`id_classe`),
   KEY `id_etablissement` (`id_etablissement`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `classes`
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `competences` (
   `id_cours` int NOT NULL,
   PRIMARY KEY (`id_competence`),
   KEY `id_cours` (`id_cours`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `contenu_lecon` (
   `ordre` int DEFAULT NULL,
   PRIMARY KEY (`id_contenu`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `cours` (
   KEY `id_matiere` (`id_matiere`),
   KEY `id_programme` (`id_programme`),
   KEY `fk_cours_classe` (`id_classe`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `cours`
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `etablissements` (
   `type` enum('primaire','secondaire','universitaire') NOT NULL,
   `localisation` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`id_etablissement`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `etablissements`
@@ -230,7 +230,7 @@ CREATE TABLE IF NOT EXISTS `exemple_lecon` (
   `ordre` int DEFAULT NULL,
   PRIMARY KEY (`id_exemple`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS `exercice` (
   `score` int DEFAULT '1',
   PRIMARY KEY (`id_exercice`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `exercices` (
   `id_competence` int NOT NULL,
   PRIMARY KEY (`id_exercice`),
   KEY `id_competence` (`id_competence`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `experience_eleve` (
   PRIMARY KEY (`id_experience`),
   UNIQUE KEY `id_utilisateur` (`id_utilisateur`),
   KEY `id_niveau` (`id_niveau`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `inscriptions` (
   PRIMARY KEY (`id_inscription`),
   KEY `id_utilisateur` (`id_utilisateur`),
   KEY `id_classe` (`id_classe`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `inscriptions`
@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS `lecon` (
   `statut` enum('brouillon','publie') DEFAULT 'brouillon',
   PRIMARY KEY (`id_lecon`),
   KEY `id_cours` (`id_cours`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `matiere` (
   `coefficient` varchar(100) DEFAULT NULL,
   `description` text,
   PRIMARY KEY (`id_matiere`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS `matieres` (
   `nb_heures_total` int DEFAULT '0',
   `nb_cours_total` int DEFAULT '0',
   PRIMARY KEY (`id_matiere`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `matieres`
@@ -388,7 +388,7 @@ CREATE TABLE IF NOT EXISTS `niveaux` (
   `xp_min` int NOT NULL,
   `xp_max` int NOT NULL,
   PRIMARY KEY (`id_niveau`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -403,7 +403,7 @@ CREATE TABLE IF NOT EXISTS `objectif_lecon` (
   `description` text,
   PRIMARY KEY (`id_objectif`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -419,7 +419,7 @@ CREATE TABLE IF NOT EXISTS `programme` (
   `description` text,
   PRIMARY KEY (`id_programme`),
   KEY `id_matiere` (`id_matiere`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -448,7 +448,7 @@ CREATE TABLE IF NOT EXISTS `programmes` (
   `createur_id` int DEFAULT NULL,
   `version` varchar(20) DEFAULT '1.0',
   PRIMARY KEY (`id_programme`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `programmes`
@@ -475,7 +475,7 @@ CREATE TABLE IF NOT EXISTS `progression` (
   PRIMARY KEY (`id_progression`),
   KEY `id_utilisateur` (`id_utilisateur`),
   KEY `id_cours` (`id_cours`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -491,7 +491,7 @@ CREATE TABLE IF NOT EXISTS `quiz` (
   `score_min` int DEFAULT NULL,
   PRIMARY KEY (`id_quiz`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -509,7 +509,7 @@ CREATE TABLE IF NOT EXISTS `rapports` (
   PRIMARY KEY (`id_rapport`),
   KEY `id_classe` (`id_classe`),
   KEY `id_inspecteur` (`id_inspecteur`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -525,7 +525,7 @@ CREATE TABLE IF NOT EXISTS `reponse_exercice` (
   `correcte` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_reponse`),
   KEY `id_exercice` (`id_exercice`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -543,7 +543,7 @@ CREATE TABLE IF NOT EXISTS `resultats` (
   PRIMARY KEY (`id_resultat`),
   KEY `id_utilisateur` (`id_utilisateur`),
   KEY `id_exercice` (`id_exercice`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -558,7 +558,7 @@ CREATE TABLE IF NOT EXISTS `resume_lecon` (
   `contenu` text,
   PRIMARY KEY (`id_resume`),
   KEY `id_lecon` (`id_lecon`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -577,7 +577,7 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
   `date_creation` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_utilisateur`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `utilisateurs`

@@ -9,7 +9,38 @@ class MatiereService {
     private MatiereDAO $matiere_dao;
     public function __construct()
     {
-       $matiere_dao = new MatierEDAO();
+       $this->matiere_dao = new MatierEDAO();
+    }
+    /**
+     * AJOUTER MATIERE
+     */
+    public function ajouterMatiere(Matiere $matiere){
+        return $this->matiere_dao->CreateMatiere($matiere);
+    }
+    /**
+     * modifier matiere
+     */
+    public function modifierMatiere(Matiere $matiere){
+        return $this->matiere_dao->UpdateMatiere($matiere);
+    }
+    /**
+     * AFFICHER UNE MATIERE
+     */
+    public function afficherUneMatiere($id_matiere){
+        return $this->matiere_dao->GetoneMatiere($id_matiere);
+    }
+    /**
+     * afficher totes les matires
+     */
+    public function afficherToutesLesMatieres(){
+        return $this->matiere_dao->AfficherToutesLesMatiere();
+    }
+
+    /**
+     * SUPPRIMER UNE MATIERE
+     */
+    public function supprimerMatiere($id_matiere){
+        return $this->matiere_dao->DeleteMatiere($id_matiere);
     }
 }
 

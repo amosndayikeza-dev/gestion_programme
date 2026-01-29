@@ -10,8 +10,40 @@ class ClasseService{
 
     public function __construct()
     {
-        $classe_dao = new ClasseDAO();
+        $this->classe_dao = new ClasseDAO();
     }
+    /**
+     * creer une nouvelle classe
+     */
+    public function creerClasse(Classe $classe){
+        return $this->classe_dao->CreateClasse($classe);
+    }
+    /**
+     * modifier une classe
+     */
+    public function modifierClasse(Classe $classe){
+        return $this->classe_dao->UpdateClasse($classe);
+    }
+    /**
+     * afficher une classe par son ID
+     */
+    public function afficherClasse($id_classe){
+        return $this->classe_dao->getOneClasse($id_classe);
+    }
+    /**
+     * afficher toutes les classes
+     */
+    public function afficherToutesLesClasses(){
+        return $this->classe_dao->getAllClasse();
+    }
+    /**
+     * supprimer une classe
+     */
+
+    public function supprimerClasse($id_classe){
+        return $this->classe_dao->DeleteOneClasse($id_classe);
+    }
+
 }
 
 

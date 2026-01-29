@@ -11,13 +11,43 @@ class ExerciceService{
 
     public function __construct()
     {
-        $exercice_dao = new ExerciceDAO();
-        $resultat_dao = new ResultatDAO();
+        $this->exercice_dao = new ExerciceDAO();
+        $this->resultat_dao = new ResultatDAO();
     }
     /**
-     * corriger l'exercice
-     * comparer la reponse de l'utilisateur avec la bonne reponse
+     * ajouter un exercice
      */
+    /**
+     * modifier exercice
+     */
+    public function modifierExercice(Exercice $exercice){
+        return $this->exercice_dao->UpdateExercice($exercice);
+    }
+    /**
+     * afficher un exercice
+     */
+    public function afficherUneExercice($id_exercice){
+        return $this->exercice_dao->getOneExercice($id_exercice);
+    }
+    /**
+     * supprimer un exercice
+     */
+    public function supprimerExercice($id_exercice){
+        return $this->exercice_dao->deleteExercice($id_exercice);
+    }
+    /**
+     * afficher toutes les exercices
+     */
+    public function afficherToutesLesExercices(){
+        return $this->exercice_dao->getAllExercice();
+    }
+    
+    public function ajouterExercice(Exercice $exercice){
+        return $this->exercice_dao->AjouterExercice($exercice);
+    /*
+      corriger l'exercice
+      comparer la reponse de l'utilisateur avec la bonne reponse
+     
     public function corrigerExercice($id_exercice,$id_utilisateur,$bonneReponse){
         //requiperer l'exercice
         $exercice = $this->exercice_dao->getOneExercice($id_exercice);
@@ -41,6 +71,7 @@ class ExerciceService{
 
         return $estCorrect;
         
+    }*/
     }
 }
 

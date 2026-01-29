@@ -11,8 +11,8 @@ class BadgeService{
 
     public function __construct()
     {
-        $badge_dao = new BadgeDAO();
-        $badge_obtenu_dao = new BadgetObtenuDAO();
+        $this->badge_dao = new BadgeDAO();
+        $this->badge_obtenu_dao = new BadgetObtenuDAO();
     }
 
     /**
@@ -28,7 +28,7 @@ class BadgeService{
         );
 
         //ajouter a la base des donnees
-        $this->badge_dao->CreateBadge($badge);
+        return $this->badge_dao->CreateBadge($badge);
     }
     /**
      * vierifier si l'utulisateur rempli les conditions d'obtention du badge
@@ -59,23 +59,20 @@ class BadgeService{
         return $this->badge_dao->AfficherToutBadge();
     }
 
+    /**
+     * afficher badge par son ID
+     */
     public function getBadgeById($id_badge){
         return $this->badge_dao->getBadgeById($id_badge);
     }
 
+    /***
+     * SUPPRIMER LE BADGET OBTENU
+     */
     public function supprimerBadgeObtenu($id_badge_obtenu){
         return $this->badge_obtenu_dao->deleteBadgeObtenu($id_badge_obtenu);
     }
 
-    public function creerBadge($nom_badge){
-        $badge = new Badge(
-            null,
-            $nom_badge,
-            null
-        );
-
-        $this->badge_dao->CreateBadge($badge);
-    }   
 
     
 }

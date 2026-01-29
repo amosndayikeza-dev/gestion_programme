@@ -12,8 +12,8 @@ class ExperienceEleveService{
 
     public function __construct()
     {
-        $experience_eleve_dao = new ExperienceEleveDAO();
-        $niveau_dao = new NiveauDAO();
+        $this->experience_eleve_dao = new ExperienceEleveDAO();
+        $this->niveau_dao = new NiveauDAO();
     }
 
     public function AjouterXP($id_utilisateur,$xp){
@@ -25,8 +25,40 @@ class ExperienceEleveService{
 
         $niveau = $this->niveau_dao->getNiveau($id_niveau);
         $experience->setNiveau($niveau->getNiveau());
-
     }
+
+    /**
+     * creer une experience
+     */
+    public function createExperienceEleve($experience_eleve){
+        return $this->experience_eleve_dao->CreateExperienceEleve($experience_eleve);
+    }
+    /**
+     * modifier une experience eleve
+     */
+    public function modifierExperienceEleve( $experience_eleve){
+        return $this->experience_eleve_dao->UpdateExperienceEleve($experience_eleve);
+    }
+    /**
+     * afficher une experience eleve
+     */
+    public function afficherExperienceEleve($id_experience_eleve){
+        return $this->experience_eleve_dao->getOneExperienceEleve($id_experience_eleve);
+    }
+    /**
+     * afficher toutes les experiences eleves
+     */
+    public function afficherToutesLesExperiencesEleves(){
+        return $this->experience_eleve_dao->getAllExperienceEleve();
+    }
+    /**
+     * supprimer une experience eleve
+     */
+    public function supprimerExperienceEleve($id_experience_eleve){
+        return $this->experience_eleve_dao->DeleteExperienceEleve($id_experience_eleve);
+    }
+    
+
 }
 
 

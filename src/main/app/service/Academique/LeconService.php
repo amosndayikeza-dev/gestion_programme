@@ -9,10 +9,41 @@ class LeconService{
 
     public function __construct()
     {
-      $lecon_dao = new LeconDAO();
+      $this->lecon_dao = new LeconDAO();
     }
-    
+    /**
+     * AJOUTER UNE LECON
+     */
+    public function ajouterLecon(Lecon $lecon){
+      return $this->lecon_dao->CreateLecon($lecon);
+    }
+    /**
+     * MODIFIER UNE LECON
+     */
+    public function modifierLecon(Lecon $lecon){
+      return $this->lecon_dao->UpdateLecon($lecon);
+    }
+    /**
+     * AFFICHER UNE LECON
+     */
+    public function afficherLecon($id_lecon){
+      return $this->lecon_dao->getOneLecon($id_lecon);
+    }
+    /**
+     * SUPPRIMER UNE LECON
+     */
+    public function supprimerLecon($id_lecon){
+      return $this->lecon_dao->DeleteLecon($id_lecon);
+    }
+    /**
+     * AFFICHER TOUTES LES LECON
+     */
+    public function afficherToutesLesLecons(){
+      return $this->lecon_dao->getAllLecon();
+    }
 }
+
+
 
 
 

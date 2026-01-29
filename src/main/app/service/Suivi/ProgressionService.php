@@ -9,12 +9,12 @@ Class ProgressionService{
 
     public function __construct()
     {
-        $progressionDAO = new ProgressionDAO();
+        $this->progressionDAO = new ProgressionDAO();
     }
 
-    /**
+    /*
      * initialiser la progression au depart
-     */
+     
     public function initialiserProgression($id_utilisateur,$id_cours){
         if($this->progressionDAO->exists($id_utilisateur,$id_cours)){
             return;
@@ -22,7 +22,7 @@ Class ProgressionService{
     $this->progressionDAO->CreateProgression($id_utilisateur,$id_cours,0);
 
 
-    }
+    }**/
 
     /**
      * Mettre a jours pourcentage
@@ -59,6 +59,31 @@ Class ProgressionService{
         }
         return round($total / count($cours),2);
     }
+    /**
+     * supprimer lecon coplet
+     */
+    public function supprimerLeconComplet($id_utilisateur,$id_cours){
+        $this->progressionDAO->DeleteProgression($id_utilisateur,$id_cours);
+    }
+    /**
+     * modifier la progression
+     */
+    public function modifierProgression($progression){
+        $this->progressionDAO->UpdateProgression($progression);
+    }
+    /**
+     * afficher la progression
+     */
+    public function afficherProgression($id_utilisateur){
+        return $this->progressionDAO->getOneProgresion($id_utilisateur);
+    }
+    /**
+     * AFFICHER TOUT PROGRESSION
+     */
+    public function afficherToutesLesProgressions(){
+        return $this->progressionDAO->AfficherToutLesProgression();
+    }
+
 }
 
 

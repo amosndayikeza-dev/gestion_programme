@@ -11,19 +11,44 @@ class QuizService {
 
     public function __construct()
     {
-        $quiz_dao = new QuizDAO();
-        $quiz_dao = new ResultatDAO();
+        $this->quiz_dao = new QuizDAO();
+        $this->resultat_dao = new ResultatDAO();
     }
 
+    /**
+     * Ajouter un quiz
+     */
+    public function ajouterQuiz(Quiz $quiz){
+        return $this->quiz_dao->CreateQuiz($quiz);
+    }
+    /**
+     * Modifier un quiz
+     */
+    public function modifierQuiz(Quiz $quiz){
+        return $this->quiz_dao->UpdateQuiz($quiz);
+    }
+    /**
+     * Afficher un quiz
+     */
+    public function afficherQuiz($id_quiz){
+        return $this->quiz_dao->getOneQuiz($id_quiz);
+    }
+    /**
+     * Supprimer un quiz
+     */
+    public function supprimerQuiz($id_quiz){
+        return $this->quiz_dao->DeleteQuiz($id_quiz);
+    
+    }
     /**
      * Soumettre u  quiz
      */
     public function soumettreQuiz($id_quiz,$id_utilisateur,$reponse_utilisateur){
-        //calculer score
+        /*//calculer score
         $score = $this->claculerScore($id_quiz,$reponse_utilisateur);
         $this->resultat_dao->CreateQuizResultat($id_utilisateur,$id_quiz,$score);
     
-    return $score;
+    return $score;*/
     }
 
     /**
@@ -31,7 +56,7 @@ class QuizService {
      */
     public function calculerScore($id_quiz,$reponse_utilisateur){
         //recuperer les question du quiz
-        $questions = $this->quiz_dao->getQuestion($id_quiz);
+        /*$questions = $this->quiz_dao->getQuestion($id_quiz);
         $score = 0;
 
             foreach($questions as $question){
@@ -41,7 +66,7 @@ class QuizService {
             }
         }
 
-        return $score;
+        return $score;*/
     }
 }
 

@@ -31,6 +31,33 @@ class ResultatService{
     public function ListerResultatUtilisateur($id_utilisateur){
         return $this->resultat_dao->findByUtilisateur($id_utilisateur);
     }
+    /**
+     * modifier Resultat
+     */
+    public function modifierResultat($resultat){
+        return $this->resultat_dao->UpdateResultat($resultat);
+    }
+    /**
+     * affucher un resulatat
+     */
+    public function afficherResultat($id_resultat){
+        return $this->resultat_dao->getOneResultat($id_resultat);
+    }
+    /**
+     * afficher touts les resultat
+     */
+    public function afficherTousLesResultats(){
+        return $this->resultat_dao->getAllResultat();
+    }
+    /**
+     * supprimer un resultat
+     */
+    public function supprimerResultat($id_resultat){
+        return $this->resultat_dao->DeleteResultat($id_resultat);
+    }
+
+
+
 }
 
 

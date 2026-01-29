@@ -15,8 +15,9 @@ class ClasseDAO{
        self::$bd = $pdo->getConnexion();
     }
     //Ajouter une classe
-    public static function Create(Classe $classe){
-        $requette = "INSERT INTO classe(nom_classe,niveau,idEtablissement,effectif_maximal,effectif_actuel,description,annee_scolaire,salle) VALUES(:nom_classe,:niveau,:idEtablissement,:effectif_maximal,:effectif_actuel,:description,:annee_scolaire,:salle)";
+    public static function CreateClasse(Classe $classe){
+        try{
+            $requette = "INSERT INTO classe(nom_classe,niveau,idEtablissement,effectif_maximal,effectif_actuel,description,annee_scolaire,salle) VALUES(:nom_classe,:niveau,:idEtablissement,:effectif_maximal,:effectif_actuel,:description,:annee_scolaire,:salle)";
                     $stmt = self::$bd->prepare($requette);
                     return  $stmt->execute(
                                 [
@@ -30,10 +31,14 @@ class ClasseDAO{
                                     ":niveau" =>$classe->getNiveau(),
                                 ]
                             );
+        }catch(PDOException $e){
+            echo "Erreur : insertion a echoue" .$e->getMessage();
+        }
     }
     //Afficher une classe
     public static function getOneClasse($idClasse){
-        $sql = "SELECT * FROM classe WHERE idClasse = :idClasse";
+        try{
+            $sql = "SELECT * FROM classe WHERE idClasse = :idClasse";
         $stmt = self::$bd->prepare($sql);
         $stmt->execute([":idClasse" => $idClasse]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -51,10 +56,14 @@ class ClasseDAO{
             );
         }
         return null;
+        }catch(PDOException $e){
+            echo "Erreur : lecture a echoue" .$e->getMessage();
+        }
     }
     //afficher beacoup de classe
     public static function getALLClasse(){
-        $sql = "SELECT * FROM classe";
+       try{
+         $sql = "SELECT * FROM classe";
         $stmt = self::$bd->query($sql);
         $ListeClasse = [];
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -71,11 +80,16 @@ class ClasseDAO{
             );
         }
         return $ListeClasse;
+       }catch(PDOException $e){
+        echo "Erreur : lecture a echoue" .$e->getMessage();
+       }
+    
     }
 
     //Update classe
     public static function UpdateClasse(Classe $classe){
-        $sql = "UPDATE classe SET 
+        TRY{
+            $sql = "UPDATE classe SET 
                     nom_classe = :nom_classe,
                     niveau = :niveau,
                     idEtablissement = :idEtablissement,
@@ -99,12 +113,19 @@ class ClasseDAO{
                 ":idClasse" =>$classe->getIdClasse(),
             ]
         );
+        }catch(PDOException $e){
+            echo "Erreur : modification a echoue" .$e->getMessage();
+        }
     }
     //Delete classe
     public static function DeleteOneClasse($idClasse){
-        $sql = "DELETE FROM classe WHERE idClasse = :idClasse";
-        $stmt = self::$bd->prepare($sql);
-        return $stmt->execute([":idClasse" => $idClasse]);
+        try{
+            $sql = "DELETE FROM classe WHERE idClasse = :idClasse";
+            $stmt = self::$bd->prepare($sql);
+            return $stmt->execute([":idClasse" => $idClasse]);
+        }catch(PDOException $e){
+            echo "Erreur : suppression a echoue" .$e->getMessage();
+        }
     }
 }
 

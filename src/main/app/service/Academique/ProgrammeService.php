@@ -11,10 +11,56 @@ class ProgrammeService {
 
     public function __construct()
     {
-      $programme_dao = new ProgressionDAO();
-      $cours_dao = new CoursDAO();
+      $$this->programme_dao = new ProgressionDAO();
+      $this->cours_dao = new CoursDAO();
     }
-  // publier un programme
+    /**
+     * Ajouter un programme
+     */
+    public function ajouterProgramme(Programme $programme){
+      return $this->programme_dao->CreateProgramme($programme);
+    }
+    /**
+     * Modifier un programme
+     */
+  public function modifierProgramme(Programme $programme){
+    return $this->programme_dao->UpdateProgramme($programme);
+  }
+  /**
+   * Afficher un programme
+   */
+  public function afficherProgramme($id_programme){
+    return $this->programme_dao->getOneProgramme($id_programme);
+  }
+
+  /**
+   * afficher touts les programmes
+   */
+  public function afficherProgrammes(){
+    return $this->programme_dao->getALLProgramme();
+  }
+  /**
+   * supprimerProgramme
+   */
+  public function supprimerProgramme($id_programme){
+    return $this->programme_dao->DeleteProgramme($id_programme);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  /*// publier un programme
   public function publierProgramme($id_programme){
     //verifier si un programme existe
     $programme = $this->programme_dao->getOneProgramme($id_programme);
@@ -39,6 +85,6 @@ class ProgrammeService {
     //changer dans la base des donnees
     $this->programme_dao->UpdateProgramme($id_programme);
   }
-
+*/
 }
 ?>

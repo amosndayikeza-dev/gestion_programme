@@ -10,9 +10,42 @@ class EtablissementService{
 
     public function __construct()
     {
-        $etablissement_dao = new EtablissementDAO();
+        $this->etablissement_dao = new EtablissementDAO();
     }
+    /**
+     * creer un nouvel etablissement
+     */
+    public function AjouterEtablissement(Etablissement $etablissement){
+        return $this->etablissement_dao->AjouterEtablissement($etablissement);
+    }
+    /**
+     * modifier etablissement
+     */
+    public function modifierEtablissement(Etablissement $etablissement){
+        return $this->etablissement_dao->UpdateEtablissement($etablissement);
+    }
+    /**
+     * afficher un etablissement
+     */
+    public function afficherEtablissement($id_etablissement){
+        return $this->etablissement_dao->getOneEtalissement($id_etablissement);
+    }
+    /**
+     * afficher touts les etablissement
+     */
+    public function afficherTousLesEtablissement(){
+        return $this->etablissement_dao->AfficherToutEtalissement();
+    }
+    /**
+     * supprimer etablissement
+     */
+    public function supprimerEtablissement($id_etablissement){
+        return $this->etablissement_dao->DeleteEtablissement($id_etablissement);
+    }
+
 }
+
+
 
 
 

@@ -16,9 +16,9 @@ class InscriptionService{
 
     public function __construct()
     {
-        $inscriptionDAO = new InscriptionDAO();
-        $classeDAO = new ClasseDAO();
-        $UtilisateurDAO = new UtilisateurDAO();
+        $this->inscriptionDAO = new InscriptionDAO();
+        $this->classeDAO = new ClasseDAO();
+        $this->utilisateurDAO = new UtilisateurDAO();
     }
 
     public function InscrirEleve($id_utilisateur,$id_Classe){
@@ -49,6 +49,29 @@ class InscriptionService{
     public function listerInscriptionsParUtilisateur($id_utilisateur){
         return $this->inscriptionDAO->getByUtilisateur($id_utilisateur);
     }
+    /**
+     * modifier une inscription
+     */
+    public function modifierInscription(Inscription $inscription){
+        return $this->inscriptionDAO->UpdateInscription($inscription);
+    }
+    /**
+     * afficher touts les inscriptions
+     */
+    public function afficherToutesLesInscriptions(){
+        return $this->inscriptionDAO->AfficherToutInscription();
+    }
+    /**
+     * supprimer une inscription
+     */
+    public function supprimerInscription($id_inscription){
+        return $this->inscriptionDAO->DeleteInscription($id_inscription);
+    }
+
+    /**
+     * verifiaction d'une inscription
+     */
+
 
 }
 

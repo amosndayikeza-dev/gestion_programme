@@ -16,50 +16,63 @@ class ExperienceEleveDAO{
     }
     //Ajouter une experience eleve
     public static function CreateExperienceEleve(ExperienceEleve $experienceEleve){
-        $requette = "INSERT INTO experience_eleve(id_utilisateur,xp_total,id_niveau) 
-                     VALUES(:id_utilisateur,:xp_total,:id_niveau)";
-        $stmt = self::$bd->prepare($requette);
-        return  $stmt->execute(
-                    [
-                        ":id_utilisateur" =>$experienceEleve->getIdUtilisateur(),
-                        ":xp_total" =>$experienceEleve->getXpTotal(),
-                        ":id_niveau" =>$experienceEleve->getIdNiveau(),
-                    ]
-                );
+        try{
+            $requette = "INSERT INTO experience_eleve(id_utilisateur,xp_total,id_niveau) 
+                        VALUES(:id_utilisateur,:xp_total,:id_niveau)";
+            $stmt = self::$bd->prepare($requette);
+            return  $stmt->execute(
+                        [
+                            ":id_utilisateur" =>$experienceEleve->getIdUtilisateur(),
+                            ":xp_total" =>$experienceEleve->getXpTotal(),
+                            ":id_niveau" =>$experienceEleve->getIdNiveau(),
+                        ]
+                    );
+        }catch(PDOException $e){
+            echo "Erreur : insertion a echoue" .$e->getMessage();
+        }
     }
     //Modifier experience eleve
     public static function UpdateExperienceEleve(ExperienceEleve $experienceEleve){
-        $requette = "UPDATE experience_eleve SET id_utilisateur=:id_utilisateur,xp_total=:xp_total,id_niveau=:id_niveau WHERE id_experience=:id_experience";
-        $stmt = self::$bd->prepare($requette);
-        return  $stmt->execute(
-                    [
-                        ":id_experience" =>$experienceEleve->getIdExperience(),
-                        ":id_utilisateur" =>$experienceEleve->getIdUtilisateur(),
-                        ":xp_total" =>$experienceEleve->getXpTotal(),
-                        ":id_niveau" =>$experienceEleve->getIdNiveau(),
-                    ]
-                );
+        try{
+            $requette = "UPDATE experience_eleve SET id_utilisateur=:id_utilisateur,xp_total=:xp_total,id_niveau=:id_niveau WHERE id_experience=:id_experience";
+            $stmt = self::$bd->prepare($requette);
+            return  $stmt->execute(
+                        [
+                            ":id_experience" =>$experienceEleve->getIdExperience(),
+                            ":id_utilisateur" =>$experienceEleve->getIdUtilisateur(),
+                            ":xp_total" =>$experienceEleve->getXpTotal(),
+                            ":id_niveau" =>$experienceEleve->getIdNiveau(),
+                        ]
+                    );
+        }catch(PDOException $e){
+            echo "Erreur : modification a echoue" .$e->getMessage();
+        }
     }
     //Afficher une experience eleve
     public static function GetoneExperienceEleve($id_experience){
-        $sql = "SELECT * FROM experience_eleve WHERE id_experience = :id_experience";
-        $stmt = self::$bd->prepare($sql);
-        $stmt->execute([":id_experience" => $id_experience]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row) {
-            return new ExperienceEleve(
-                $row['id_experience'],
-                $row['id_utilisateur'],
-                $row['xp_total'],
-                $row['id_niveau']
-            );
-        }else{
-            return NULL;
+        try{
+            $sql = "SELECT * FROM experience_eleve WHERE id_experience = :id_experience";
+            $stmt = self::$bd->prepare($sql);
+            $stmt->execute([":id_experience" => $id_experience]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                return new ExperienceEleve(
+                    $row['id_experience'],
+                    $row['id_utilisateur'],
+                    $row['xp_total'],
+                    $row['id_niveau']
+                );
+            }else{
+                return NULL;
+            }
+        }catch(PDOException $e){
+            echo "Erreur : lecture a echoue" .$e->getMessage();
         }
     }
     //Afficher toutes les experiences eleve
     public static function GetAllExperienceEleve(){
-        $sql = "SELECT * FROM experience_eleve";
+        try{
+            $sql = "SELECT * FROM experience_eleve";
         $stmt = self::$bd->prepare($sql);
         $stmt->execute();
         $listeExperienceEleve = [];
@@ -71,13 +84,22 @@ class ExperienceEleveDAO{
                 $row['id_niveau']
             );
         }
+        return $listeExperienceEleve;
+
+        }catch(PDOException $e){
+            echo "Erreur : lecture a echoue" .$e->getMessage();
+        }
     }
     //Supprimer une experience eleve
     public static function DeleteExperienceEleve($id_experience){
-        $sql = "DELETE FROM experience_eleve WHERE id_experience = :id_experience";
-        $stmt = self::$bd->prepare($sql);
-        $stmt->bindValue(":id_experience",$id_experience);
-        return $stmt->execute([":id_experience" => $id_experience]);
+        try{
+            $sql = "DELETE FROM experience_eleve WHERE id_experience = :id_experience";
+            $stmt = self::$bd->prepare($sql);
+            $stmt->bindValue(":id_experience",$id_experience);
+            return $stmt->execute([":id_experience" => $id_experience]);
+        }catch(PDOException $e){
+            echo "Erreur : suppression a echoue" .$e->getMessage();
+        }
     }
 }
 ?>

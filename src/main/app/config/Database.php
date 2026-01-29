@@ -3,7 +3,7 @@ class Database {
    protected $host = "localhost";
    protected $user = "root";
    protected $pwd = "";
-   protected $database = "gestion_programme";
+   protected $database = "gestion_programmes";
    private $pdo = null;
 
       // Constructeur

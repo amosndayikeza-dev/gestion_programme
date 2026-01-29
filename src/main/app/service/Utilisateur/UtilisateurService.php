@@ -39,7 +39,6 @@ clasS UtilisateurService{
         $utilisateur->setRole($role);
         $utilisateur->setDateCreation($date_de_creation);
 
-
         $this->utilisateurDao->CreateUtilisateur($utilisateur);
 
         return $utilisateur;
@@ -124,6 +123,26 @@ clasS UtilisateurService{
             return $this->utilisateurDao->searchUtilisateur($keyword);
         }
     }
+    /**
+     * supprimer un utilisateur
+     */
+    public function supprimerUtilisateur($id_utilisateur){
+        return $this->utilisateurDao->DeleteUtilisateur($id_utilisateur);
+
+    }
+    /**
+     * afficher un utilisateur
+     */
+    public function afficherUtilisateur($id_utilisateur){
+        return $this->utilisateurDao->getOneUtilisateur($id_utilisateur);
+    }
+    /**
+     * afficher tout les utilisateur
+     */
+    public function afficherTousLesUtilisateurs(){
+        return $this->utilisateurDao->getAllUtilisateur();
+    }
+
 
 }
 
