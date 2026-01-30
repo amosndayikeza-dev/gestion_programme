@@ -15,15 +15,15 @@ class Classe
     private $anneeScolaire;
 
     public function __construct(
-         $idClasse,
-         $nomClasse,
-         $niveau,
-         $idEtablissement,
-         $description,
-         $effectifMaximal,
-         $effectifActuel,
-         $salle,
-         $anneeScolaire
+         $idClasse = null,
+         $nomClasse = null,
+         $niveau = null,
+         $idEtablissement = null,
+         $description = null,
+         $effectifMaximal = null,
+         $effectifActuel = null,
+         $salle = null,
+         $anneeScolaire = null,
     ) {
         $this->idClasse = $idClasse;
         $this->nomClasse = $nomClasse;
@@ -31,7 +31,7 @@ class Classe
         $this->idEtablissement = $idEtablissement;
         $this->salle = $salle;
         $this->description = $description;
-        $this->effectifMaximum = $effectifMaximal;
+        $this->effectifMaximal = $effectifMaximal;
         $this->effectifActuel = $effectifActuel;
         $this->anneeScolaire = $anneeScolaire;
     }

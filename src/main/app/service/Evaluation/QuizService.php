@@ -3,8 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Evaluation/QuizDAO.php";
-require_once __DIR__ ."../../../dao/Evaluation/resultatDAO.php";
+require_once __DIR__ . "/../../dao/Evaluation/QuizDAO.php";
+require_once __DIR__ . "/../../dao/Evaluation/resultatDAO.php";
 class QuizService {
     private QuizDAO $quiz_dao;
     private ResultatDAO $resultat_dao;
@@ -15,11 +15,27 @@ class QuizService {
         $this->resultat_dao = new ResultatDAO();
     }
 
+    //netoyer les donnees
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
     /**
-     * Ajouter un quiz
+     * create and update
      */
     public function ajouterQuiz(Quiz $quiz){
+        $quiz->setIdLecon($this->cleanData($quiz->getIdLecon()));
+        $quiz->setTitre($this->cleanData($quiz->getTitre()));
+        $quiz->setScoreMin($this->cleanData($quiz->getScoreMin()));
+
+        //verifier les donnees
+        if(empty($quiz->getIdLecon()) || empty($quiz->getTitre()) || empty($quiz->getScoreMin())){
+            throw new Exception("Tous les champs sont obligatoires");
+        }
+        if($quiz->getIdQuiz()){
+            return $this->quiz_dao->UpdateQuiz($quiz);
+        }
         return $this->quiz_dao->CreateQuiz($quiz);
+        
     }
     /**
      * Modifier un quiz

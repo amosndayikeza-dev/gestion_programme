@@ -10,10 +10,10 @@ class Matiere
     private  $description;
 
     public function __construct(
-         $id_matiere,
-         $nom_matiere,
-         $coefficient,
-         $description
+         $id_matiere = null,
+         $nom_matiere = null,
+         $coefficient = null,
+         $description = null,
     ) {
         $this->id_matiere = $id_matiere;
         $this->nom_matiere = $nom_matiere;

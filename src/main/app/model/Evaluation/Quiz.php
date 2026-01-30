@@ -10,10 +10,10 @@ class Quiz
     private  $scoreMin;
 
     public function __construct(
-         $id_quiz,
-         $id_lecon,
-         $titre,
-         $scoreMin
+         $id_quiz = null,
+         $id_lecon = null,
+         $titre = null,
+         $scoreMin = null,
     ) {
         $this->id_quiz = $id_quiz;
         $this->id_lecon = $id_lecon;

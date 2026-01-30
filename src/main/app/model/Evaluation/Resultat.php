@@ -11,11 +11,11 @@ class Resultat
     private  $date_resultat;
 
     public function __construct(
-         $id_resultat,
-         $id_utilisateur,
-         $id_exercice,
-         $score,
-         $date_resultat
+         $id_resultat = null,
+         $id_utilisateur = null,
+         $id_exercice = null,
+         $score = null,
+         $date_resultat = null,
     ) {
         $this->id_resultat = $id_resultat;
         $this->id_utilisateur = $id_utilisateur;

@@ -16,19 +16,30 @@ class BadgeService{
     }
 
     /**
+     * nettoyer les donnees
+     */
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
+    /**
      * Creer un nouveaux badge
      */
-    public function creerNouveauBadge($nom_badge,$description,$seuil){
-        //creation de l'objet metier
-        $badge = new Badge(
-            null,
-            $nom_badge,
-            $description,
-            $seuil
-        );
+    public function creerNouveauBadge($badge){
+        $badge->setNomBadge($this->cleanData($badge->getNomBadge()));
+        $badge->setDateObtention($this->cleanData($badge->getDateObtention()));
+       // verifier les donnees
+       if(empty($badge->getNom()) || empty($badge->getDateObtention())){
+           throw new Exception("Tous les champs sont obligatoires");
+       }
+
+       if($badge->getBadgeById()){
+         $this->badge_dao->UpateBadge($badge);
+       }else{
+         $this->badge_dao->CreateBadge($badge);
+       }
 
         //ajouter a la base des donnees
-        return $this->badge_dao->CreateBadge($badge);
+         $this->badge_dao->CreateBadge($badge);
     }
     /**
      * vierifier si l'utulisateur rempli les conditions d'obtention du badge

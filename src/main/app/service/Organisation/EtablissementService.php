@@ -13,10 +13,30 @@ class EtablissementService{
         $this->etablissement_dao = new EtablissementDAO();
     }
     /**
-     * creer un nouvel etablissement
+     * netoyer les donnees
+     */
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
+    /**
+     * create and update
      */
     public function AjouterEtablissement(Etablissement $etablissement){
-        return $this->etablissement_dao->AjouterEtablissement($etablissement);
+        $etablissement->setNom($this->cleanData($etablissement->getNom()));
+        $etablissement->setType($this->cleanData($etablissement->getType()));
+        $etablissement->setLocalisation($this->cleanData($etablissement->getLocalisation()));
+        //verifier les donnees
+        if(empty($etablissement->getNom()) || empty($etablissement->getType()) || empty($etablissement->getLocalisation())){
+            throw new Exception("Tous les champs sont obligatoires");
+        }
+
+        if($etablissement->setIdEtablissement($etablissement->getIdEtablissement())){
+            return $this->etablissement_dao->UpdateEtablissement($etablissement);
+        }else{
+            return $this->etablissement_dao->AjouterEtablissement($etablissement);
+        }
+
+
     }
     /**
      * modifier etablissement

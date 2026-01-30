@@ -3,18 +3,34 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Academique/MatiereDAO.php";
+require_once __DIR__ . "/../../dao/Academique/MatiereDAO.php";
 
 class MatiereService {
     private MatiereDAO $matiere_dao;
     public function __construct()
     {
-       $this->matiere_dao = new MatierEDAO();
+       $this->matiere_dao = new MatiereDAO();
     }
     /**
-     * AJOUTER MATIERE
+     * NETTOYER LES DONNES PROVENANT DU CONTROLLEUR
+     */
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }   
+    /**
+     * AJOUTER et modifier matiere
      */
     public function ajouterMatiere(Matiere $matiere){
+        $matiere->setNomMatiere($this->cleanData($matiere->getNomMatiere()));
+        $matiere->setCoefficient($this->cleanData($matiere->getCoefficient()));
+        $matiere->setDescription($this->cleanData($matiere->getDescription()));
+
+        if(empty($matiere->getNomMatiere()) || empty($matiere->getCoefficient()) || empty($matiere->getDescription())){
+            throw new Exception("Tous les champs sont obligatoire");
+        }
+        if($matiere->getIdMatiere()){
+            return $this->matiere_dao->UpdateMatiere($matiere);
+        }
         return $this->matiere_dao->CreateMatiere($matiere);
     }
     /**

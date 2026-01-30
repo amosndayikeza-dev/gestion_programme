@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "../../../config/Database.php";
+require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__ ."../../../model/Academique/Programme.php";
 
 class ProgrammeDAO{
@@ -54,8 +54,8 @@ class ProgrammeDAO{
         try{
             $sql = "SELECT * FROM programme WHERE id_programme = :id_programme";
             $stmt = self::$bd->prepare($sql);
-            $stmt->execute([$id_programme => 'id_programme']);
-            $row = $stmt->fetchALL(PDO::FETCH_ASSOC);
+            $stmt->execute([':id_programme' => $id_programme]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if(!$row){
                 return NULL;
             }else{
@@ -108,8 +108,6 @@ class ProgrammeDAO{
 
 
 }
-
-//ProgrammeDAO::EtablirConnexion();
 
 
 

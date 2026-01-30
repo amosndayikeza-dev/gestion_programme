@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ .'../../../dao/Utilisateur/UtilisateurDAO.php';
+require_once __DIR__ . '/../../dao/Utilisateur/UtilisateurDAO.php';
 
 class AuthService{
     private UtilisateurDAO $utilisateurDAO;
@@ -69,7 +69,7 @@ class AuthService{
     /**
      * Verifier le role avant l'acces 
      */
-    public function varifierRole(array $roleAutorise){
+    public function verifierRole(array $roleAutorise){
         //verifier la session
         if(! $this->verifierSession()){
             throw new Exception("Acces refuse : Utilisateur non connecte");

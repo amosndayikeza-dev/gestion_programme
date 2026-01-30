@@ -32,7 +32,7 @@ class ResultatDAO{
         }
     }
     //Modifier Resultat
-    public static function Update(Resultat $resultat){
+    public static function UpdateResultat(Resultat $resultat){
        try{
             $sql = "UPDATE resultat SET id_utilisateur = :id_utilisateur,id_exercice = :id_exercice,score =:score,date_resulatat = :date_resulatat WHERE id_resultat = :id_resultat";
             $stmt = self::$db->prepare($sql);

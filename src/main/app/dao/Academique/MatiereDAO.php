@@ -77,7 +77,7 @@ class MatiereDAO{
             $stmt = self::$db->prepare($sql);
             $stmt->execute();
             $listeMatiere = [];
-            while($row = $stmt->fetchAll(PDO::FETCH_CLASS)){
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                 $listeMatiere [] = new Matiere(
                     $row['id_matiere'],
                     $row['nom_matiere'],

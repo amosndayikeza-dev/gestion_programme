@@ -14,12 +14,33 @@ class InscriptionController{
     }
 
     public function Inscrire(){
-        $this->inscription_service->InscrirEleve(
-            $_POST['utilisateur']->getId(),
-            $_POST['id_programme']
-        );
-        header("Location: /mes_programmes");
-        exit;
+       if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            //recuperer les donnees
+            $id_utilisateur = $_POST['id_utilisateur'];
+            $id_classe = $_POST['id_classe'];
+            $statut = $_POST['statut'];
+
+            //creer l'objet inscription
+            $inscription = new Inscription();
+            if(!empty($_POST['id_inscription'])){
+                $inscription->setIdInscription($_POST['id_inscription']);
+            }
+            $inscription->setIdUtilisateur($id_utilisateur);
+            $inscription->setIdClasse($id_classe);
+            $inscription->setStatut($statut);
+        }else{
+            require __DIR__ ."/../../views/inscription/creer.php";
+        }
+
+
+       //appeler un service
+       $success = $this->inscription_service->InscrirEleve($inscription);
+       if($success){
+           header("location: /inscription");
+       }else{
+           header("location: /inscription");
+           exit;
+       }
     }
 }
 

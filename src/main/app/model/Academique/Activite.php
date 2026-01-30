@@ -6,10 +6,10 @@ class Activite{
     private $type;
     private $instruction;
     public function __construct(
-        $id_activite,
-        $nom_activite,
-        $type,
-        $instruction
+        $id_activite = null,
+        $nom_activite = null,
+        $type = null,
+        $instruction = null
     ) {
         $this->id_activite = $id_activite;
         $this->nom_activite = $nom_activite;

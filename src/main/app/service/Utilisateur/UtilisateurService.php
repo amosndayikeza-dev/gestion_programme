@@ -3,15 +3,15 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Utilisateur/UtilisateurDAO.php";
+require_once __DIR__ . "/../../dao/Utilisateur/UtilisateurDAO.php";
 require_once __DIR__ ."../../../model/Utilisateur/utilisateur.php";
 
-clasS UtilisateurService{
+class UtilisateurService{
     private UtilisateurDAO $utilisateurDao;
 
     public function __construct()
     {
-        $utilisateurDao = new UtilisateurDAO();
+        $this->utilisateurDao = new UtilisateurDAO();
     }
     //Ajouter utilisateur
     public function AjouterUtilisateur($nom,$prenom,$email,$mot_de_passe,$role,$date_de_creation){
@@ -70,7 +70,7 @@ clasS UtilisateurService{
         //mettre dans la base des donnees
         $this->utilisateurDao->UpdateUtilisateur($id_utilisateur);
     }
-    public function desctiverUtilisateur($id_utilisateur){
+    public function desactiverUtilisateur($id_utilisateur){
           //verifier l'existance d'un utilisateur
         $utilisateur = $this->utilisateurDao->getOneUtilisateur($id_utilisateur);
 

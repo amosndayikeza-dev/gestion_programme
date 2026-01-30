@@ -16,8 +16,6 @@ class Cours
     private  $ordre_progression;
     private  $niveau_difficulte;
     private  $dureeEstimee;
-    private  $datecreation;
-    private  $modification;
     private  $type_cours;
     private  $objectif_apprentissage;
     private  $prerequis;
@@ -27,31 +25,28 @@ class Cours
     private  $seuil_reussite;
     private  $createurId;
     private  $visible;
-    private  $tags;
 
     public function __construct(
-         $id_cours,
-         $titre,
-         $description,
-         $id_matiere,
-         $id_programme,
-         $id_classe,
-         $statut,
-         $ordre_progression,
-         $niveau_difficulte,
-         $dureeEstimee,
-         $datecreation,
-         $modification,
-         $typeCours,
-         $objectifApprentissage,
-         $prerequis,
-         $ressourcesExternes,
-         $nbVues,
-         $tauxReussite,
-         $seuilReussite,
-         $createurId,
-         $visible,
-         $tags,
+         $id_cours = null,
+         $titre = null,
+         $description = null,
+         $id_matiere = null,
+         $id_programme = null,
+         $id_classe = null,
+         $statut = null,
+         $ordre_progression = null,
+         $niveau_difficulte = null,
+         $dureeEstimee = null,
+         $modification = null,
+         $typeCours = null,
+         $objectifApprentissage = null,
+         $prerequis = null,
+         $ressourcesExternes = null,
+         $nbVues = null,
+         $tauxReussite = null,
+         $seuilReussite = null,
+         $createurId = null,
+         $visible = null,
     ) {
         $this->id_cours = $id_cours;
         $this->titre = $titre;
@@ -63,8 +58,6 @@ class Cours
         $this->ordre_progression = $ordre_progression;
         $this->niveau_difficulte = $niveau_difficulte;
         $this->dureeEstimee = $dureeEstimee;
-        $this->datecreation = $datecreation;
-        $this->modification = $modification;
         $this->type_cours = $typeCours;
         $this->objectif_apprentissage = $objectifApprentissage;
         $this->prerequis = $prerequis;
@@ -74,12 +67,11 @@ class Cours
         $this->seuil_reussite = $seuilReussite;
         $this->createurId = $createurId;
         $this->visible = $visible;
-        $this->tags = $tags;
     }
 
-    public function getIdCours()  { return $this->id_cours; }
+   public function getIdCours() { return $this->id_cours; }
     public function setIdCours( $id) { $this->id_cours = $id; }
-
+   
     public function getTitre() { return $this->titre; }
     public function setTitre( $titre) { $this->titre = $titre; }
 
@@ -106,12 +98,6 @@ class Cours
 
     public function getDureeEstimee() { return $this->dureeEstimee; }
     public function setDureeEstimee( $duree) { $this->dureeEstimee = $duree; }
-
-    public function getDateCreation() { return $this->datecreation; }
-    public function setDateCreation( $date) { $this->datecreation = $date; }
-
-    public function getModification() { return $this->modification; }
-    public function setModification( $modif) { $this->modification = $modif; }
 
     public function getTypeCours() { return $this->type_cours; }
     public function setTypeCours( $type) { $this->type_cours = $type; }
@@ -140,10 +126,5 @@ class Cours
     public function getVisible() { return $this->visible; }
     public function setVisible( $visible) { $this->visible = $visible; }
 
-    public function getTags() { return $this->tags; }
-    public function setTags( $tags) { $this->tags = $tags; }    
-
 
 }
-//$cours = new Cours();
-//$cours->getTitre();

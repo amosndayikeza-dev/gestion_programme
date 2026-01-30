@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Academique/ActiviteDAO.php";
+require_once __DIR__ . "/../../dao/Academique/ActiviteDAO.php";
 
 class ActiviteService{
     private ActiviteDAO $activitedao;
@@ -11,11 +11,29 @@ class ActiviteService{
     {
        $this->activitedao = new ActiviteDAO();
     }
+   
     /**
-     * enregistrer une activite utilisateur
+     * NETTOYER LES DONNES PROVENANT DU CONTROLLEUR
+     */
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
+
+     /**
+     * CREATE AND UPDATE (methode de netoyage commune)
      */
     public function enregistrerActivite(Activite $activite){
-        $this->activitedao->CreateActivite($activite);  
+        $activite->setNomActivite($this->cleanData($activite->getNomActivite()));
+        $activite->setInstruction($this->cleanData($activite->getInstruction()));
+        $activite->setType($this->cleanData($activite->getType()));
+
+        if($activite->getIdActivite()){
+            return $this->activitedao->UpdateActivite($activite);
+        }else{
+            return $this->activitedao->CreateActivite($activite);
+        }
+        
+    
     }
 
     /**
@@ -35,7 +53,7 @@ class ActiviteService{
     /**
      * Supprimer une activite
      */
-    public function supprimerActiviter($id_activite){
+    public function supprimerActivite($id_activite){
         return $this->activitedao->DeleteActivite($id_activite);
     }
     /**

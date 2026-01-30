@@ -13,13 +13,13 @@ class Lecon
     private  $statut;
 
     public function __construct(
-         $id_lecon,
-         $id_cours,
-         $titre,
-         $ordre,
-         $annee_estime,
-         $description,
-         $statut
+         $id_lecon = null,
+         $id_cours = null,
+         $titre = null,
+         $ordre = null,
+         $annee_estime = null,
+         $description = null,
+         $statut = null,
     ) {
         $this->id_lecon = $id_lecon;
         $this->id_cours = $id_cours;

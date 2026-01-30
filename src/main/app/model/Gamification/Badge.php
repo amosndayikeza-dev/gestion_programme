@@ -9,9 +9,9 @@ class Badge
     private  $date_obtention;
 
     public function __construct(
-         $id_badge,
-         $nom_badge,
-         $date_obtention
+         $id_badge = null,
+         $nom_badge = null,
+         $date_obtention = null,
     ) {
         $this->id_badge = $id_badge;
         $this->nom_badge = $nom_badge;

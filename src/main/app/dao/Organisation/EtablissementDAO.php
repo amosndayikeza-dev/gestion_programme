@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__."../../../config/Database.php";
+require_once __DIR__ . "/../../config/Database.php";
 require_once __DIR__."../../../model/Organisation/Etablissement.php";
 
 // DAO pour l'entité Etablissement
@@ -36,7 +36,7 @@ class EtablissementDAO {
         try{
             $sql = "SELECT * FROM etablissement WHERE id_etablissement  = :id_etablissement";
             $stmt = self::$db->prepare($sql);
-            $stmt->exeute(["id_etablissement" => $id_etablissement]);
+            $stmt->execute(["id_etablissement" => $id_etablissement]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if(!$row){
                 return NULL;
@@ -55,7 +55,7 @@ class EtablissementDAO {
     // Afficher tout les etablissment
     public function AfficherToutEtalissement(){
         try{
-            $sql = "SELECT * FROM etablisssement";
+            $sql = "SELECT * FROM etablissement";
             $stmt = self::$db->query($sql);
             $ListeEtablissement = [];
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
@@ -76,7 +76,7 @@ class EtablissementDAO {
     //Modifier Etablissement
     public static function UpdateEtablissement(Etablissement $etablissement){
         try{
-            $sql = "UPADATE etablissement SET nom = :nom,type = :type, location = :location WHERE id_etablissement = :id_etablissement";
+            $sql = "UPDATE etablissement SET nom = :nom,type = :type, location = :location WHERE id_etablissement = :id_etablissement";
             $stmt = self::$db->prepare($sql);
             return $stmt->execute(
             [ ":id_etablissement" =>$etablissement->getIdEtablissement(),

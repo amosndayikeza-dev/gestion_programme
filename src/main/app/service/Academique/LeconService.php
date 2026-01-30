@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Academique/LeconDAO.php";
+require_once __DIR__ . "/../../dao/Academique/LeconDAO.php";
 class LeconService{
     private LeconDAO $lecon_dao;
 
@@ -12,17 +12,29 @@ class LeconService{
       $this->lecon_dao = new LeconDAO();
     }
     /**
-     * AJOUTER UNE LECON
+     * NETTOYER LES DONNES
      */
-    public function ajouterLecon(Lecon $lecon){
-      return $this->lecon_dao->CreateLecon($lecon);
+    private function cleanData($data){
+      return htmlspecialchars(trim($data));
     }
     /**
-     * MODIFIER UNE LECON
+     * create and update
      */
-    public function modifierLecon(Lecon $lecon){
-      return $this->lecon_dao->UpdateLecon($lecon);
+    public function ajouterLecon(Lecon $lecon){
+      $lecon->setIdCours($this->cleanData($lecon->getIdCours()));
+      $lecon->setTitre($this->cleanData($lecon->getTitre()));
+      $lecon->setDescription($this->cleanData($lecon->getDescription()));
+      $lecon->setOrdre($this->cleanData($lecon->getOrdre()));
+      $lecon->setAnneeEstime($this->cleanData($lecon->getAnneeEstime()));
+      $lecon->setStatut($this->cleanData($lecon->getStatut()));
+     
+      if($lecon->getIdLecon()){
+        return $this->lecon_dao->UpdateLecon($lecon);
+      }
+      return $this->lecon_dao->CreateLecon($lecon);
+
     }
+    
     /**
      * AFFICHER UNE LECON
      */

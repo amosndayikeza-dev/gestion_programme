@@ -3,29 +3,44 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Academique/ProgrammeDAO.php";
-require_once __DIR__ ."../../../dao/Academique/CoursDAO.php";
+require_once __DIR__ . "/../../dao/Academique/ProgrammeDAO.php";
+require_once __DIR__ . "/../../dao/Academique/CoursDAO.php";
 class ProgrammeService {
     private ProgrammeDAO $programme_dao;
     private CoursDAO $cours_dao;
 
     public function __construct()
     {
-      $$this->programme_dao = new ProgressionDAO();
+      $this->programme_dao = new ProgrammeDAO();
       $this->cours_dao = new CoursDAO();
     }
-    /**
-     * Ajouter un programme
-     */
-    public function ajouterProgramme(Programme $programme){
-      return $this->programme_dao->CreateProgramme($programme);
+    // netoyer les donnees
+    private function cleanData($data){
+      return htmlspecialchars(trim($data));
     }
     /**
-     * Modifier un programme
+     * CREATE AND UPDATE
      */
-  public function modifierProgramme(Programme $programme){
-    return $this->programme_dao->UpdateProgramme($programme);
-  }
+    public function ajouterProgramme(Programme $programme){
+      $programme->setNomProgramme($this->cleanData($programme->getNomProgramme()));
+      $programme->setNiveau($this->cleanData($programme->getNiveau()));
+      $programme->setDescription($this->cleanData($programme->getDescription()));
+      $programme->setStatut($this->cleanData($programme->getStatut()));
+
+      //verifier les donnees
+      if(empty($programme->getNomProgramme()) || empty($programme->getNiveau()) || empty($programme->getDescription())){
+        throw new Exception("Tous les champs sont obligatoires");
+      }
+
+      if(!empty($programme->getIdProgramme())){
+        $this->programme_dao->UpdateProgramme($programme);
+      }else{
+        $this->programme_dao->CreateProgramme($programme);
+      }
+
+    }
+    
+  
   /**
    * Afficher un programme
    */

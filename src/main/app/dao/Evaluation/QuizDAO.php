@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__.'../../../config/Database.php'; 
+require_once __DIR__ . '/../../config/Database.php'; 
 require_once __DIR__."../../../model/Evaluation/Quiz.php";
 
 class QuizDAO{
@@ -19,7 +19,7 @@ class QuizDAO{
     public static function CreateQuiz(Quiz $quiz){
         try{
             $sql = "INSERT INTO quiz(id_lecon,titre,scoreMin) VALUES(:id_lecon,:titre,:scoreMin)";
-            $stmt = self::$db->prpare($sql);
+            $stmt = self::$db->prepare($sql);
             return $stmt->execute(
                 [
                 ":id_quiz" =>$quiz->getIdQuiz(),
@@ -37,7 +37,7 @@ class QuizDAO{
         try{
             $sql = "SELECT * FROM quiz WHERE id_quiz = :id_quiz";
             $stmt = self::$db->prepare($sql);
-            $stmt->excute(['id_quiz'=>$id_quiz]);
+            $stmt->execute(['id_quiz'=>$id_quiz]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if(!$row){
                 return NULL;
@@ -59,7 +59,7 @@ class QuizDAO{
          $sql = "SELECT * FROM quiz";
         $stmt = self::$db->query($sql);
         $ListeQuiz = [];
-        while($row = $stmt->fetchall(PDO::FETCH_ASSOC)){
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
               $ListeQuiz [] =  new Quiz(
                 $row['id_quiz'],
                 $row['id_lecon'],

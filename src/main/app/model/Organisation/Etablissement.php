@@ -11,10 +11,10 @@ class Etablissement
     private  $localisation;
 
     public function __construct(
-        $id_etablissement,
-        $nom,
-        $type,
-        $localisation
+        $id_etablissement = null,
+        $nom = null,
+        $type = null,
+        $localisation = null,
     ) {
         $this->id_etablissement = $id_etablissement;
         $this->nom = $nom;

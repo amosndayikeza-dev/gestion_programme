@@ -3,8 +3,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ ."../../../dao/Evaluation/ExerciceDAO.php";
-require_once __DIR__ ."../../../dao/Evaluation/resultatDAO.php";
+require_once __DIR__ . "/../../dao/Evaluation/ExerciceDAO.php";
+require_once __DIR__ . "/../../dao/Evaluation/resultatDAO.php";
 class ExerciceService{
     private ExerciceDAO $exercice_dao;
     private resultatDAO $resultat_dao;
@@ -15,18 +15,33 @@ class ExerciceService{
         $this->resultat_dao = new ResultatDAO();
     }
     /**
-     * ajouter un exercice
+     * netoyer les donnees
      */
-    /**
-     * modifier exercice
-     */
-    public function modifierExercice(Exercice $exercice){
-        return $this->exercice_dao->UpdateExercice($exercice);
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
+    //create and update data
+    public function ajouterExercice(Exercice $exercice){
+        $exercice->setIdLecon($this->cleanData($exercice->getIdLecon()));
+        $exercice->setQuestion($this->cleanData($exercice->getQuestion()));
+        $exercice->setType($this->cleanData($exercice->getType()));
+        $exercice->setNiveau($this->cleanData($exercice->getNiveau()));
+        $exercice->setScore($this->cleanData($exercice->getScore()));
+
+        //verifier les donnees
+        if(empty($exercice->getIdLecon()) || empty($exercice->getQuestion()) || empty($exercice->getType()) || empty($exercice->getNiveau()) || empty($exercice->getScore())){
+            throw new Exception("Tous les champs sont obligatoires");
+        }
+
+        if($exercice->getIdExercice()){
+            return $this->exercice_dao->UpdateExercice($exercice);
+        }
+        return $this->exercice_dao->AjouterExercice($exercice);
     }
     /**
      * afficher un exercice
      */
-    public function afficherUneExercice($id_exercice){
+    public function afficherUnExercice($id_exercice){
         return $this->exercice_dao->getOneExercice($id_exercice);
     }
     /**
@@ -42,8 +57,7 @@ class ExerciceService{
         return $this->exercice_dao->getAllExercice();
     }
     
-    public function ajouterExercice(Exercice $exercice){
-        return $this->exercice_dao->AjouterExercice($exercice);
+    
     /*
       corriger l'exercice
       comparer la reponse de l'utilisateur avec la bonne reponse
@@ -72,7 +86,6 @@ class ExerciceService{
         return $estCorrect;
         
     }*/
-    }
 }
 
 

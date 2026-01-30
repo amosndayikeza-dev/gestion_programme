@@ -3,7 +3,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__."../../../service/Academique/ActiviteService.php";
+require_once __DIR__ . "/../../service/Academique/ActiviteService.php";
 
 class ActiviteController{
     private ActiviteService $activite_service;

@@ -12,11 +12,33 @@ class ClasseService{
     {
         $this->classe_dao = new ClasseDAO();
     }
+    //netoyer les donnees
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
     /**
-     * creer une nouvelle classe
+     * create and update
      */
-    public function creerClasse(Classe $classe){
-        return $this->classe_dao->CreateClasse($classe);
+    public function createClasse(Classe $classe){
+        $classe->setNomClasse($this->cleanData($classe->getNomClasse()));
+        $classe->setNiveau($this->cleanData($classe->getNiveau()));
+        $classe->setIdEtablissement($this->cleanData($classe->getIdEtablissement()));
+        $classe->setDescription($this->cleanData($classe->getDescription()));
+        $classe->setEffectifMaximal($this->cleanData($classe->getEffectifMaximal()));
+        $classe->setSalle($this->cleanData($classe->getSalle()));
+        $classe->setEffectifActuel($this->cleanData($classe->getEffectifActuel()));
+        $classe->setAnneeScolaire($this->cleanData($classe->getAnneeScolaire()));
+
+        //verifier les donnees
+        if(empty($classe->getNomClasse()) || empty($classe->getNiveau()) || empty($classe->getIdEtablissement()) || empty($classe->getDescription()) || empty($classe->getEffectifMaximal()) || empty($classe->getSalle()) || empty($classe->getEffectifActuel()) || empty($classe->getAnneeScolaire())){
+            throw new Exception("Tous les champs sont obligatoires");
+        }
+
+        if($classe->getIdClasse()){
+            return $this->classe_dao->UpdateClasse($classe);
+        }else{
+            return $this->classe_dao->CreateClasse($classe);
+        }
     }
     /**
      * modifier une classe

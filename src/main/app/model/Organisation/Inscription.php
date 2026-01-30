@@ -11,11 +11,11 @@ class Inscription
     private  $statut;
 
     public function __construct(
-         $id_inscription,
-         $id_utilisateur,
-         $id_classe,
-         $date_inscription,
-         $statut
+         $id_inscription = null,
+         $id_utilisateur = null,
+         $id_classe = null,
+         $date_inscription = null,
+         $statut = null,
     ) {
         $this->id_inscription = $id_inscription;
         $this->id_utilisateur = $id_utilisateur;

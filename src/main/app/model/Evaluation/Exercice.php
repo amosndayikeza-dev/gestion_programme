@@ -12,12 +12,12 @@ class Exercice
     private $score;
 
     public function __construct(
-         $id_exercice,
-         $id_lecon,
-         $question,
-         $type,
-         $niveau,
-         $score,
+         $id_exercice = null,
+         $id_lecon = null,
+         $question = null,
+         $type = null,
+         $niveau = null,
+         $score = null,
     ) {
         $this->id_exercice = $id_exercice;
         $this->id_lecon = $id_lecon;

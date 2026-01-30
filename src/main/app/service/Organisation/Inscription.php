@@ -21,8 +21,28 @@ class InscriptionService{
         $this->utilisateurDAO = new UtilisateurDAO();
     }
 
-    public function InscrirEleve($id_utilisateur,$id_Classe){
-        if(! $this->utilisateurDAO->getOneUtilisateur($id_utilisateur)){
+    //nettoyer les donnees
+    private function cleanData($data){
+        return htmlspecialchars(trim($data));
+    }
+    public function InscrirEleve($inscription){
+        $inscription->setIdInscription($this->cleanData($inscription->getIdInscription()));
+        $inscription->setIdUtilisateur($this->cleanData($inscription->getIdUtilisateur()));
+        $inscription->setIdClasse($this->cleanData($inscription->getIdClasse()));
+        $inscription->setStatut($this->cleanData($inscription->getStatut()));
+
+        //verifier les donnees
+        if(empty($inscription->getIdUtilisateur()) || empty($inscription->getIdClasse()) || empty($inscription->getStatut())){
+            throw new Exception("Tous les champs sont obligatoires");
+        }
+
+        if($inscription->setIdInscription($inscription->getIdInscription())){
+            return $this->inscriptionDAO->UpdateInscription($inscription);
+        }else{
+            return $this->inscriptionDAO->CreateInscription($inscription);
+        }
+
+        /*if(! $this->utilisateurDAO->getOneUtilisateur($id_utilisateur)){
             throw new Exception("Utilisateur Introuvable");
         }
         if(! $this->classeDAO->getOneClasse($id_Classe)){
@@ -30,9 +50,9 @@ class InscriptionService{
         }
        if ($this->inscriptionDAO->existsInscription($id_utilisateur, $id_Classe)) {
             throw new Exception("Déjà inscrit");
-        }
+        }*/
 
-        $inscription = new Inscription( null,$id_utilisateur,$id_Classe,date('Y-m-d'),'ACTIVE');
+
 
         $this->inscriptionDAO->CreateInscription($inscription);
     }

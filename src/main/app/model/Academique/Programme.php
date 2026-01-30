@@ -11,11 +11,11 @@ class Programme
     private  $statut;
 
     public function __construct(
-        $idProgramme,
-        $nom_programme,
-        $niveau,
-        $description,
-        $statut
+        $idProgramme = null,
+        $nom_programme = null,
+        $niveau = null,
+        $description = null,
+        $statut = null,
     ) {
         $this->idProgramme = $idProgramme;
         $this->nom_programme = $nom_programme;
