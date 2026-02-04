@@ -2,6 +2,9 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+require_once __DIR__ . '/RoleEnum.php';
+
 class Utilisateur
 {
     private  $idUtilisateur;
@@ -50,4 +53,66 @@ class Utilisateur
 
     public function getDateCreation() { return $this->dateCreation; }
     public function setDateCreation( $date) { $this->dateCreation = $date; }
+
+    /**
+     * Vérifie si le rôle de l'utilisateur est valide
+     */
+    public function hasValidRole(): bool {
+        return RoleEnum::isValidRole($this->role);
+    }
+
+    /**
+     * Retourne le libellé du rôle
+     */
+    public function getRoleLabel(): string {
+        return RoleEnum::getRoleLabel($this->role);
+    }
+
+    /**
+     * Vérifie si l'utilisateur a un rôle spécifique
+     */
+    public function hasRole(string $role): bool {
+        return $this->role === $role;
+    }
+
+    /**
+     * Vérifie si l'utilisateur appartient à une catégorie de rôles
+     */
+    public function belongsToCategory(string $category): bool {
+        $rolesByCategory = RoleEnum::getRolesByCategory();
+        return isset($rolesByCategory[$category]) && 
+               in_array($this->role, $rolesByCategory[$category]);
+    }
+
+    /**
+     * Retourne les permissions de l'utilisateur selon son rôle
+     */
+    public function getPermissions(): array {
+        switch($this->role) {
+            case RoleEnum::ADMINISTRATEUR:
+                return ['manage_users', 'manage_system', 'view_all', 'edit_all'];
+            case RoleEnum::PROVISEUR:
+                return ['manage_teachers', 'manage_students', 'view_reports', 'manage_discipline'];
+            case RoleEnum::DIRECTEUR_DISCIPLINE:
+                return ['manage_discipline', 'view_student_records', 'sanction_students'];
+            case RoleEnum::ENSEIGNANT:
+                return ['manage_courses', 'view_students', 'grade_students'];
+            case RoleEnum::ELEVE:
+                return ['view_own_grades', 'participate_activities'];
+            case RoleEnum::PARENT:
+                return ['view_child_grades', 'view_child_attendance'];
+            case RoleEnum::PREFET:
+                return ['manage_class_discipline', 'report_issues'];
+            case RoleEnum::CHEF_CLASSE:
+                return ['represent_class', 'organize_activities'];
+            case RoleEnum::PRESIDENT_ELEVES:
+                return ['represent_students', 'organize_events'];
+            case RoleEnum::COMITE_PARENTS:
+                return ['represent_parents', 'participate_meetings'];
+            case RoleEnum::INSPECTEUR:
+                return ['inspect_teaching', 'evaluate_teachers', 'view_reports'];
+            default:
+                return [];
+        }
+    }
 }
