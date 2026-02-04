@@ -25,9 +25,10 @@ class ChefClasse extends Utilisateur
         $dateCreation,
         $classe = null,
         $dateDebut = null,
-        $dateFin = null
+        $dateFin = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->classe = $classe;
         $this->delegues = [];
         $this->responsabilites = [];

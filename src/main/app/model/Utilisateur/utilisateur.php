@@ -14,6 +14,7 @@ class Utilisateur
     private  $motDePasse;
     private  $role;
     private  $dateCreation;
+    private  $photoProfil;
 
     public function __construct(
          $idUtilisateur,
@@ -22,7 +23,8 @@ class Utilisateur
          $email,
          $motDePasse,
          $role,
-         $dateCreation
+         $dateCreation,
+         $photoProfil = null
     ) {
         $this->idUtilisateur = $idUtilisateur;
         $this->nom = $nom;
@@ -31,6 +33,7 @@ class Utilisateur
         $this->motDePasse = $motDePasse;
         $this->role = $role;
         $this->dateCreation = $dateCreation;
+        $this->photoProfil = $photoProfil;
     }
 
     public function getIdUtilisateur() { return $this->idUtilisateur; }
@@ -53,6 +56,181 @@ class Utilisateur
 
     public function getDateCreation() { return $this->dateCreation; }
     public function setDateCreation( $date) { $this->dateCreation = $date; }
+
+    public function getPhotoProfil() { return $this->photoProfil; }
+    public function setPhotoProfil( $photo) { $this->photoProfil = $photo; }
+
+    /**
+     * Vérifie si l'utilisateur a une photo de profil
+     */
+    public function aPhotoProfil(): bool {
+        return !empty($this->photoProfil);
+    }
+
+    /**
+     * Retourne le chemin de la photo de profil ou une image par défaut
+     */
+    public function getPhotoProfilPath(): string {
+        if ($this->aPhotoProfil()) {
+            return $this->photoProfil;
+        }
+        
+        // Image par défaut selon le rôle
+        $defaultImages = [
+            'administrateur' => 'assets/images/default/admin.png',
+            'proviseur' => 'assets/images/default/principal.png',
+            'censeur' => 'assets/images/default/censeur.png',
+            'directeur_discipline' => 'assets/images/default/discipline.png',
+            'enseignant' => 'assets/images/default/teacher.png',
+            'eleve' => 'assets/images/default/student.png',
+            'parent' => 'assets/images/default/parent.png',
+            'prefet' => 'assets/images/default/prefect.png',
+            'chef_classe' => 'assets/images/default/chef.png',
+            'president_eleves' => 'assets/images/default/president.png',
+            'comite_parents' => 'assets/images/default/comite.png'
+        ];
+        
+        return $defaultImages[$this->role] ?? 'assets/images/default/user.png';
+    }
+
+    /**
+     * Retourne l'URL complète de la photo de profil
+     */
+    public function getPhotoProfilUrl(): string {
+        $path = $this->getPhotoProfilPath();
+        
+        // Si c'est déjà une URL complète
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+        
+        // Si c'est un chemin relatif, ajouter la base URL
+        if (strpos($path, '/') === 0) {
+            return $path;
+        }
+        
+        return '/' . $path;
+    }
+
+    /**
+     * Vérifie si la photo de profil existe
+     */
+    public function photoProfilExists(): bool {
+        $path = $this->getPhotoProfilPath();
+        
+        // Si c'est une URL, on ne peut pas vérifier facilement
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return true;
+        }
+        
+        return file_exists($path);
+    }
+
+    /**
+     * Retourne les informations sur la photo de profil
+     */
+    public function getPhotoProfilInfo(): array {
+        return [
+            'a_photo' => $this->aPhotoProfil(),
+            'path' => $this->getPhotoProfilPath(),
+            'url' => $this->getPhotoProfilUrl(),
+            'exists' => $this->photoProfilExists(),
+            'is_default' => !$this->aPhotoProfil(),
+            'extension' => $this->getPhotoExtension(),
+            'size' => $this->getPhotoSize()
+        ];
+    }
+
+    /**
+     * Retourne l'extension de la photo
+     */
+    public function getPhotoExtension(): string {
+        if (!$this->aPhotoProfil()) {
+            return 'png'; // Extension par défaut
+        }
+        
+        $path = $this->photoProfil;
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        
+        return in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']) ? $extension : 'png';
+    }
+
+    /**
+     * Retourne la taille du fichier photo en octets
+     */
+    public function getPhotoSize(): int {
+        if (!$this->aPhotoProfil() || !file_exists($this->photoProfil)) {
+            return 0;
+        }
+        
+        return filesize($this->photoProfil);
+    }
+
+    /**
+     * Retourne la taille formatée du fichier photo
+     */
+    public function getPhotoSizeFormatted(): string {
+        $size = $this->getPhotoSize();
+        
+        if ($size === 0) {
+            return '0 octets';
+        }
+        
+        $units = ['octets', 'Ko', 'Mo', 'Go'];
+        $unitIndex = 0;
+        
+        while ($size >= 1024 && $unitIndex < count($units) - 1) {
+            $size /= 1024;
+            $unitIndex++;
+        }
+        
+        return round($size, 2) . ' ' . $units[$unitIndex];
+    }
+
+    /**
+     * Valide le format de la photo de profil
+     */
+    public function validerPhotoProfil(): array {
+        $erreurs = [];
+        
+        if (!$this->aPhotoProfil()) {
+            return $erreurs; // Photo non obligatoire
+        }
+        
+        $path = $this->photoProfil;
+        
+        // Vérifier si le fichier existe
+        if (!file_exists($path)) {
+            $erreurs[] = 'Le fichier photo n\'existe pas';
+            return $erreurs;
+        }
+        
+        // Vérifier l'extension
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extensionsAutorisees = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        
+        if (!in_array($extension, $extensionsAutorisees)) {
+            $erreurs[] = 'L\'extension du fichier n\'est pas autorisée (jpg, jpeg, png, gif, webp)';
+        }
+        
+        // Vérifier la taille (max 5Mo)
+        $size = filesize($path);
+        if ($size > 5 * 1024 * 1024) {
+            $erreurs[] = 'La taille du fichier ne doit pas dépasser 5Mo';
+        }
+        
+        // Vérifier le type MIME
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $path);
+        finfo_close($finfo);
+        
+        $mimesAutorises = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array($mimeType, $mimesAutorises)) {
+            $erreurs[] = 'Le type de fichier n\'est pas une image valide';
+        }
+        
+        return $erreurs;
+    }
 
     /**
      * Vérifie si le rôle de l'utilisateur est valide

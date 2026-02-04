@@ -21,9 +21,10 @@ class Prefet extends Utilisateur
         $role = RoleEnum::PREFET,
         $dateCreation,
         $ecole = null,
-        $specialite = null
+        $specialite = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->ecole = $ecole;
         $this->specialite = $specialite;
     }

@@ -25,9 +25,10 @@ class Proviseur extends Utilisateur
         $etablissement = null,
         $bureau = null,
         $telephonePro = null,
-        $dateDebutMandat = null
+        $dateDebutMandat = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->etablissement = $etablissement;
         $this->bureau = $bureau;
         $this->telephonePro = $telephonePro;

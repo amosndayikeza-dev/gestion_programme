@@ -23,9 +23,10 @@ class ComiteParents extends Utilisateur
         $role = RoleEnum::COMITE_PARENTS,
         $dateCreation,
         $poste = 'membre',
-        $mandat = null
+        $mandat = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->poste = $poste;
         $this->mandat = $mandat;
         $this->enfantsScolarises = [];

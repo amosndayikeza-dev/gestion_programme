@@ -22,9 +22,10 @@ class PresidentEleves extends Utilisateur
         $motDePasse,
         $role = RoleEnum::PRESIDENT_ELEVES,
         $dateCreation,
-        $mandat = null
+        $mandat = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->mandat = $mandat;
         $this->vicePresident = null;
         $this->membresBureau = [];

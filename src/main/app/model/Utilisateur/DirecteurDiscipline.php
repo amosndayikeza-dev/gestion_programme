@@ -26,9 +26,10 @@ class DirecteurDiscipline extends Utilisateur
         $bureau = null,
         $telephonePro = null,
         $datedebut = null,
-        $datefin = null
+        $datefin = null,
+        $photoProfil = null
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation);
+        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->bureau = $bureau;
         $this->telephonePro = $telephonePro;
         $this->plagesDisponibilite = [];
