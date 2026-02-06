@@ -23,7 +23,7 @@ class QuizController{
 
             //creer l'objet quiz
             $quiz = new Quiz();
-                        // C'est cet ID qui dira au Service de faire un UPDATE et non un CREATE
+            // C'est cet ID qui dira au Service de faire un UPDATE et non un CREATE
             if(!empty($_POST['id_quiz'])){
                 $quiz->setIdQuiz($_POST['id_quiz']);
             }

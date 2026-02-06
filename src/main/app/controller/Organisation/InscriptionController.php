@@ -42,6 +42,24 @@ class InscriptionController{
            exit;
        }
     }
+    //afficher touts les inscriptions
+    public function afficherToutesLesInscriptions(){
+        $inscriptions = $this->inscription_service->afficherToutesLesInscriptions();
+        require __DIR__ ."/../../views/inscription/liste.php";
+    }
+    //afficher une inscription
+    public function afficherInscription($id_inscription){
+        $inscription = $this->inscription_service->afficherInscription($id_inscription);
+        require __DIR__ ."/../../views/inscription/detail.php";
+    }
+    //supprimer une inscription
+    public function supprimerInscription($id_inscription){
+        $this->inscription_service->supprimerInscription($id_inscription);
+        header("location: /inscription");
+        exit;
+    }
+    
+
 }
 
 
