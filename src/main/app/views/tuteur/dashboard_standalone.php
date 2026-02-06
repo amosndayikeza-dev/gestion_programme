@@ -270,9 +270,10 @@ class TuteurDashboardStandalone extends Component {
                 }
                 
                 body {
-                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
                     min-height: 100vh;
-                    font-size: 16px; /* Augmenter la taille de base */
+                    color: #000000;
+                    font-size: 14px;
                 }
                 
                 @keyframes fadeInUp {
@@ -325,7 +326,36 @@ class TuteurDashboardStandalone extends Component {
                 }
                 
                 .sidebar {
-                    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+                    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                    color: #000000;
+                }
+                
+                .sidebar .text-white {
+                    color: #000000 !important;
+                }
+                
+                .sidebar .bg-white/5 {
+                    background: rgba(0, 0, 0, 0.05);
+                }
+                
+                .sidebar .bg-white/10 {
+                    background: rgba(0, 0, 0, 0.1);
+                }
+                
+                .sidebar .bg-white/20 {
+                    background: rgba(0, 0, 0, 0.2);
+                }
+                
+                .sidebar .border-white/10 {
+                    border-color: rgba(0, 0, 0, 0.1);
+                }
+                
+                .sidebar .text-white/80 {
+                    color: rgba(0, 0, 0, 0.8) !important;
+                }
+                
+                .sidebar .text-white/60 {
+                    color: rgba(0, 0, 0, 0.6) !important;
                 }
                 
                 .stat-card {
@@ -350,20 +380,7 @@ class TuteurDashboardStandalone extends Component {
                     border: 2px solid #fbbf24;
                 }
                 
-                /* Augmenter la taille du texte dans tout le dashboard */
-                h1 { font-size: 2.5rem; }
-                h2 { font-size: 2rem; }
-                h3 { font-size: 1.5rem; }
-                h4 { font-size: 1.25rem; }
-                p { font-size: 1rem; }
-                .text-sm { font-size: 0.875rem; }
-                .text-xs { font-size: 0.75rem; }
-                .text-lg { font-size: 1.125rem; }
-                .text-xl { font-size: 1.25rem; }
-                .text-2xl { font-size: 1.5rem; }
-                .text-3xl { font-size: 1.875rem; }
-                
-                /* Taille de police pour les badges et éléments spécifiques */
+                /* Taille de police pour les badges et lments spcifiques */
                 .grade-badge {
                     font-size: 1.1rem; /* Augmenter la taille des badges */
                 }
@@ -432,7 +449,7 @@ class TuteurDashboardStandalone extends Component {
 
             <div class="flex min-h-[calc(100vh-73px)]">
                 <!-- Sidebar -->
-                <aside class="w-64 text-gray-800 bg-white hidden md:block fixed top-[73px] left-0 h-[calc(100vh-73px)] z-40">
+                <aside class="sidebar w-64 text-black hidden md:block fixed top-[74px] left-0 h-[calc(100vh-74px)] z-40 overflow-y-auto">
                     <div class="p-6 h-full overflow-y-auto">
                         <div class="flex items-center mb-8">
                             <div class="w-8 h-8 bg-gradient-to-br from-teal-400 to-blue-400 rounded-lg flex items-center justify-center mr-3">
@@ -452,9 +469,9 @@ class TuteurDashboardStandalone extends Component {
                                 ['icon' => 'fas fa-calendar-alt', 'label' => 'Calendrier'],
                                 ['icon' => 'fas fa-chart-line', 'label' => 'Suivi scolaire']
                             ] as $item): ?>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-blue-50 border-l-4 border-blue-500' : ''; ?>">
-                                <i class="<?php echo $item['icon']; ?> w-5 mr-3 text-sm text-gray-600"></i>
-                                <span class="flex-1 text-sm text-gray-700"><?php echo $item['label']; ?></span>
+                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 border-l-4 border-blue-500' : ''; ?>">
+                                <i class="<?php echo $item['icon']; ?> w-5 mr-3 text-sm text-black"></i>
+                                <span class="flex-1 text-sm text-black"><?php echo $item['label']; ?></span>
                                 <?php if(isset($item['badge'])): ?>
                                     <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full"><?php echo $item['badge']; ?></span>
                                 <?php endif; ?>
@@ -463,11 +480,11 @@ class TuteurDashboardStandalone extends Component {
                         </nav>
                         
                         <!-- Sidebar Footer -->
-                        <div class="mt-8 pt-6 border-t border-gray-100">
-                            <div class="px-4 py-3 bg-gray-50 rounded-lg">
-                                <p class="text-sm text-gray-600 mb-1">Prochaine réunion</p>
-                                <p class="font-medium text-gray-900">Lundi 23 Oct, 16h</p>
-                                <p class="text-xs text-gray-500 mt-1">Avec Prof. Principal</p>
+                        <div class="mt-8 pt-6 border-t border-black/10">
+                            <div class="px-4 py-3 bg-black/5 rounded-lg">
+                                <p class="text-sm text-black/80 mb-1">Prochaine réunion</p>
+                                <p class="font-medium text-black">Lundi 23 Oct, 16h</p>
+                                <p class="text-xs text-black/60 mt-1">Avec Prof. Principal</p>
                             </div>
                         </div>
                     </div>
@@ -479,7 +496,7 @@ class TuteurDashboardStandalone extends Component {
                 </button>
 
                 <!-- Main Content -->
-                <main class="flex-1 ml-64 p-4 md:p-6 lg:p-8 animate-fade-in">
+                <main class="flex-1 ml-64 p-4 md:p-6 lg:p-8 animate-fade-in mt-[74px]">
                     <!-- Welcome Header -->
                     <div class="mb-8 mt-28">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
