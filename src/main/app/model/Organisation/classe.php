@@ -7,7 +7,11 @@ class Classe
     private  $idClasse;
     private  $nomClasse;
     private  $niveau;
-    private  $idEtablissement;
+    private  $cycle;
+    private  $idOption;
+    private  $idSection;
+    private  $capacite;
+    private  $idEcole;
     private $description;
     private $effectifMaximal;
     private $salle;
@@ -18,7 +22,11 @@ class Classe
          $idClasse = null,
          $nomClasse = null,
          $niveau = null,
-         $idEtablissement = null,
+         $cycle = null,
+         $idOption = null,
+         $idSection = null,
+         $capacite = null,
+         $idEcole = null,
          $description = null,
          $effectifMaximal = null,
          $effectifActuel = null,
@@ -28,7 +36,11 @@ class Classe
         $this->idClasse = $idClasse;
         $this->nomClasse = $nomClasse;
         $this->niveau = $niveau;
-        $this->idEtablissement = $idEtablissement;
+        $this->cycle = $cycle;
+        $this->idOption = $idOption;
+        $this->idSection = $idSection;
+        $this->capacite = $capacite;
+        $this->idEcole = $idEcole;
         $this->salle = $salle;
         $this->description = $description;
         $this->effectifMaximal = $effectifMaximal;
@@ -45,8 +57,23 @@ class Classe
     public function getNiveau()  { return $this->niveau; }
     public function setNiveau( $niveau) { $this->niveau = $niveau; }
 
-    public function getIdEtablissement()  { return $this->idEtablissement; }
-    public function setIdEtablissement( $id) { $this->idEtablissement = $id; }
+    public function getIdEtablissement()  { return $this->idEcole; }
+    public function setIdEtablissement( $id) { $this->idEcole = $id; }
+
+    public function getCycle()  { return $this->cycle; }
+    public function setCycle( $cycle) { $this->cycle = $cycle; }
+
+    public function getIdOption()  { return $this->idOption; }
+    public function setIdOption( $id) { $this->idOption = $id; }
+
+    public function getIdSection()  { return $this->idSection; }
+    public function setIdSection( $id) { $this->idSection = $id; }
+
+    public function getCapacite()  { return $this->capacite; }
+    public function setCapacite( $capacite) { $this->capacite = $capacite; }
+
+    public function getIdEcole()  { return $this->idEcole; }
+    public function setIdEcole( $id) { $this->idEcole = $id; }
 
     public function getSalle()  { return $this->salle; }
     public function setSalle( $salle) { $this->salle = $salle; }
