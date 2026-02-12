@@ -1,9 +1,17 @@
 <?php
+namespace App\Service\Gamification;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__."../../../dao/Gamification/BadgeDAO.php";
+
+use App\Dao\Gamification\BadgeDAO;;
+use App\Models\Evaluation\Resultat;
+use Exception;
+
+//require_once __DIR__."../../../dao/Gamification/BadgeDAO.php";
+//require_once __DIR__."../../../dao/Gamification/BadgetObtenuDAO.php";
 
 class BadgeService{
     private BadgeDAO $badge_dao;
@@ -12,7 +20,7 @@ class BadgeService{
     public function __construct()
     {
         $this->badge_dao = new BadgeDAO();
-        $this->badge_obtenu_dao = new BadgetObtenuDAO();
+        $this->badge_obtenu_dao = new BadgeObtenuDAO();
     }
 
     /**
