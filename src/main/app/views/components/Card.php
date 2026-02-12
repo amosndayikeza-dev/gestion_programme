@@ -199,10 +199,11 @@ class StatsCard extends Card {
         </div>';
     }
 }
-
+ 
 /**
  * Composant ListCard pour les listes
  */
+
 class ListCard extends Card {
     private $items = [];
     private $emptyMessage = 'Aucun élément à afficher';
@@ -213,7 +214,7 @@ class ListCard extends Card {
             'description' => $description,
             'url' => $url,
             'actions' => $actions
-        ];
+        ];02136521
         return $this;
     }
     
