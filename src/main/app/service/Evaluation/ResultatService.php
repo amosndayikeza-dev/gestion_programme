@@ -1,9 +1,15 @@
 <?php
+namespace App\Service\Evaluation;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "/../../dao/Evaluation/resultatDAO.php";
+
+use App\Dao\Evaluation\ResultatDAO;
+use App\Models\Evaluation\Resultat;
+use Exception;
+//require_once __DIR__ . "/../../dao/Evaluation/resultatDAO.php";
 
 class ResultatService{
     private ResultatDAO $resultat_dao;

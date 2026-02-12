@@ -1,4 +1,10 @@
 <?php
+namespace App\Dao\Academique;
+use App\Config\Database;
+use App\Models\Utilisateur\Utilisateur;
+use PDO;
+use PDOException;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

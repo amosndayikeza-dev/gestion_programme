@@ -1,4 +1,7 @@
 <?php
+namespace App\Config;
+use PDO;
+use PDOException;
 class Database {
    protected $host = "localhost";
    protected $user = "root";

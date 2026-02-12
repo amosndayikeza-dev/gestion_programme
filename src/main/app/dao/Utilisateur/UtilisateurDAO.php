@@ -1,169 +1,183 @@
 <?php
+namespace App\Dao\Academique;
+use App\Config\Model;
+use App\Models\Utilisateur\Utilisateur;
+use PDO;
+use PDOException;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-require_once __DIR__ . "../../../config/Database.php";
-require_once __DIR__ ."../../../model/Utilisateur/utilisateur.php";
-
-class UtilisateurDAO{
+class UtilisateurDAO extends Model {
     
-    private static $bd;
+    protected  $table = "utilisateur";
+    protected  $primaryKy = "id_utilisateur";
 
     //etablir connexion a la bd
     public function __construct()
     {
-        $pdo = new Database();
-        self::$bd = $pdo->getConnexion();
+        parent:: __construct();
     }
-    //Ajouter un utilisateur
-    public static function CreateUtilisateur(Utilisateur $utilisateur){
-        try{
-            $requette = "INSERT INTO utilisateur(nom,prenom,email,mot_de_passe,role) 
-                        VALUES(:nom,:prenom,:email,:mot_de_passe,:role)";
-            $stmt = self::$bd->prepare($requette);
-            return  $stmt->execute(
-                        [
-                            ":nom" =>$utilisateur->getNom(),
-                            ":prenom" =>$utilisateur->getPrenom(),
-                            ":email" =>$utilisateur->getEmail(),
-                            ":mot_de_passe" =>$utilisateur->getMotDePasse(),
-                            ":role" =>$utilisateur->getRole(),
-                        ]
-                    );
-        }catch(PDOException $e){
-            echo "Erreur : insertion a echoue" .$e->getMessage();
+
+    /**
+     * convertir un tableau en objet utilisateur
+     */
+    public function createEntity(array $data): Utilisateur {
+        $utilisateur = new Utilisateur();
+        $utilisateur->hydrate($data);
+        return $utilisateur;
+    }
+    /**
+     * suavegarder un utilisateur (creation ou  mise a jour)
+     */
+    public function save(Utilisateur $utilisateur){
+        $data = [
+            'nom' => $utilisateur->getNom(),
+            'prenom' => $utilisateur->getPrenom(),
+            'email' => $utilisateur->getEmail(),
+            'mot_de_passe' => $utilisateur->getMotDePasse(),
+            'role' => $utilisateur->getRole(),
+            'statut' => $utilisateur->getStatut(),
+            'telephone' => $utilisateur->getTelephone(),
+            'photo_profil' => $utilisateur->getPhotoProfil(),
+        ];
+        //si c;est une mise a jours
+        if($utilisateur->getIdUtilisateur()){
+            return $this->update($utilisateur->getIdUtilisateur(),$data);
+        }
+        //SI C'EST UNE CREATION
+        $id = $this->Create($data);
+        if($id){
+            $utilisateur->setIdUtilisateur($id);
+            return true;
         }
     }
-    //modifier utilisateur
-    public static function UpdateUtilisateur(Utilisateur $utilisateur){
-        try{
-            $sql = "UPDATE utilisateur SET nom =:nom,prenom =:prenom,email =:email,mot_de_passe =:mot_de_passe,role =:role WHERE id_utilisateur = :id_utilisateur";
-        $stmt = self::$bd->prepare($sql);
-        return $stmt->execute([
-            ":nom" =>$utilisateur->getNom(),
-            ":prenom" =>$utilisateur->getPrenom(),
-            ":email" =>$utilisateur->getEmail(),
-            ":mot_de_passe" =>$utilisateur->getMotDePasse(),
-            ":role" =>$utilisateur->getRole()
-        ]);
-        }catch(PDOException $e){
-            echo "Erreur : modification a echoue" .$e->getMessage();
-        }
+    /**
+     * supprimr un utilisatuer
+     */
+    public function delete($id)
+    {
+        return parent::delete($id);
     }
-    //Afficher UN UTILISATEUR
-    public function getOneUtilisateur($id_utilisateur){
-        try{
-            $sql = "SELECT * FROM utilisateur WHERE id_utilisateur = :id_utilisateur";
-            $stmt = self::$bd->prepare($sql);
-            $stmt->execute([$id_utilisateur => 'id_utilisateur']);
-            $row = $stmt->fetchALL(PDO::FETCH_ASSOC);
-            if(!$row){
-                return NULL;
-            }else{
-                return new Utilisateur(
-                    $row["id_utilisateur"],
-                    $row["nom"],
-                    $row["prenom"],
-                    $row["email"],
-                    $row["mot_de_passe"],
-                    $row["role"],
-                    $row["date_creation"]
-                );
-            }
-        }catch(PDOException $e){
-            echo "Erreur : lecture a echoue" .$e->getMessage();
+    /**
+     * trouver un enetit par son ID
+     */
+    public function find($id):?Utilisateur
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE {$this->primaryKy} = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->excute([$id]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($data){
+            return $this->createEntity($data);
         }
+        return null;
     }
-    public function getOneUtilisateurByEmail($email){
-        try{
-            $sql = "SELECT * FROM utilisateur WHERE email = :email";
-        $stmt = self::$bd->prepare($sql);
-        $stmt->execute([$email => 'email']);
-        $row = $stmt->fetchALL(PDO::FETCH_ASSOC);
-        if(!$row){
-            return NULL;
-        }else{
-            return new Utilisateur(
-                $row["id_utilisateur"],
-                $row["nom"],
-                $row["prenom"],
-                $row["email"],
-                $row["mot_de_passe"],
-                $row["role"],
-                $row["date_creation"]
-            );
+    /** 
+     * trouver un utilisateur par son email
+     */
+    public function fincdByEmail($email):?Utilisateur
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE email = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($data){
+            return $this->createEntity($data);
         }
-        }catch(PDOException $e){
-            echo "Erreur : lecture a echoue" .$e->getMessage();
-        }
+        return null;
+  
     }
-    //afficher tout les utilisateur
-    public static function getALLUtilisateur(){
-        try{
-            $sql = "SELECT * FROM utilisateur";
-        $stmt = self::$bd->query($sql);
+    /**
+     * trouver tous les utilisateurs
+     */ public function fincdByRole($role):?Utilisateur
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE role = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$role]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($data){
+            return $this->createEntity($data);
+        }
+        return null;
+  
+    }
+    /**
+     * trouver tous les utilisateurs
+     */
+    public function findAll(): array
+    {
+        $sql = "SELECT * FROM {$this->table}";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map([$this, 'createEntity'], $data);
+    }
+    /**
+     * changer le statut d'un utilisateur
+     */
+    public function changeStatut($id,$statut){
+        $sql = "UPDATE {$this->table} SET statut = ? WHERE {$this->primaryKey} = ?";
+        $stmt = $this->db->prepare($sql); 
+        return $stmt->execute([$statut,$id]);
+    }
+    /**
+     * mettre a jours la derniere connexion d'un utilisateur
+     */
+    public function updateLastLogin($id){
+        $sql = "UPDATE {$this->table} SET derniere_connexion = NOW() WHERE {$this->primaryKey} = ?";
+        $stmt = $this->db->prepare($sql); 
+        return $stmt->execute([$id]);
+    }
+    /** 
+     * compter les utilisateur par role
+     */
+    public function countByRole($role){
+        $sql = "SELECT COUNT("*") AS total FROM {$this->table} WHERE role = ? ANS statut = 'actif";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$role]);
+        $resultat = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) $resultat['total'];
+    }
+    /**
+     * chercher lesutilisateur par 
+     */
+    public function search(array $criteria = [],int $limit =20, int $offset = 0): array { 
+        $sql = "SELECT * FROM {$this->table} WHERE 1=1";
+        $params = [];
+        
+        if (!empty($criteria['role'])) {
+            $sql .= " AND role = ?";
+            $params[] = $criteria['role'];
+        }
+        
+        if (!empty($criteria['statut'])) {
+            $sql .= " AND statut = ?";
+            $params[] = $criteria['statut'];
+        }
+        
+        if (!empty($criteria['search'])) {
+            $sql .= " AND (nom LIKE ? OR prenom LIKE ? OR email LIKE ?)";
+            $searchTerm = "%{$criteria['search']}%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+        
+        $sql .= " ORDER BY date_creation DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        
         $utilisateurs = [];
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $utilisateurs[] = new Utilisateur(
-                $row["id_utilisateur"],
-                $row["nom"],
-                $row["prenom"],
-                $row["email"],
-                $row["mot_de_passe"],
-                $row["role"],
-                $row["date_creation"]
-            );
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $utilisateurs[] = $this->createEntity($data);
         }
+        
         return $utilisateurs;
-        }catch(PDOException $e){
-            echo "Erreur : lecture a echoue" .$e->getMessage();
-        }
-    
     }
-    //Supprimer utilisateur
-     public static function DeleteUtilisateur($id_utilisateur){
-        try{
-            $sql = "DELETE FROM utilisateur WHERE id_utilisateur =:id_utilisateur";
-            $stmt = self::$bd->prepare($sql);
-            $stmt->bindValue(':id_utilisateur',$id_utilisateur);
-            return $stmt->execute();
-        }catch(PDOException $e){
-            echo "Erreur : suppression a echoue" .$e->getMessage();
-        }
     }
-    //verifier l'email
-    public function EmailExists($email){
-        try{
-            $sql = "SELECT COUNT(*) FROM utilisateur WHERE email = :email";
-            $stmt = self::$bd->prepare($sql);
-            $stmt->bindValue(":email",$email);
-            $stmt->excute();
-            return $stmt->fetchColumn() > 0;
-        }catch(PDOException $e){
-            echo "Erreur : verification a echoue" .$e->getMessage();
-        }
-    }   
-    
-    //fonction pour chercher un utilisateur
-    public function searchUtilisateur($keyword){
-        try{
-            $sql = "SELECT * FROM utilisateur WHERE nom_utilisateur like :keyword or prenom_utilisateur like :keyword";
-            $stmt = self::$bd->prepare($sql);
-            $stmt->bindValue(":keyword","%" .$keyword. "%");
-            $stmt->excute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }catch(PDOException $e){
-            echo "Erreur : recherche a echoue" .$e->getMessage();
-        }
-    }
-
-}
-
-
-
-
-
-
 ?>

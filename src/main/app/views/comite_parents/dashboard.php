@@ -23,6 +23,7 @@ class Component {
         $this->options = $options;
     }
     
+
     public function render(): string {
         return '';
     }

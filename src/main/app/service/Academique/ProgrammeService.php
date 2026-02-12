@@ -1,10 +1,17 @@
 <?php
+namespace App\Service\Academique;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "/../../dao/Academique/ProgrammeDAO.php";
-require_once __DIR__ . "/../../dao/Academique/CoursDAO.php";
+use App\Dao\Academique\ProgrammeDAO;
+use App\Models\Academique\Programme;
+use App\Dao\Academique\CoursDAO;
+use Exception;
+
+//require_once __DIR__ . "/../../dao/Academique/ProgrammeDAO.php";
+//require_once __DIR__ . "/../../dao/Academique/CoursDAO.php";
 class ProgrammeService {
     private ProgrammeDAO $programme_dao;
     private CoursDAO $cours_dao;

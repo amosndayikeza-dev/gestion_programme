@@ -42,18 +42,6 @@ class InscriptionService{
             return $this->inscriptionDAO->CreateInscription($inscription);
         }
 
-        /*if(! $this->utilisateurDAO->getOneUtilisateur($id_utilisateur)){
-            throw new Exception("Utilisateur Introuvable");
-        }
-        if(! $this->classeDAO->getOneClasse($id_Classe)){
-            throw new Exception("Classe introuvable");
-        }
-       if ($this->inscriptionDAO->existsInscription($id_utilisateur, $id_Classe)) {
-            throw new Exception("Déjà inscrit");
-        }*/
-
-
-
         $this->inscriptionDAO->CreateInscription($inscription);
     }
 
