@@ -14,6 +14,7 @@ class SessionManager {
         $_SESSION[$key] = $value;
     }
     
+
     public static function get($key, $default = null) {
         return $_SESSION[$key] ?? $default;
     }

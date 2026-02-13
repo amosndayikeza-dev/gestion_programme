@@ -1,5 +1,15 @@
+-- Changer le délimiteur
+DELIMITER $$
+
+-- Première procédure : calculer_moyenne_eleve
 DROP PROCEDURE IF EXISTS `calculer_moyenne_eleve`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `calculer_moyenne_eleve` (IN `p_id_eleve` INT, IN `p_trimestre` VARCHAR(10), IN `p_annee` VARCHAR(20))   BEGIN
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calculer_moyenne_eleve` (
+    IN `p_id_eleve` INT, 
+    IN `p_trimestre` VARCHAR(10), 
+    IN `p_annee` VARCHAR(20)
+)  
+BEGIN
     SELECT 
         e.id_eleve,
         e.nom,
@@ -14,11 +24,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `calculer_moyenne_eleve` (IN `p_id_e
     WHERE e.id_eleve = p_id_eleve 
     AND ex.periode LIKE CONCAT('%', p_trimestre, '%')
     AND ex.annee_scolaire = p_annee
-    GROUP BY e.id_eleve;
+    GROUP BY e.id_eleve, e.nom, e.prenom;
 END$$
 
+-- Deuxième procédure : inscrire_eleve (COMPLÈTE)
 DROP PROCEDURE IF EXISTS `inscrire_eleve`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `inscrire_eleve` (IN `p_nom` VARCHAR(100), IN `p_prenom` VARCHAR(100), IN `p_date_naissance` DATE, IN `p_sexe` ENUM('M','F'), IN `p_id_classe` INT, IN `p_id_tuteur` INT, IN `p_id_annee` INT)   BEGIN
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `inscrire_eleve` (
+    IN `p_nom` VARCHAR(100), 
+    IN `p_prenom` VARCHAR(100), 
+    IN `p_date_naissance` DATE, 
+    IN `p_sexe` ENUM('M','F'), 
+    IN `p_id_classe` INT, 
+    IN `p_id_tuteur` INT, 
+    IN `p_id_annee` INT
+)  
+BEGIN
     DECLARE v_matricule VARCHAR(50);
     DECLARE v_id_eleve INT;
     
@@ -29,17 +50,19 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `inscrire_eleve` (IN `p_nom` VARCHAR
     INSERT INTO eleve (matricule, nom, prenom, date_naissance, sexe, id_classe_actuelle, id_tuteur, date_inscription)
     VALUES (v_matricule, p_nom, p_prenom, p_date_naissance, p_sexe, p_id_classe, p_id_tuteur, CURDATE());
     
+    -- Récupérer l'ID de l'élève inséré
     SET v_id_eleve = LAST_INSERT_ID();
     
-    -- Créer l'inscription
+    -- Créer l'inscription dans la table inscription
     INSERT INTO inscription (id_eleve, id_classe, id_annee_scolaire, date_inscription, type, statut)
     VALUES (v_id_eleve, p_id_classe, p_id_annee, CURDATE(), 'nouveau', 'validee');
     
-    SELECT v_id_eleve as id_eleve, v_matricule as matricule;
+    -- Retourner le matricule et l'ID
+    SELECT v_matricule AS matricule, v_id_eleve AS id_eleve;
 END$$
 
+-- Rétablir le délimiteur par défaut
 DELIMITER ;
-
 -- --------------------------------------------------------
 
 --

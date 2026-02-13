@@ -466,7 +466,7 @@ class EnseignantDashboardStandalone extends Component {
                     color: #000000 !important;
                 }
                 
-                .sidebar .bg-white/5 {
+                .sidebar .bg-white/5{ 
                     background: rgba(0, 0, 0, 0.05);
                 }
                 
@@ -584,6 +584,7 @@ class EnseignantDashboardStandalone extends Component {
                                 ['icon' => 'fas fa-school', 'label' => 'Mes Classes', 'active' => false],
                                 ['icon' => 'fas fa-clipboard-list', 'label' => 'Notes', 'active' => false],
                                 ['icon' => 'fas fa-tasks', 'label' => 'Devoirs', 'active' => false],
+                                ['icon' => 'fas fa-file', 'label' => 'Interrogation', 'active' => false],
                                 ['icon' => 'fas fa-comments', 'label' => 'Messages', 'badge' => '3', 'active' => false],
                                 ['icon' => 'fas fa-calendar-alt', 'label' => 'Emploi du temps', 'active' => false],
                                 ['icon' => 'fas fa-chart-line', 'label' => 'Analyses', 'active' => false],

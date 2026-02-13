@@ -1,7 +1,15 @@
 <?php
+namespace App\Service\Evaluation;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+use App\Dao\Evaluation\QuizDAO;
+use App\Dao\Evaluation\ResultatDAO;
+use App\Models\Evaluation\Resultat;
+use App\Models\Evaluation\Quiz;
+use Exception;
 
 require_once __DIR__ . "/../../dao/Evaluation/QuizDAO.php";
 require_once __DIR__ . "/../../dao/Evaluation/resultatDAO.php";

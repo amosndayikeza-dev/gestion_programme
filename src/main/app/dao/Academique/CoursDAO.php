@@ -1,10 +1,16 @@
 <?php
+namespace App\Dao\Academique;
+use App\Config\Database;
+use App\Models\academique\Cours;
+use PDO;
+use PDOException;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "../../../config/Database.php";
-require_once __DIR__ ."../../../model/Academique/cours.php";
+//require_once __DIR__ . "../../../config/Database.php";
+//require_once __DIR__ ."../../../model/Academique/cours.php";
 
 // Note: The rest of the CoursDAO.php file is not provided in the snippets for comparison.
 class CoursDAO{

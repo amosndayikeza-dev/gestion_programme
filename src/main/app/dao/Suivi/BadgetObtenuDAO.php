@@ -1,7 +1,12 @@
 <?php
+namespace App\Dao\Academique;
+use App\Config\Database;
+use App\Models\Suivi\BadgeObtenu;
+use PDO;
+use PDOException;
 
-require_once __DIR__ ."../../../model/Suivi/badgeObtenu.php";
-require_once __DIR__ ."../../../config/Database.php";
+//require_once __DIR__ ."../../../model/Suivi/badgeObtenu.php";
+//require_once __DIR__ ."../../../config/Database.php";
 
 class BadgetObtenuDAO{
     private $db;

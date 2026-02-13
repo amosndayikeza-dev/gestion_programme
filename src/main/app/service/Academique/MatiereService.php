@@ -1,9 +1,16 @@
 <?php
+namespace App\Service\Academique;
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "/../../dao/Academique/MatiereDAO.php";
+use App\Dao\Academique\MatiereDAO;
+use App\Models\Academique\Matiere;
+use Exception;
+use PDOException;
+use PDO;
+//require_once __DIR__ . "/../../dao/Academique/MatiereDAO.php";
 
 class MatiereService {
     private MatiereDAO $matiere_dao;
