@@ -374,18 +374,24 @@ class Utilisateur
     }
 
     //Hydratation depuis un tableau associatif (ex: résultat de base de données)
-    public function hydrate(array $data){
-        foreach($data as $key => $values){
-                $method = 'set'.str_replace('_', '', ucwords($key, '_'));
-                if (method_exists($this, $method)) {
-                    $this->$method($values);
-                }else if(property_exists($this, $key)){
-                    $this->$key = $values;
-
-                }
+    public function hydrate(array $data)
+{    // $data = tableau venant de la BDD ex: 
+    // ['nom' => 'Dupont', 'prenom' => 'Jean', 'email' => 'jean@email.com']
+    
+    foreach($data as $key => $value) {
+        // Convertit 'nom' en 'setNom', 'date_creation' en 'setDateCreation'
+        $method = 'set' . str_replace('_', '', ucwords($key, '_'));
+        
+        if (method_exists($this, $method)) {
+            // Si le setter existe, on l'utilise (validation, logique métier)
+            $this->$method($value);
+        } else if(property_exists($this, $key)) {
+            // Sinon, on affecte directement à la propriété
+            $this->$key = $value;
         }
-        return $this;
-    }   
+    }
+    return $this;
+}
     //transformation en tableaux
     public function toArray(){
         return [

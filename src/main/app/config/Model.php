@@ -5,6 +5,7 @@ abstract class Model{
     protected $db;//database connection
     protected $table;
     protected $primaryKey = "id";
+    protected $email;
 
 
     public function __construct(){
@@ -15,6 +16,12 @@ abstract class Model{
         $sql = "SELECT * FROM {$this->table} WHERE {$this->primaryKey} = ?";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+    public function findByEmail($email){
+        $sql = "SELECT * FROM {$this->table} WHERE email = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$email]);
         return $stmt->fetch();
     }
     public function all($columns = ['*']){

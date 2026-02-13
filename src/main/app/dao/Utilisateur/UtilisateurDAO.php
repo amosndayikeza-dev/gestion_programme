@@ -38,7 +38,7 @@ class UtilisateurDAO extends Model {
             'telephone' => $utilisateur->getTelephone(),
             'photo_profil' => $utilisateur->getPhotoProfil(),
         ];
-        //si c;est une mise a jours
+        //si c'est une mise a jours
         if($utilisateur->getIdUtilisateur()){
             return $this->update($utilisateur->getIdUtilisateur(),$data);
         }
@@ -57,7 +57,7 @@ class UtilisateurDAO extends Model {
         return parent::delete($id);
     }
     /**
-     * trouver un enetit par son ID
+     * trouver un utilisateur par son ID
      */
     public function find($id):?Utilisateur
     {
@@ -179,5 +179,21 @@ class UtilisateurDAO extends Model {
         
         return $utilisateurs;
     }
+    /**
+     * recuperer tout les utilisateur actif
+     */
+    public function fincdAllActive():array{
+        $sql = "SELECT * FROM  {$this->table} WHERE statut = 'actif";
+        $stmt = $this->db->query($sql);
+
+        $utilisateur = [];
+        while($data = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $utilisateur[] = $this->createEntity($data);
+        }
+        return $utilisateur;
     }
+
+
+
+}
 ?>

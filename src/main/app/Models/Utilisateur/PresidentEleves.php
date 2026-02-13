@@ -13,9 +13,6 @@ error_reporting(E_ALL);
 use App\Models\Utilisateur\utilisateur;
 use App\Models\Utilisateur\RoleEnum;
 
-//require_once __DIR__ . '/utilisateur.php';
-//require_once __DIR__ . '/RoleEnum.php';
-
 class PresidentEleves extends Utilisateur
 {
     private $mandat;

@@ -6,6 +6,8 @@ error_reporting(E_ALL);
 
 require_once __DIR__ . '/utilisateur.php';
 require_once __DIR__ . '/RoleEnum.php';
+use App\Models\Utilisateur\Utilisateur;
+use App\Models\Utilisateur\RoleEnum;
 
 class Prefet extends Utilisateur
 {

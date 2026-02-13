@@ -199,3 +199,42 @@ function testFile($filePath, $fileName) {
     echo "</div>";
 }
 ?>
+
+// logique modele entre eleve et utilisateur(les classe)
+
+┌─────────────────────────────┐
+│      UTILISATEUR            │
+├─────────────────────────────┤
+│ - idUtilisateur             │◄─────┐
+│ - nom, prenom               │      │
+│ - email, motDePasse         │      │ Héritage
+│ - role, statut              │      │
+│ - telephone, dateCreation   │      │
+│ - photoProfil, tokenReset   │      │
+├─────────────────────────────┤      │
+│ + hydrate()                 │      │
+│ + toArray()                 │      │
+└─────────────────────────────┘      │
+              ▲                      │
+              │                      │
+              │ extends              │
+              │                      │
+┌─────────────┴───────────────┐      │
+│           ELEVE             │      │
+├─────────────────────────────┤      │
+│ - idEleve                   │◄─────┘
+│ - idClasse                  │  (même ID)
+│ - idTuteur                  │
+│ - dateNaissance             │
+│ - lieuNaissance             │
+│ - sexe                      │
+│ - adresse                   │
+│ - dateInscription           │
+│ - matricule                 │
+├─────────────────────────────┤
+│ + hydrate() [surchargée]    │
+│ + toArray() [surchargée]    │
+│ + getAge()                  │
+│ + isAdult()                 │
+│ + fromDbRow() [statique]    │
+└─────────────────────────────┘

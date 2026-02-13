@@ -6,11 +6,12 @@ error_reporting(E_ALL);
 
 
 namespace App\Models\Organisme;
+use App\Models\Utilisateur\Utilisateur;
 use DateTime;
 use DateInterval;
 use PDO;
 use Exception;
-class Enseignant
+class Enseignant extends Utilisateur 
 {
     private $idEnseignant;
     private $nomComplet;
