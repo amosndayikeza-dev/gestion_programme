@@ -28,7 +28,8 @@ class LoginPage extends Component {
     }
     
     public function render(): string {
-        return '
+        ob_start();
+        ?>
         <!DOCTYPE html>
         <html lang="fr">
         <head>
@@ -88,7 +89,7 @@ class LoginPage extends Component {
                     0%, 100% { transform: translateY(0px) rotate(0deg); }
                     50% { transform: translateY(-20px) rotate(180deg); }
                 }
-                                            </style>
+            </style>
         </head>
         <body class="min-h-screen gradient-bg flex items-center justify-center">
             <!-- Formes flottantes -->
@@ -103,17 +104,16 @@ class LoginPage extends Component {
                 <!-- Logo -->
                 <div class="text-center mb-6">
                     <h1 class="text-3xl font-bold text-white mb-2">Gestion Scolaire</h1>
-                    <p class="text-gray-300">Lycée CIREZI - Bukavu</p>
                 </div>
                 
                 <!-- Formulaire de connexion -->
                 <div class="glass-effect rounded-2xl shadow-2xl p-8">
                     <!-- Messages -->
-                    '. $this->renderMessages() .'
+                    <?php echo $this->renderMessages(); ?>
                     
                     <form method="POST" action="/login" class="space-y-6">
                         <input type="hidden" name="action" value="login">
-                        <input type="hidden" name="redirect" value="' . htmlspecialchars($this->redirectUrl) . '">
+                        <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($this->redirectUrl); ?>">
                         
                         <!-- Email -->
                         <div class="relative">
@@ -165,10 +165,10 @@ class LoginPage extends Component {
                         </button>
                     </form>
                     
-                    <!-- Lien vers l\'inscription -->
+                    <!-- Lien vers l'inscription -->
                     <div class="mt-6 text-center">
                         <p class="text-gray-600">
-                            Vous n\'avez pas de compte? 
+                            Vous n'avez pas de compte? 
                             <a href="/auth/register" class="text-blue-600 hover:text-blue-800 font-medium transition-colors">
                                 Créer un compte
                             </a>
@@ -180,15 +180,15 @@ class LoginPage extends Component {
                         <div class="text-center text-xs text-gray-500">
                             <p class="mb-2">Accès rapide:</p>
                             <div class="flex justify-center space-x-4">
-                                <button onclick="quickLogin(\'admin@ecole.com\', \'admin123\')" 
+                                <button onclick="quickLogin('admin@ecole.com', 'admin123')" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors">
                                     Admin
                                 </button>
-                                <button onclick="quickLogin(\'enseignant@ecole.com\', \'enseignant123\')" 
+                                <button onclick="quickLogin('enseignant@ecole.com', 'enseignant123')" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors">
                                     Enseignant
                                 </button>
-                                <button onclick="quickLogin(\'eleve@ecole.com\', \'eleve123\')" 
+                                <button onclick="quickLogin('eleve@ecole.com', 'eleve123')" 
                                         class="text-blue-600 hover:text-blue-800 transition-colors">
                                     Élève
                                 </button>
@@ -200,7 +200,7 @@ class LoginPage extends Component {
                 <!-- Footer -->
                 <div class="text-center mt-8">
                     <p class="text-blue-100 text-sm">
-                        &copy; ' . date('Y') . ' Gestion Programme. Tous droits réservés.
+                        &copy; <?php echo date('Y'); ?> Gestion Programme. Tous droits réservés.
                     </p>
                 </div>
             </div>
@@ -208,41 +208,43 @@ class LoginPage extends Component {
             <!-- Scripts -->
             <script>
                 function togglePassword() {
-                    const passwordInput = document.getElementById(\'password\');
-                    const passwordIcon = document.getElementById(\'passwordIcon\');
+                    const passwordInput = document.getElementById('password');
+                    const passwordIcon = document.getElementById('passwordIcon');
                     
-                    if (passwordInput.type === \'password\') {
-                        passwordInput.type = \'text\';
-                        passwordIcon.classList.remove(\'fa-eye\');
-                        passwordIcon.classList.add(\'fa-eye-slash\');
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        passwordIcon.classList.remove('fa-eye');
+                        passwordIcon.classList.add('fa-eye-slash');
                     } else {
-                        passwordInput.type = \'password\';
-                        passwordIcon.classList.remove(\'fa-eye-slash\');
-                        passwordIcon.classList.add(\'fa-eye\');
+                        passwordInput.type = 'password';
+                        passwordIcon.classList.remove('fa-eye-slash');
+                        passwordIcon.classList.add('fa-eye');
                     }
                 }
                 
                 function quickLogin(email, password) {
-                    document.getElementById(\'email\').value = email;
-                    document.getElementById(\'password\').value = password;
-                    document.querySelector(\'form\').submit();
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = password;
+                    document.querySelector('form').submit();
                 }
                 
                 // Animation des inputs
-                document.querySelectorAll(\'input\').forEach(input => {
-                    input.addEventListener(\'focus\', function() {
-                        this.parentElement.classList.add(\'focused\');
+                document.querySelectorAll('input').forEach(input => {
+                    input.addEventListener('focus', function() {
+                        this.parentElement.classList.add('focused');
                     });
                     
-                    input.addEventListener(\'blur\', function() {
+                    input.addEventListener('blur', function() {
                         if (!this.value) {
-                            this.parentElement.classList.remove(\'focused\');
+                            this.parentElement.classList.remove('focused');
                         }
                     });
                 });
             </script>
         </body>
-        </html>';
+        </html>
+        <?php
+        return ob_get_clean();
     }
     
     private function renderMessages(): string {
@@ -288,3 +290,4 @@ $page = new LoginPage([
 ]);
 
 echo $page->render();
+?>
