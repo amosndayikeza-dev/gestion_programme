@@ -143,6 +143,7 @@ class Administrateur extends Utilisateur
         return $this; 
     }
     
+
     public function setAuthentification2Facteurs($bool) { 
         $this->authentification2Facteurs = $bool; 
         return $this; 
