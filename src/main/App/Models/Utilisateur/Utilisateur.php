@@ -66,9 +66,9 @@ class Utilisateur
     public function setNom( $nom) { 
         if(strlen($nom) < 2 || strlen($nom) > 50) {
             throw new Exception("Le nom doit comporter entre 2 et 50 caractères.");
-            $this->nom = $nom;
-            return $this;
         }
+         $this->nom = $nom;
+            return $this;
     }
     public function getPrenom() { return $this->prenom; }
     public function setPrenom( $prenom) { $this->prenom = $prenom; }
@@ -77,9 +77,9 @@ class Utilisateur
     public function setEmail( $email) {
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)){
             throw new Exception("L'email n'est pas valide.");
-            $this->email = $email;
-            return $this;
         }
+        $this->email = $email;
+            return $this;
     }
 
     public function getMotDePasse() { return $this->motDePasse; }
@@ -93,11 +93,10 @@ class Utilisateur
             'bibliothecaire','surveillant'
         ];
         if(!in_array($role,$alloewdRoles)){
-            throw new Exception("Le rôle n'est pas valide.");
-            $this->role = $role;
-            return $this;   
+            throw new Exception("Le rôle n'est pas valide.");  
         }    
-        
+        $this->role = $role;
+            return $this; 
     }
 
     public function getDateCreation() { return $this->dateCreation; }
