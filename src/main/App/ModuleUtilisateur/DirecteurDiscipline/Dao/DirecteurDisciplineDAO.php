@@ -9,8 +9,9 @@ class DirecteurDisciplineDAO extends Model
 {
     protected $table = "directeur_discipline";
     protected $primaryKey = "id_directeur";
-
+    
     private $userTable = "utilisateur";
+
 
     public function __construct()
     {

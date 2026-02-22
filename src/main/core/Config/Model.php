@@ -7,7 +7,6 @@ abstract class Model{
     protected $primaryKey = "id";
     protected $email;
 
-
     public function __construct(){
         $database = new Database();
         $this->db = $database->getConnexion();
@@ -69,9 +68,7 @@ abstract class Model{
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([$id]);
     }
-
-
-
+    
       /**
      * Compter le nombre d'enregistrements dans la table
      * @return int
