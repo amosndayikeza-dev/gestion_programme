@@ -4,8 +4,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . '/../../Config/Database.php';
-require_once __DIR__ . '/../../Config/Model.php';
+require_once __DIR__ . '/../../core/Config/Database.php';
+require_once __DIR__ . '/../../core/Config/Model.php';
 require_once __DIR__ . '/../../Models/Utilisateur/Utilisateur.php';
 require_once __DIR__ . '/../../Models/Utilisateur/DirecteurDiscipline.php';
 require_once __DIR__ . '/DirecteurDisciplineDAO.php';
@@ -33,7 +33,7 @@ try {
     echo "\n📋 Colonnes de directeur_discipline:\n";
     $cols = $db->query("DESCRIBE directeur_discipline")->fetchAll(PDO::FETCH_ASSOC);
     foreach ($cols as $col) {
-        echo "   - " . $col['Field'] . "\n";
+        echo "   - " . $col['Field'] . "<br>";
     }
 
     // 3. Création DAO
@@ -44,9 +44,9 @@ try {
     // 4. Création objet
     echo "\n📦 Création de l'objet DirecteurDiscipline...\n";
     $directeur = new DirecteurDiscipline();
-    $directeur->setNom('Diop');
-    $directeur->setPrenom('Mamadou');
-    $directeur->setEmail('amos.diop@ecole.sn');
+    $directeur->setNom('kalenga') ;
+    $directeur->setPrenom('Marc');
+    $directeur->setEmail('kamar@bi.bi');
     $directeur->setTelephone('771234567');
     $directeur->setMotDePasse(password_hash('pass123', PASSWORD_DEFAULT));
     $directeur->setRole('directeur_discipline');
