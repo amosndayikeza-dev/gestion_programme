@@ -1,6 +1,6 @@
 <?php
-namespace App\ModuleUtilisateur\DirecteurDiscipline\Dao;
 
+namespace App\ModuleUtilisateur\DirecteurDiscipline\Dao;
 use App\ModuleUtilisateur\DirecteurDiscipline\Models\DirecteurDiscipline;
 use App\core\config\Model;
 use PDO;
@@ -36,31 +36,34 @@ class DirecteurDisciplineDAO extends Model
     try {
         // Insertion utilisateur
         $stmt = $this->db->prepare("INSERT INTO utilisateur 
-            (nom, prenom, email, mot_de_passe, role, statut, date_creation) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW())");
+            (nom, prenom, email,telephone, mot_de_passe, role, statut, date_creation) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
         
         $stmt->execute([
             $directeur->getNom(),
             $directeur->getPrenom(),
             $directeur->getEmail(),
+            $directeur->getTelephone(),
             $directeur->getMotDePasse(),
             $directeur->getRole(),
             $directeur->getStatut()
         ]);
         
-        $id = $this->db->lastInsertId();
+        $id = $this->getLastId();
         $directeur->setIdUtilisateur($id);
-        $directeur->setIdDirecteur($id);
         
         // Insertion directeur
         $stmt = $this->db->prepare("INSERT INTO directeur_discipline 
-            (id_directeur, bureau, telephone_pro) 
-            VALUES (?, ?, ?)");
+            (id_utilisateur, bureau, telephone_pro, plages_disponibilite, date_debut, date_fin) 
+            VALUES (?, ?, ?, ?, ?, ?)");
         
         $stmt->execute([
-            $id,
+            $directeur->getIdUtilisateur(),
             $directeur->getBureau(),
-            $directeur->getTelephonePro()
+            $directeur->getTelephonePro(),
+            '{}',
+            $directeur->getDateDebut() ?: date('Y-m-d'),
+            $directeur->getDateFin()
         ]);
         
         return true;
@@ -86,6 +89,7 @@ class DirecteurDisciplineDAO extends Model
                 nom = ?,
                 prenom = ?,
                 email = ?,
+                telephone = ?,
                 mot_de_passe = ?,
                 statut = ?
                 WHERE id_utilisateur = ?");
@@ -94,6 +98,7 @@ class DirecteurDisciplineDAO extends Model
                 $directeur->getNom(),
                 $directeur->getPrenom(),
                 $directeur->getEmail(),
+                $directeur->getTelephone(),
                 $directeur->getMotDePasse(),
                 $directeur->getStatut(),
                 $id
@@ -111,8 +116,8 @@ class DirecteurDisciplineDAO extends Model
             $stmt->execute([
                 $directeur->getBureau(),
                 $directeur->getTelephonePro(),
-                $directeur->getPlagesDisponibilite(),
-                $directeur->getDateDebut(),
+                $directeur->getPlagesDisponibilite() ?: '{}',
+                $directeur->getDateDebut() ?: date('Y-m-d'),
                 $directeur->getDateFin(),
                 $id
             ]);
@@ -187,7 +192,7 @@ class DirecteurDisciplineDAO extends Model
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.id_utilisateur = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -204,7 +209,7 @@ class DirecteurDisciplineDAO extends Model
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.role = 'directeur_discipline'
                 ORDER BY u.nom, u.prenom";
         
@@ -225,7 +230,7 @@ class DirecteurDisciplineDAO extends Model
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                LEFT JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                LEFT JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.email = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -242,7 +247,7 @@ class DirecteurDisciplineDAO extends Model
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE d.bureau = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -281,7 +286,7 @@ class DirecteurDisciplineDAO extends Model
     public function countByStatut($statut)
     {
         $sql = "SELECT COUNT(*) FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.statut = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -313,7 +318,7 @@ class DirecteurDisciplineDAO extends Model
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.statut = ?
                 ORDER BY u.nom, u.prenom";
         
@@ -328,5 +333,12 @@ class DirecteurDisciplineDAO extends Model
         return $directeurs;
     }
 
-    
+    public function getLastId()
+    {
+        $sql = "SELECT MAX(id_utilisateur) FROM utilisateur";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }  
 }
+
