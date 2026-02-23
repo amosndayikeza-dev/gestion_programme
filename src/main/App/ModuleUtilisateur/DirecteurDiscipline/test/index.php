@@ -19,15 +19,15 @@ echo "<h2>🧪 TEST DIRECTEUR DISCIPLINE</h2>";
 
    try {
     $directeur = new DirecteurDiscipline();
-    $directeur->setNom('WARAKOZE');
-    $directeur->setPrenom('Grannie');
-    $directeur->setEmail('Amos' . time() . '@gmail.com');
+    $directeur->setNom('Kalenga');
+    $directeur->setPrenom('Marcel');
+    $directeur->setEmail('Marcel' . time() . '@gmail.com');
     $directeur->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
     $directeur->setRole('directeur_discipline');  // ← OBLIGATOIRE
     $directeur->setStatut('actif');               // ← OBLIGATOIRE
-    $directeur->setBureau('Bureau 101');
-    $directeur->setTelephonePro('0708091011');
-    
+    $directeur->setBureau('Bureau 30');
+    $directeur->setTelephonePro('70143569');
+    $directeur->setDateDebut(date('Y-m-d'));    // ← OBLIGATOIRE (NOT NULL)
     $dao = new DirecteurDisciplineDAO();
     $resultat = $dao->save($directeur);
     
@@ -40,4 +40,5 @@ echo "<h2>🧪 TEST DIRECTEUR DISCIPLINE</h2>";
 } catch (Exception $e) {
     echo "❌ Erreur: " . $e->getMessage();
 }
+
 ?>

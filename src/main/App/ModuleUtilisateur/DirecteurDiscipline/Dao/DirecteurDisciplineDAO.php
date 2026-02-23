@@ -1,6 +1,6 @@
 <?php
-namespace App\ModuleUtilisateur\DirecteurDiscipline\Dao;
 
+namespace App\ModuleUtilisateur\DirecteurDiscipline\Dao;
 use App\ModuleUtilisateur\DirecteurDiscipline\Models\DirecteurDiscipline;
 use App\core\config\Model;
 use PDO;
@@ -19,59 +19,54 @@ class DirecteurDisciplineDAO extends Model
         parent::__construct();
     }
 
-    /**
-     * Créer un objet DirecteurDiscipline à partir d'un tableau
-     */
     public function createEntity($row)
     {
         $directeur = new DirecteurDiscipline();
         return $directeur->hydrate($row);
     }
 
-    /**
-     * Sauvegarder un directeur (création ou mise à jour)
-     */
     public function save(DirecteurDiscipline $directeur)
-{
-    try {
-        // Insertion utilisateur
-        $stmt = $this->db->prepare("INSERT INTO utilisateur 
-            (nom, prenom, email, mot_de_passe, role, statut, date_creation) 
-            VALUES (?, ?, ?, ?, ?, ?, NOW())");
-        
-        $stmt->execute([
-            $directeur->getNom(),
-            $directeur->getPrenom(),
-            $directeur->getEmail(),
-            $directeur->getMotDePasse(),
-            $directeur->getRole(),
-            $directeur->getStatut()
-        ]);
-        
-        $id = $this->db->lastInsertId();
-        $directeur->setIdUtilisateur($id);
-        $directeur->setIdDirecteur($id);
-        
-        // Insertion directeur
-        $stmt = $this->db->prepare("INSERT INTO directeur_discipline 
-            (id_directeur, bureau, telephone_pro) 
-            VALUES (?, ?, ?)");
-        
-        $stmt->execute([
-            $id,
-            $directeur->getBureau(),
-            $directeur->getTelephonePro()
-        ]);
-        
-        return true;
-        
-    } catch (PDOException $e) {
-        die("Erreur: " . $e->getMessage());
+    {
+        try {
+            // Insertion utilisateur
+            $stmt = $this->db->prepare("INSERT INTO utilisateur 
+                (nom, prenom, email,telephone, mot_de_passe, role, statut, date_creation) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+            
+            $stmt->execute([
+                $directeur->getNom(),
+                $directeur->getPrenom(),
+                $directeur->getEmail(),
+                $directeur->getTelephone(),
+                $directeur->getMotDePasse(),
+                $directeur->getRole(),
+                $directeur->getStatut()
+            ]);
+            
+            $id = $this->getLastId();
+            $directeur->setIdUtilisateur($id);
+            
+            // Insertion directeur
+            $stmt = $this->db->prepare("INSERT INTO directeur_discipline 
+                (id_utilisateur, bureau, telephone_pro, plages_disponibilite, date_debut, date_fin) 
+                VALUES (?, ?, ?, ?, ?, ?)");
+            
+            $stmt->execute([
+                $directeur->getIdUtilisateur(),
+                $directeur->getBureau(),
+                $directeur->getTelephonePro(),
+                '{}',
+                $directeur->getDateDebut() ?: date('Y-m-d'),
+                $directeur->getDateFin()
+            ]);
+            
+            return true;
+            
+        } catch (PDOException $e) {
+            die("Erreur: " . $e->getMessage());
+        }
     }
-}
-    /**
-     * METTRE À JOUR un directeur existant
-     */
+ 
     public function update(DirecteurDiscipline $directeur)
     {
         try {
@@ -86,6 +81,7 @@ class DirecteurDisciplineDAO extends Model
                 nom = ?,
                 prenom = ?,
                 email = ?,
+                telephone = ?,
                 mot_de_passe = ?,
                 statut = ?
                 WHERE id_utilisateur = ?");
@@ -94,6 +90,7 @@ class DirecteurDisciplineDAO extends Model
                 $directeur->getNom(),
                 $directeur->getPrenom(),
                 $directeur->getEmail(),
+                $directeur->getTelephone(),
                 $directeur->getMotDePasse(),
                 $directeur->getStatut(),
                 $id
@@ -111,8 +108,8 @@ class DirecteurDisciplineDAO extends Model
             $stmt->execute([
                 $directeur->getBureau(),
                 $directeur->getTelephonePro(),
-                $directeur->getPlagesDisponibilite(),
-                $directeur->getDateDebut(),
+                $directeur->getPlagesDisponibilite() ?: '{}',
+                $directeur->getDateDebut() ?: date('Y-m-d'),
                 $directeur->getDateFin(),
                 $id
             ]);
@@ -124,22 +121,13 @@ class DirecteurDisciplineDAO extends Model
         }
     }
 
-     // ============================================
-    // MÉTHODES SIMPLES (via le parent)
-    // ============================================
-    
-    /**
-     * Trouver un directeur par son ID
-     */
     public function find($id)
     {
         $resultat = parent::find($id);
         return $resultat ? $this->createEntity($resultat) : null;
     }
 
-    /**
-     * Récupérer tous les directeurs
-     */
+   
     public function all($columns = ['*'])
     {
         $resultats = parent::all($columns);
@@ -152,42 +140,27 @@ class DirecteurDisciplineDAO extends Model
         return $directeurs;
     }
 
-    /**
-     * Supprimer un directeur par ID
-     */
     public function delete($id)
     {
         return parent::delete($id);
     }
 
-    /**
-     * Compter le nombre de directeurs
-     */
     public function count()
     {
         return parent::count();
     }
 
-    /**
-     * Vérifier si un directeur existe
-     */
+
     public function exists($id)
     {
         return $this->find($id) !== null;
     }
 
-    // ============================================
-    // MÉTHODES DE RECHERCHE SPÉCIFIQUES
-    // ============================================
-    
-    /**
-     * Trouver un directeur avec ses infos utilisateur (jointure)
-     */
     public function findWithUser($id)
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.id_utilisateur = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -197,14 +170,11 @@ class DirecteurDisciplineDAO extends Model
         return $data ? $this->createEntity($data) : null;
     }
 
-    /**
-     * Trouver tous les directeurs avec leurs infos utilisateur
-     */
     public function findAllWithUser()
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.role = 'directeur_discipline'
                 ORDER BY u.nom, u.prenom";
         
@@ -218,14 +188,11 @@ class DirecteurDisciplineDAO extends Model
         return $directeurs;
     }
 
-    /**
-     * Trouver un directeur par email
-     */
     public function findByEmail($email)
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                LEFT JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                LEFT JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.email = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -235,14 +202,12 @@ class DirecteurDisciplineDAO extends Model
         return $data ? $this->createEntity($data) : null;
     }
 
-    /**
-     * Trouver les directeurs par bureau
-     */
+
     public function findByBureau($bureau)
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE d.bureau = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -256,9 +221,7 @@ class DirecteurDisciplineDAO extends Model
         return $directeurs;
     }
 
-    /**
-     * Vérifier si un email existe déjà
-     */
+ 
     public function emailExists($email, $excludeId = null)
     {
         $sql = "SELECT COUNT(*) FROM utilisateur WHERE email = ?";
@@ -275,13 +238,10 @@ class DirecteurDisciplineDAO extends Model
         return $stmt->fetchColumn() > 0;
     }
 
-    /**
-     * Compter les directeurs par statut
-     */
     public function countByStatut($statut)
     {
         $sql = "SELECT COUNT(*) FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.statut = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -290,30 +250,21 @@ class DirecteurDisciplineDAO extends Model
         return (int) $stmt->fetchColumn();
     }
 
-    /**
-     * Récupérer les directeurs actifs
-     */
     public function findActifs()
     {
         return $this->findByStatut('actif');
     }
 
-    /**
-     * Récupérer les directeurs inactifs
-     */
     public function findInactifs()
     {
         return $this->findByStatut('inactif');
     }
 
-    /**
-     * Méthode interne pour filtrer par statut
-     */
     private function findByStatut($statut)
     {
         $sql = "SELECT u.*, d.* 
                 FROM utilisateur u
-                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_utilisateur
                 WHERE u.statut = ?
                 ORDER BY u.nom, u.prenom";
         
@@ -328,5 +279,31 @@ class DirecteurDisciplineDAO extends Model
         return $directeurs;
     }
 
-    
+    public function getLastId()
+    {
+        $sql = "SELECT MAX(id_utilisateur) FROM utilisateur";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    } 
+    public function setDateFin($id, $dateFin)
+    {
+        $sql = "UPDATE directeur_discipline SET date_fin = ? WHERE id_directeur = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$dateFin, $id]);
+    }
+    public function setDateDebut($id, $dateDebut)
+    {
+        $sql = "UPDATE directeur_discipline SET date_debut = ? WHERE id_directeur = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$dateDebut, $id]);
+    }
+    public function setPlageDisponibilite($id, $plageDisponibilite)
+    {
+        $sql = "UPDATE directeur_discipline SET plages_disponibilite = ? WHERE id_directeur = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$plageDisponibilite, $id]);
+    }
+
 }
+
