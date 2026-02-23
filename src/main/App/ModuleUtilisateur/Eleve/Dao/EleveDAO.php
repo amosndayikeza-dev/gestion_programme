@@ -1,9 +1,10 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\Dao;
 
-use App\Models\Utilisateur\Eleve;
-use App\Config\Model;
+use App\ModuleUtilisateur\Eleve\Models\Eleve;
+use App\core\Config\Model;
 use PDO;
+use PDOException;   
 
 class EleveDAO extends Model
 {
@@ -17,7 +18,7 @@ class EleveDAO extends Model
     }
 
     /**
-     * Créer un objet Eleve à partir d'un tableau (avec jointure)
+     * Créer un objet Eleve à partir d'un tableau
      */
     public function createEntity($row)
     {
@@ -28,288 +29,147 @@ class EleveDAO extends Model
     /**
      * Sauvegarder un élève (dans les 2 tables)
      */
-    public function save(Eleve $eleve)
-    {
-        try {
-            $this->db->beginTransaction();
+    public function save(Eleve $eleve){
+        try{
+            //insertion utilisateur
+            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, statut, telephone) VALUES (:nom, :prenom, :email, :mot_de_passe, :statut, :telephone)");
+            $stmt->execute([
+                ':nom' => $eleve->getNom(),
+                ':prenom' => $eleve->getPrenom(),
+                ':email' => $eleve->getEmail(),
+                ':mot_de_passe' => $eleve->getMotDePasse(),
+                ':statut' => $eleve->getStatut(),
+                ':telephone' => $eleve->getTelephone()
+            ]);
+            // Récupération de l'ID utilisateur généré
+            $idUtilisateur = $this->db->lastInsertId();
+            // Mise à jour de l'objet Eleve avec l'ID utilisateur
+            $eleve->setIdUtilisateur($idUtilisateur);
             
-            // === 1. PRÉPARER LES DONNÉES ===
-            // Données pour la table utilisateur
-            $userData = [
-                'nom' => $eleve->getNom(),
-                'prenom' => $eleve->getPrenom(),
-                'email' => $eleve->getEmail(),
-                'telephone' => $eleve->getTelephone(),
-                'mot_de_passe' => $eleve->getMotDePasse(),
-                'role' => 'eleve',
-                'statut' => $eleve->getStatut(),
-                'photo_profil' => $eleve->getPhotoProfil(),
-                'date_creation' => date('Y-m-d H:i:s')
-            ];
-            
-            // Données pour la table eleve
-            $eleveData = [
-                'matricule' => $eleve->getMatricule(),
-                'date_naissance' => $eleve->getDateNaissance(),
-                'lieu_naissance' => $eleve->getLieuNaissance(),
-                'sexe' => $eleve->getSexe(),
-                'adresse' => $eleve->getAdresse(),
-                'id_classe_actuelle' => $eleve->getIdClasse(),
-                'id_tuteur' => $eleve->getIdTuteur(),
-                'date_inscription' => $eleve->getDateInscription() ?? date('Y-m-d H:i:s')
-            ];
-
-            // === 2. CAS MISE À JOUR ===
-            if ($eleve->getIdEleve()) {
-                // Mettre à jour utilisateur
-                $this->updateUser($eleve->getIdUtilisateur(), $userData);
-                
-                // Mettre à jour élève
-                $this->update($eleve->getIdEleve(), $eleveData);
-                
-                $this->db->commit();
-                return true;
-            }
-
-            // === 3. CAS CRÉATION ===
-            // Créer l'utilisateur d'abord
-            $userId = $this->createUser($userData);
-            if (!$userId) {
-                throw new \Exception("Erreur création utilisateur");
-            }
-            
-            // Ajouter l'id_utilisateur aux données élève
-            $eleveData['id_utilisateur'] = $userId;
-            
-            // Créer l'élève
-            $eleveId = $this->create($eleveData);
-            if (!$eleveId) {
-                throw new \Exception("Erreur création élève");
-            }
-            
-            // Générer matricule si nécessaire
-            if (empty($eleve->getMatricule())) {
-                $matricule = $this->genererMatricule($eleveId);
-                $this->update($eleveId, ['matricule' => $matricule]);
-                $eleve->setMatricule($matricule);
-            }
-            
-            // Mettre à jour l'objet avec les IDs
-            $eleve->setIdUtilisateur($userId);
-            $eleve->setIdEleve($eleveId);
-            
-            $this->db->commit();
+            // Insertion dans la table eleve
+            $stmt = $this->db->prepare("INSERT INTO eleve(id_utilisateur, id_classe_actuelle, id_tuteur, date_naissance, lieu_naissance, sexe, adresse, date_inscription, matricule) VALUES (:id_utilisateur, :id_classe_actuelle, :id_tuteur, :date_naissance, :lieu_naissance, :sexe, :adresse, :date_inscription, :matricule)");
+            $stmt->execute([
+                ":id_utilisateur" => $eleve->getIdUtilisateur(),
+                ":id_classe_actuelle" => $eleve->getIdClasse(),
+                ":id_tuteur" => $eleve->getIdTuteur(),
+                ":date_naissance" => $eleve->getDateNaissance(),
+                ":lieu_naissance" => $eleve->getLieuNaissance(),
+                ":sexe" => $eleve->getSexe(),
+                ":adresse" => $eleve->getAdresse(),
+                ":date_inscription" => $eleve->getDateInscription(),
+                ":matricule" => $eleve->getMatricule()
+            ]);
             return true;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur save Eleve: " . $e->getMessage());
-            return false;
+        }catch(PDOException $e){
+            // En cas d'erreur, on peut faire un rollback ou gérer l'exception
+            die("Erreur lors de la sauvegarde de l'élève : " . $e->getMessage());
         }
     }
 
-    /**
-     * Trouver un élève par son ID (avec jointure)
-     */
-    public function find($id)
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                WHERE e.{$this->primaryKey} = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row ? $this->createEntity($row) : null;
+    //Modifier un eleve
+    public function updateEleve(Eleve $eleve){
+        try{
+            //verifier si l'ID de l'utilisateur existe
+            $id = $eleve->getIdEleve();
+            if(!$id){
+                throw new \Exception("ID de l'élève manquant pour la mise à jour");
+            }
+            // Mise à jour de l'utilisateur
+            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
+            $stmt->execute([
+                ':nom' => $eleve->getNom(),
+                ':prenom' => $eleve->getPrenom(),
+                ':email' => $eleve->getEmail(),
+                ':mot_de_passe' => $eleve->getMotDePasse(),
+                ':statut' => $eleve->getStatut(),
+                ':telephone' => $eleve->getTelephone(),
+                ':id_utilisateur' => $eleve->getIdUtilisateur()
+            ]);
+
+            // Mise à jour de l'élève
+            $stmt = $this->db->prepare("UPDATE eleve SET id_classe_actuelle = :id_classe_actuelle, id_tuteur = :id_tuteur, date_naissance = :date_naissance, lieu_naissance = :lieu_naissance, sexe = :sexe, adresse = :adresse, date_inscription = :date_inscription, matricule = :matricule WHERE id_eleve = :id_eleve");
+            $stmt->execute([
+                ":id_classe_actuelle" => $eleve->getIdClasse(),
+                ":id_tuteur" => $eleve->getIdTuteur(),
+                ":date_naissance" => $eleve->getDateNaissance(),
+                ":lieu_naissance" => $eleve->getLieuNaissance(),
+                ":sexe" => $eleve->getSexe(),
+                ":adresse" => $eleve->getAdresse(),
+                ":date_inscription" => $eleve->getDateInscription(),
+                ":matricule" => $eleve->getMatricule(),
+                ":id_eleve" => $eleve->getIdEleve()
+            ]);
+            return true;
+        }catch(PDOException $e){
+            die("Erreur lors de la mise à jour de l'élève : " . $e->getMessage());
+        }
     }
 
-    /**
-     * Trouver tous les élèves
-     */
-    public function findAll()
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                ORDER BY u.nom, u.prenom";
-        
-        $stmt = $this->db->query($sql);
-        
+    // trouver un eleve par son ID
+    public function find($id){
+        $result = parent::find($id, "eleve");
+        return $result ? $this->createEntity($result) : null;
+    }
+    // recuperer tout les eleves
+    public function all($columna = ["*"]){
+        $results = parent::all("eleve", $columna);
         $eleves = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        foreach($results as $row){
             $eleves[] = $this->createEntity($row);
         }
-        
         return $eleves;
     }
-
-    /**
-     * Trouver un élève par email
-     */
-    public function findByEmail($email)
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                WHERE u.email = :email";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['email' => $email]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row ? $this->createEntity($row) : null;
-    }
-
-    /**
-     * Trouver les élèves par classe
-     */
-    public function findByClasse($classeId)
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                WHERE e.id_classe_actuelle = :classe_id
-                ORDER BY u.nom, u.prenom";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['classe_id' => $classeId]);
-        
-        $eleves = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $eleves[] = $this->createEntity($row);
-        }
-        
-        return $eleves;
-    }
-
-    /**
-     * Trouver les élèves par tuteur
-     */
-    public function findByTuteur($tuteurId)
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                WHERE e.id_tuteur = :tuteur_id
-                ORDER BY u.nom, u.prenom";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['tuteur_id' => $tuteurId]);
-        
-        $eleves = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $eleves[] = $this->createEntity($row);
-        }
-        
-        return $eleves;
-    }
-
-    /**
-     * Rechercher des élèves par mot-clé
-     */
-    public function search($keyword)
-    {
-        $sql = "SELECT u.*, e.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} e ON u.id_utilisateur = e.id_utilisateur
-                WHERE u.nom LIKE :keyword OR u.prenom LIKE :keyword
-                ORDER BY u.nom, u.prenom";
-        
-        $keyword = "%{$keyword}%";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['keyword' => $keyword]);
-        
-        $eleves = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $eleves[] = $this->createEntity($row);
-        }
-        
-        return $eleves;
-    }
-
-    /**
-     * Compter les élèves actifs
-     */
-    public function countActiveEleve()
-    {
-        $sql = "SELECT COUNT(*) FROM {$this->userTable} WHERE role = 'eleve' AND statut = 'actif'";
-        return $this->db->query($sql)->fetchColumn();
-    }
-
-    /**
-     * Supprimer un élève (des 2 tables)
-     */
+    // supprimer un eleve par son ID
     public function delete($id)
     {
-        try {
-            $this->db->beginTransaction();
-            
-            $eleve = $this->find($id);
-            if (!$eleve) {
-                return false;
-            }
-            
-            $userId = $eleve->getIdUtilisateur();
-            
-            // Supprimer l'élève d'abord
-            parent::delete($id);
-            
-            // Supprimer l'utilisateur
-            $sqlUser = "DELETE FROM {$this->userTable} WHERE id_utilisateur = ?";
-            $stmtUser = $this->db->prepare($sqlUser);
-            $stmtUser->execute([$userId]);
-            
-            $this->db->commit();
-            return true;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            return false;
-        }
+        return parent::delete($id);
     }
-
-    // === MÉTHODES PRIVÉES ===
-    
-    private function createUser($data)
+    // compter le nombre des eleves
+    public function count()
     {
-        $columns = implode(',', array_keys($data));
-        $placeholders = implode(',', array_fill(0, count($data), '?'));
-        
-        $sql = "INSERT INTO {$this->userTable} ({$columns}) VALUES ({$placeholders})";
+        return parent::count();
+    }
+    // verifier si un eleve existe
+    public function exists($id)
+    {
+        return $this->find($id) !== null;
+    }
+    // trouver un eleve avec les infos de l'utilisateur
+    public function findWithUser($id){
+        $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur WHERE e.id_eleve = :id";
         $stmt = $this->db->prepare($sql);
-        
-        if ($stmt->execute(array_values($data))) {
-            return $this->db->lastInsertId();
-        }
-        
-        return false;
+        $stmt->execute([':id' => $id]);
+        return $this->createEntity($stmt->fetch(PDO::FETCH_ASSOC));
     }
-
-    private function updateUser($id, $data)
-    {
-        $set = [];
-        foreach (array_keys($data) as $column) {
-            $set[] = "{$column} = ?";
-        }
-        $set = implode(',', $set);
-        
-        $sql = "UPDATE {$this->userTable} SET {$set} WHERE id_utilisateur = ?";
+    // trouver tous les eleves avec les infos de l'utilisateur
+    public function findAllWithUser($columns = ['*']){
+        $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur";
         $stmt = $this->db->prepare($sql);
-        
-        $values = array_values($data);
-        $values[] = $id;
-        
-        return $stmt->execute($values);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $eleves = [];
+        foreach($results as $row){
+            $eleves[] = $this->createEntity($row);
+        }
+        return $eleves;
     }
 
-    private function genererMatricule($id)
-    {
-        $annee = date('Y');
-        $prefixe = 'EL';
-        $numero = str_pad($id, 4, '0', STR_PAD_LEFT);
-        
-        return $prefixe . $annee . $numero;
+    // trouver un eleve par son Email
+    public function findByEmail($email){    
+        $sql = "SELECT u.*, e.* FROM utilisateur u LEFT JOIN eleve e ON u.id_utilisateur = e.id_eleve WHERE u.email = :email";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':email' => $email]);
+        return $this->createEntity($stmt->fetch(PDO::FETCH_ASSOC));
     }
+    // verifier si un email de l'eleve existe
+    public function emailExists($email){
+        $sql = "SELECT COUNT(*) FROM utilisateur WHERE email = :email";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':email' => $email]);
+        return $stmt->fetchColumn() > 0;
+    }
+
+
+
 }
+

@@ -1,9 +1,11 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\Prefet\Dao;
 
-use App\Models\Utilisateur\PrefetEnseignant;
-use App\Config\Model;
+use App\ModuleUtilisateur\Prefet\Models\PrefetEnseignant;
+use App\core\Config\Model;
 use PDO;
+use Exception;
+
 
 class PrefetEnseignantDAO extends Model
 {
@@ -27,52 +29,95 @@ class PrefetEnseignantDAO extends Model
 
     /**
      * Sauvegarder un préfet (création ou mise à jour)
+     */public function save(PrefetEnseignant $prefet)
+{ 
+    try{
+        // 1. Insertion dans utilisateur
+        $stmt = $this->db->prepare("INSERT INTO utilisateur 
+            (nom, prenom, email, mot_de_passe, role, statut, telephone, date_creation) 
+            VALUES 
+            (:nom, :prenom, :email, :mot_de_passe, :role, :statut, :telephone, :date_creation)");
+        
+        $result = $stmt->execute([
+            ':nom' => $prefet->getNom(),
+            ':prenom' => $prefet->getPrenom(),
+            ':email' => $prefet->getEmail(),
+            ':mot_de_passe' => $prefet->getMotDePasse(),
+            ':role' => $prefet->getRole(),
+            ':statut' => $prefet->getStatut(),
+            ':telephone' => $prefet->getTelephone(),
+            ':date_creation' => $prefet->getDateCreation()
+        ]);
+        
+        if (!$result) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Erreur insertion utilisateur: " . $error[2]);
+        }
+        
+        $userId = $this->db->lastInsertId();
+        $prefet->setIdUtilisateur($userId);
+        $prefet->setIdPrefet($userId);
+        
+        // 2. Insertion dans prefet_enseignant
+        $stmt = $this->db->prepare("INSERT INTO prefet_enseignant 
+            (id_prefet, departement, specialite, echelle_traitement) 
+            VALUES 
+            (:id_prefet, :departement, :specialite, :echelle_traitement)");
+        
+        $result2 = $stmt->execute([  // ← VÉRIFIER AUSSI !
+            ':id_prefet' => $userId,
+            ':departement' => $prefet->getDepartement(),
+            ':specialite' => $prefet->getSpecialite(),
+            ':echelle_traitement' => $prefet->getEchelleTraitement()
+        ]);
+        
+        if (!$result2) {
+            $error = $stmt->errorInfo();
+            throw new \Exception("Erreur insertion prefet: " . $error[2]);
+        }
+        
+        return true;
+        
+    } catch (\Exception $e) {
+        error_log("Erreur save PrefetEnseignant: " . $e->getMessage());
+        return false;  // ← Retourne false en cas d'erreur
+    }
+}
+    /**
+     * mettre a jour un préfet
      */
-    public function save(PrefetEnseignant $prefet)
-    {
+    public function updatePrefet(PrefetEnseignant $prefet)
+    {   
+        $id = $prefet->getIdPrefet();
+        if (!$this->find($id)) {
+            throw new \Exception("Préfet avec ID $id non trouvé.");
+        }
+
         try {
-            $this->db->beginTransaction();
+            // Mise à jour de l'utilisateur
+            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
+            $stmt->execute([
+                ':nom' => $prefet->getNom(),
+                ':prenom' => $prefet->getPrenom(),
+                ':email' => $prefet->getEmail(),
+                ':mot_de_passe' => $prefet->getMotDePasse(),
+                ':statut' => $prefet->getStatut(),
+                ':telephone' => $prefet->getTelephone(),
+                ':id_utilisateur' => $prefet->getIdPrefet()
+            ]);
             
-            $data = $prefet->toArrayForDb();
+            // Mise à jour du préfet
+            $stmt = $this->db->prepare("UPDATE prefet_enseignant SET departement = :departement, specialite = :specialite, echelle_traitement = :echelle_traitement WHERE id_prefet = :id_prefet");
+            $stmt->execute([
+                ':departement' => $prefet->getDepartement(),
+                ':specialite' => $prefet->getSpecialite(),
+                ':echelle_traitement' => $prefet->getEchelleTraitement(),
+                ':id_prefet' => $id
+            ]);
             
-            // CAS MISE À JOUR
-            if ($prefet->getIdPrefet()) {
-                // Mettre à jour utilisateur
-                $this->updateUser($prefet->getIdUtilisateur(), $data['user']);
-                
-                // Mettre à jour préfet (utilise update du parent)
-                $this->update($prefet->getIdPrefet(), $data['prefet']);
-                
-                $this->db->commit();
-                return true;
-            }
-            
-            // CAS CRÉATION
-            // 1. Créer l'utilisateur
-            $userId = $this->createUser($data['user']);
-            if (!$userId) {
-                throw new \Exception("Erreur création utilisateur");
-            }
-            
-            // 2. Ajouter l'id_utilisateur
-            $data['prefet']['id_prefet'] = $userId;
-            
-            // 3. Créer le préfet (utilise create du parent)
-            $prefetId = $this->create($data['prefet']);
-            if (!$prefetId) {
-                throw new \Exception("Erreur création préfet");
-            }
-            
-            // 4. Mettre à jour l'objet
-            $prefet->setIdUtilisateur($userId);
-            $prefet->setIdPrefet($userId);
-            
-            $this->db->commit();
             return true;
-            
         } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur save PrefetEnseignant: " . $e->getMessage());
+            error_log("Erreur update PrefetEnseignant: " . $e->getMessage());
             return false;
         }
     }
@@ -136,34 +181,7 @@ class PrefetEnseignantDAO extends Model
      */
     public function delete($id)
     {
-        try {
-            $this->db->beginTransaction();
-            
-            $prefet = $this->find($id);
-            if (!$prefet) {
-                return false;
-            }
-            
-            $userId = $prefet->getIdUtilisateur();
-            
-            // Supprimer préfet (utilise delete du parent)
-            $result = parent::delete($id);
-            
-            // Supprimer utilisateur
-            if ($result) {
-                $sqlUser = "DELETE FROM {$this->userTable} WHERE id_utilisateur = ?";
-                $stmtUser = $this->db->prepare($sqlUser);
-                $result = $stmtUser->execute([$userId]);
-            }
-            
-            $this->db->commit();
-            return $result;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur delete PrefetEnseignant: " . $e->getMessage());
-            return false;
-        }
+        return parent::delete($id);
     }
 
     // === MÉTHODES SPÉCIFIQUES ===

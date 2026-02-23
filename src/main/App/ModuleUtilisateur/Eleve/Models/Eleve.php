@@ -1,6 +1,7 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Eleve\Models;
 
+use App\ModuleUtilisateur\Models\Utilisateur;
 use DateTime;
 use Exception;
 

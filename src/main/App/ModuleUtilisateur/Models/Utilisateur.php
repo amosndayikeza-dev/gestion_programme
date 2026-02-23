@@ -88,12 +88,13 @@ class Utilisateur
 
     public function getRole() { return $this->role; }
     public function setRole( $role) { 
-        $alloewdRoles = [
-            'administrateur','proviseur','censeur','directeur_discipline','eleve',
-            'parent','prefet','chef_classe','president_eleves','comite_parents','secretaire','inspecteur','enseignant',
-            'bibliothecaire','surveillant'
-        ];
-        if(!in_array($role,$alloewdRoles)){
+        $allowedRoles = [
+    'administrateur','proviseur','censeur','directeur_discipline','eleve',
+    'parent','prefet','chef_classe','president_eleves','comite_parents',
+    'secretaire','inspecteur','enseignant','bibliothecaire','surveillant',
+    'prefet_enseignant'  // ← AJOUTE ICI !
+];
+        if(!in_array($role,$allowedRoles)){
             throw new Exception("Le rôle n'est pas valide.");  
         }    
         $this->role = $role;

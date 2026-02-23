@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-use App\Models\Utilisateur\Utilisateur;
+use App\ModuleUtilisateur\Models\Utilisateur;
 use DateTime;
 use DateInterval;
 use PDO;
@@ -14,7 +14,8 @@ use Exception;
 class Enseignant extends Utilisateur 
 {
     private $idEnseignant;
-    private $nomComplet;
+    private $nom;
+    private $prenom;
     private $sexe;
     private $grade;
     private $specialite;
@@ -25,7 +26,8 @@ class Enseignant extends Utilisateur
 
     public function __construct(
         $idEnseignant = null,
-        $nomComplet = null,
+        $nom = null,
+        $prenom = null,
         $sexe = null,
         $grade = null,
         $specialite = null,
@@ -35,7 +37,8 @@ class Enseignant extends Utilisateur
         $dateEmbauche = null
     ) {
         $this->idEnseignant = $idEnseignant;
-        $this->nomComplet = $nomComplet;
+        $this->nom = $nom;
+        $this->prenom = $prenom;
         $this->sexe = $sexe;
         $this->grade = $grade;
         $this->specialite = $specialite;
@@ -47,7 +50,8 @@ class Enseignant extends Utilisateur
 
     // Getters
     public function getIdEnseignant() { return $this->idEnseignant; }
-    public function getNomComplet() { return $this->nomComplet; }
+    public function getNom() { return $this->nom; }
+    public function getPrenom() { return $this->prenom; }
     public function getSexe() { return $this->sexe; }
     public function getGrade() { return $this->grade; }
     public function getSpecialite() { return $this->specialite; }
@@ -58,7 +62,8 @@ class Enseignant extends Utilisateur
 
     // Setters
     public function setIdEnseignant($idEnseignant) { $this->idEnseignant = $idEnseignant; }
-    public function setNomComplet($nomComplet) { $this->nomComplet = $nomComplet; }
+    public function setNom($nom) { $this->nom = $nom; }
+    public function setPrenom($prenom) { $this->prenom = $prenom; }
     public function setSexe($sexe) { $this->sexe = $sexe; }
     public function setGrade($grade) { $this->grade = $grade; }
     public function setSpecialite($specialite) { $this->specialite = $specialite; }
@@ -68,22 +73,10 @@ class Enseignant extends Utilisateur
     public function setDateEmbauche($dateEmbauche) { $this->dateEmbauche = $dateEmbauche; }
 
     // Méthodes utilitaires
-    public function getPrenom(): string {
-        $noms = explode(' ', $this->nomComplet);
-        return end($noms);
-    }
-
-    public function getNom(): string {
-        $noms = explode(' ', $this->nomComplet);
-        return $noms[0] ?? '';
-    }
-
-    public function getNomAffichage(): string {
-        return ucwords(strtolower($this->nomComplet));
-    }
+  
 
     public function getAbreviation(): string {
-        $noms = explode(' ', $this->nomComplet);
+        $noms = explode(' ', $this->nom . ' ' . $this->prenom);
         $abreviation = '';
         
         foreach ($noms as $nom) {
@@ -290,10 +283,9 @@ class Enseignant extends Utilisateur
 
     public function getInformationsPersonnelles(): array {
         return [
-            'nom_complet' => $this->nomComplet,
-            'nom_affichage' => $this->getNomAffichage(),
+            'nom' => $this->nom,
+            //'nom_affichage' => $this->getNomAffichage(),
             'prenom' => $this->getPrenom(),
-            'nom' => $this->getNom(),
             'abreviation' => $this->getAbreviation(),
             'sexe' => $this->sexe,
             'genre' => $this->getGenre(),
@@ -402,7 +394,8 @@ class Enseignant extends Utilisateur
         return array_merge(
             [
                 'id_enseignant' => $this->idEnseignant,
-                'nom_complet' => $this->nomComplet,
+                'nom' => $this->nom,
+                'prenom' => $this->prenom,
                 'sexe' => $this->sexe,
                 'grade' => $this->grade,
                 'specialite' => $this->specialite,
@@ -437,7 +430,12 @@ class Enseignant extends Utilisateur
         }
         
         // Recherche dans le nom
-        if (strpos(strtolower($this->nomComplet), $terme) !== false) {
+        if (strpos(strtolower($this->nom), $terme) !== false) {
+            return true;
+        }
+        
+        // Recherche dans le prénom
+        if (strpos(strtolower($this->prenom), $terme) !== false) {
             return true;
         }
         
@@ -463,7 +461,9 @@ class Enseignant extends Utilisateur
     public function toRapportArray(): array {
         return [
             'ID' => $this->idEnseignant,
-            'Nom Complet' => $this->getNomAffichage(),
+            'Nom' => $this->getNom(),
+            'Prénom' => $this->getPrenom(),
+            'Abréviation' => $this->getAbreviation(),
             'Sexe' => $this->getGenre(),
             'Grade' => $this->getGradeLibelle(),
             'Spécialité' => $this->specialite,

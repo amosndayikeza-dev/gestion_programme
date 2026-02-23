@@ -1,6 +1,7 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Inspcteur\Models;
 
+use App\ModuleUtilisateur\Models\Utilisateur;
 use DateTime;
 
 class Inspecteur extends Utilisateur

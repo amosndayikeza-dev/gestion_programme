@@ -1,9 +1,12 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\Inspecteur\Dao;
 
-use App\Models\Utilisateur\Inspecteur;
-use App\Config\Model;
+use App\ModuleUtilisateur\Models\Utilisateur;
+use App\ModuleUtilisateur\Inspcteur\Models\Inspecteur;
+use App\core\Config\Model;
 use PDO;
+use PDOException;
+
 
 class InspecteurDAO extends Model
 {
@@ -29,377 +32,153 @@ class InspecteurDAO extends Model
      * Sauvegarder un inspecteur (création ou mise à jour)
      */
     public function save(Inspecteur $inspecteur)
-    {
-        try {
-            $this->db->beginTransaction();
-            
-            $data = $inspecteur->toArrayForDb();
-            
-            // CAS MISE À JOUR
-            if ($inspecteur->getIdInspecteur()) {
-                // Mettre à jour utilisateur
-                $this->updateUser($inspecteur->getIdUtilisateur(), $data['user']);
-                
-                // Mettre à jour inspecteur (utilise update du parent)
-                $this->update($inspecteur->getIdInspecteur(), $data['inspecteur']);
-                
-                $this->db->commit();
-                return true;
-            }
-            
-            // CAS CRÉATION
-            // 1. Créer l'utilisateur
-            $userId = $this->createUser($data['user']);
-            if (!$userId) {
-                throw new \Exception("Erreur création utilisateur");
-            }
-            
-            // 2. Ajouter l'id_utilisateur
-            $data['inspecteur']['id_inspecteur'] = $userId;
-            
-            // 3. Créer l'inspecteur (utilise create du parent)
-            $inspecteurId = $this->create($data['inspecteur']);
-            if (!$inspecteurId) {
-                throw new \Exception("Erreur création inspecteur");
-            }
-            
-            // 4. Mettre à jour l'objet
-            $inspecteur->setIdUtilisateur($userId);
-            $inspecteur->setIdInspecteur($userId);
-            
-            $this->db->commit();
-            return true;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur save Inspecteur: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Trouver un inspecteur par ID (avec jointure)
-     */
-    public function find($id)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE i.{$this->primaryKey} = :id";
+{   
+    try{
+        // 1. Insertion dans utilisateur
+        $stmt = $this->db->prepare("INSERT INTO utilisateur 
+            (nom, prenom, email, telephone, mot_de_passe, role, statut, photo_profil, date_creation) 
+            VALUES (:nom, :prenom, :email, :telephone, :mot_de_passe, :role, :statut, :photo_profil, :date_creation)");
         
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row ? $this->createEntity($row) : null;
-    }
-
-    /**
-     * Trouver tous les inspecteurs (avec jointure)
-     */
-    public function all($columns = ['*'])
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                ORDER BY i.niveau_habilitation DESC, u.nom, u.prenom";
-        
-        $stmt = $this->db->query($sql);
-        
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
-        
-        return $inspecteurs;
-    }
-
-    /**
-     * Trouver par email (avec jointure)
-     */
-    public function findByEmail($email)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE u.email = :email";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['email' => $email]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row ? $this->createEntity($row) : null;
-    }
-
-    /**
-     * Supprimer un inspecteur
-     */
-    public function delete($id)
-    {
-        try {
-            $this->db->beginTransaction();
-            
-            $inspecteur = $this->find($id);
-            if (!$inspecteur) {
-                return false;
-            }
-            
-            $userId = $inspecteur->getIdUtilisateur();
-            
-            // Supprimer inspecteur (utilise delete du parent)
-            $result = parent::delete($id);
-            
-            // Supprimer utilisateur
-            if ($result) {
-                $sqlUser = "DELETE FROM {$this->userTable} WHERE id_utilisateur = ?";
-                $stmtUser = $this->db->prepare($sqlUser);
-                $result = $stmtUser->execute([$userId]);
-            }
-            
-            $this->db->commit();
-            return $result;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur delete Inspecteur: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // === MÉTHODES SPÉCIFIQUES ===
-
-    /**
-     * Trouver par zone d'inspection
-     */
-    public function findByZone($zone)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE i.zone_inspection = :zone
-                ORDER BY i.niveau_habilitation DESC, u.nom, u.prenom";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['zone' => $zone]);
-        
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
-        
-        return $inspecteurs;
-    }
-
-    /**
-     * Trouver par niveau d'habilitation
-     */
-    public function findByNiveau($niveau)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE i.niveau_habilitation = :niveau
-                ORDER BY u.nom, u.prenom";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['niveau' => $niveau]);
-        
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
-        
-        return $inspecteurs;
-    }
-
-    /**
-     * Trouver les inspecteurs seniors (niveau 3+)
-     */
-    public function findSeniors()
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE i.niveau_habilitation >= 3
-                ORDER BY i.niveau_habilitation DESC, u.nom, u.prenom";
-        
-        $stmt = $this->db->query($sql);
-        
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
-        
-        return $inspecteurs;
-    }
-
-    /**
-     * Trouver un inspecteur disponible pour une zone
-     */
-    public function findDisponiblePourZone($zone, $niveauRequis = 1)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE (i.zone_inspection = :zone OR i.zone_inspection = 'National')
-                AND i.niveau_habilitation >= :niveau
-                AND u.statut = 'actif'
-                ORDER BY i.niveau_habilitation DESC
-                LIMIT 5";
-        
-        $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'zone' => $zone,
-            'niveau' => $niveauRequis
+            ':nom' => $inspecteur->getNom(),
+            ':prenom' => $inspecteur->getPrenom(),
+            ':email' => $inspecteur->getEmail(),
+            ':telephone' => $inspecteur->getTelephone(),
+            ':mot_de_passe' => $inspecteur->getMotDePasse(),
+            ':role' => $inspecteur->getRole(),
+            ':statut' => $inspecteur->getStatut(),
+            ':photo_profil' => $inspecteur->getPhotoProfil(),
+            ':date_creation' => date('Y-m-d H:i:s')
         ]);
         
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
+        $idUtilisateur = $this->db->lastInsertId();
         
-        return $inspecteurs;
-    }
-
-    /**
-     * Rechercher par nom ou zone
-     */
-    public function search($keyword)
-    {
-        $sql = "SELECT u.*, i.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} i ON u.id_utilisateur = i.id_inspecteur
-                WHERE u.nom LIKE :keyword 
-                   OR u.prenom LIKE :keyword
-                   OR i.zone_inspection LIKE :keyword
-                ORDER BY i.niveau_habilitation DESC, u.nom, u.prenom";
+        // 2. Insertion dans inspecteur (avec la bonne colonne : id_utilisateur)
+        $stmt = $this->db->prepare("INSERT INTO inspecteur 
+            (id_utilisateur, zone_inspection, niveau_habilitation) 
+            VALUES (:id_utilisateur, :zone_inspection, :niveau_habilitation)");
         
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['keyword' => "%{$keyword}%"]);
+        $stmt->execute([
+            ':id_utilisateur' => $idUtilisateur,  // ← La clé étrangère
+            ':zone_inspection' => $inspecteur->getZoneInspection(),
+            ':niveau_habilitation' => $inspecteur->getNiveauHabilitation()
+        ]);
         
-        $inspecteurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
+        // Optionnel : mettre à jour l'objet
+        $inspecteur->setIdUtilisateur($idUtilisateur);
         
-        return $inspecteurs;
-    }
-
-    /**
-     * Compter par zone
-     */
-    public function countByZone()
-    {
-        $sql = "SELECT zone_inspection, COUNT(*) as total 
-                FROM {$this->table} 
-                GROUP BY zone_inspection 
-                ORDER BY total DESC";
+        return true;
         
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Compter par niveau
-     */
-    public function countByNiveau()
-    {
-        $sql = "SELECT niveau_habilitation, COUNT(*) as total 
-                FROM {$this->table} 
-                GROUP BY niveau_habilitation 
-                ORDER BY niveau_habilitation";
-        
-        $stmt = $this->db->query($sql);
-        
-        $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $niveau = new Inspecteur();
-            $result[$niveau->getNiveauLibelle()] = $row['total'];
-        }
-        
-        return $result;
-    }
-
-    /**
-     * Obtenir les statistiques
-     */
-    public function getStatistiques()
-    {
-        $stats = [];
-        
-        // Total
-        $stats['total'] = $this->count();
-        
-        // Par zone
-        $stats['par_zone'] = $this->countByZone();
-        
-        // Par niveau
-        $stats['par_niveau'] = $this->countByNiveau();
-        
-        // Niveau moyen
-        $sql = "SELECT AVG(niveau_habilitation) FROM {$this->table}";
-        $stats['niveau_moyen'] = round($this->db->query($sql)->fetchColumn(), 1);
-        
-        // Répartition géographique
-        $sql = "SELECT zone_inspection, COUNT(*) as total 
-                FROM {$this->table} 
-                WHERE zone_inspection != 'National'
-                GROUP BY zone_inspection";
-        $stats['repartition_regionale'] = $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-        
-        return $stats;
-    }
-
-    /**
-     * Vérifier si email existe déjà
-     */
-    public function emailExists($email, $excludeId = null)
-    {
-        $sql = "SELECT COUNT(*) FROM {$this->userTable} WHERE email = ?";
-        $params = [$email];
-        
-        if ($excludeId) {
-            $sql .= " AND id_utilisateur != ?";
-            $params[] = $excludeId;
-        }
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        
-        return $stmt->fetchColumn() > 0;
-    }
-
-    // === MÉTHODES PRIVÉES ===
-
-    private function createUser($data)
-    {
-        $columns = implode(',', array_keys($data));
-        $placeholders = implode(',', array_fill(0, count($data), '?'));
-        
-        $sql = "INSERT INTO {$this->userTable} ({$columns}) VALUES ({$placeholders})";
-        $stmt = $this->db->prepare($sql);
-        
-        if ($stmt->execute(array_values($data))) {
-            return $this->db->lastInsertId();
-        }
-        
-        return false;
-    }
-
-    private function updateUser($id, $data)
-    {
-        $set = [];
-        foreach (array_keys($data) as $column) {
-            $set[] = "{$column} = ?";
-        }
-        $set = implode(',', $set);
-        
-        $sql = "UPDATE {$this->userTable} SET {$set} WHERE id_utilisateur = ?";
-        $stmt = $this->db->prepare($sql);
-        
-        $values = array_values($data);
-        $values[] = $id;
-        
-        return $stmt->execute($values);
+    } catch (PDOException $e) {
+        throw new \Exception("Erreur : " . $e->getMessage());
     }
 }
+    /**
+     * mettre a jour l'inspecteur
+     */
+    public function updateInspecteur(Inspecteur $inspecteur)
+    {
+        try{
+            // Vérifier si l'inspecteur existe
+            $id = $inspecteur->getIdInspecteur();
+            if (!$this->find($id)) {
+                throw new \Exception("Inspecteur with ID $id not found.");
+            }
+            
+            // Mettre à jour l'utilisateur
+            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, telephone = :telephone, mot_de_passe = :mot_de_passe, statut = :statut, photo_profil = :photo_profil WHERE id_utilisateur = :id_utilisateur");
+            $stmt->execute([
+                ':nom' => $inspecteur->getNom(),
+                ':prenom' => $inspecteur->getPrenom(),
+                ':email' => $inspecteur->getEmail(),
+                ':telephone' => $inspecteur->getTelephone(),
+                ':mot_de_passe' => $inspecteur->getMotDePasse(),
+                ':statut' => $inspecteur->getStatut(),
+                ':photo_profil' => $inspecteur->getPhotoProfil(),
+                ':id_utilisateur' => $inspecteur->getIdUtilisateur()
+            ]);
+
+            // mettre a jours l'inspecteur
+            $stmt = $this->db->prepare("UPDATE inspecteur SET zone_inspection = :zone_inspection, niveau_habilitation = :niveau_habilitation WHERE id_inspecteur = :id_inspecteur");
+            $stmt->execute([
+                ':zone_inspection' => $inspecteur->getZoneInspection(),
+                ':niveau_habilitation' => $inspecteur->getNiveauHabilitation(),
+                ':id_inspecteur' => $id
+            ]);
+            return true;
+
+        }catch(PDOException $e){
+            throw new \Exception("Erreur lors de la mise à jour de l'inspecteur : " . $e->getMessage());
+        }
+    }
+
+    // trouver l'inspectur par son ID
+    public function find($id)
+    {
+       $result = parent::find($id);
+       return $result ? $this->createEntity($result) : null;
+    
+    }
+
+    //recuperer tout les inspecteurs
+    public function all($columns = ['*'])
+    {
+        $result =  parent::all($columns);
+        $inspecteurs = [];
+        foreach ($result as $row) {
+            $inspecteurs[] = $this->createEntity($row);
+        }
+        return $inspecteurs;
+    }
+    // supprimer un inspecteur
+    public function delete($id)
+    {
+        return parent::delete($id);
+    }
+    // compter le nombre des inspecteurs
+    public function count()
+    {
+        return parent::count();
+    }
+
+     // ============================================
+     // verifier si un inspecteur existe par son email
+     public function existsByEmail($email){
+        return $this->find($email, "email") !== null;
+     }
+
+     // afficher un innspecteur avec les infos de l'utilisateur
+     public function findWithUserInfo($id)
+     {
+         $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_utilisateur WHERE i.id_inspecteur = :id";
+         $stmt = $this->db->prepare($sql);
+         $stmt->execute([':id' => $id]);
+         $result = $stmt->fetch();
+         return $result ? $this->createEntity($result) : null;
+     }
+
+     // afficher tout les inspecteurs avec les infos de l'utilisateur
+     public function findAllWithUserInfo()
+     {
+        $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_utilisateur";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $inspecteurs = [];
+        foreach ($results as $row) {
+            $inspecteurs[] = $this->createEntity($row);
+        }
+        return $inspecteurs;
+
+     }
+     // verifier si l'email existe 
+     public function emailExists($email)
+     {
+         $sql = "SELECT COUNT(*) FROM utilisateur WHERE email = :email";
+         $stmt = $this->db->prepare($sql);
+         $stmt->execute([':email' => $email]);
+         return $stmt->fetchColumn() > 0;
+     }
+}
+
+?>

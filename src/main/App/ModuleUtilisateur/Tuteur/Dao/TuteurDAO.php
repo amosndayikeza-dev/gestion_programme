@@ -1,9 +1,11 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\Tuteur\Dao;
 
-use App\Models\Utilisateur\Tuteur;
-use App\Config\Model;
+use App\ModuleUtilisateur\Tuteur\Models\Tuteur;
+use App\core\Config\Model;
 use PDO;
+use PDOException;
+
 
 class TuteurDAO extends Model
 {
@@ -27,70 +29,74 @@ class TuteurDAO extends Model
     public function save(Tuteur $tuteur)
     {
         try {
-            $this->db->beginTransaction();
+            // Insertion dans utilisateur
+            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, statut, telephone) VALUES (:nom, :prenom, :email, :mot_de_passe, :statut, :telephone)");
+            $stmt->execute([
+                ':nom' => $tuteur->getNom(),
+                ':prenom' => $tuteur->getPrenom(),
+                ':email' => $tuteur->getEmail(),
+                ':mot_de_passe' => $tuteur->getMotDePasse(),
+                ':statut' => $tuteur->getStatut(),
+                ':telephone' => $tuteur->getTelephone()
+            ]);
             
-            // Préparer les données
-            $userData = [
-                'nom' => $tuteur->getNom(),
-                'prenom' => $tuteur->getPrenom(),
-                'email' => $tuteur->getEmail(),
-                'telephone' => $tuteur->getTelephone(),
-                'mot_de_passe' => $tuteur->getMotDePasse(),
-                'role' => 'parent',
-                'statut' => $tuteur->getStatut() ?? 'actif',
-                'photo_profil' => $tuteur->getPhotoProfil(),
-                'date_creation' => $tuteur->getDateCreation() ?? date('Y-m-d H:i:s')
-            ];
-            
-            $tuteurData = [
-                'profession' => $tuteur->getProfession(),
-                'adresse' => $tuteur->getAdresse(),
-                'lien_parental' => $tuteur->getLienParental(),
-                'piece_identite' => $tuteur->getPieceIdentite()
-            ];
-            
-            // CAS MISE À JOUR
-            if ($tuteur->getIdTuteur()) {
-                // Mettre à jour utilisateur (requête manuelle car pas dans Model)
-                $this->updateUser($tuteur->getIdUtilisateur(), $userData);
-                
-                // Mettre à jour tuteur (utilise la méthode update du parent)
-                $this->update($tuteur->getIdTuteur(), $tuteurData);
-                
-                $this->db->commit();
-                return true;
-            }
-            
-            // CAS CRÉATION
-            // 1. Créer l'utilisateur d'abord
-            $userId = $this->createUser($userData);
-            if (!$userId) {
-                throw new \Exception("Erreur création utilisateur");
-            }
-            
-            // 2. Ajouter l'id_utilisateur aux données tuteur
-            $tuteurData['id_tuteur'] = $userId;
-            
-            // 3. Créer le tuteur (utilise la méthode create du parent)
-            $tuteurId = $this->create($tuteurData);
-            if (!$tuteurId) {
-                throw new \Exception("Erreur création tuteur");
-            }
-            
-            // 4. Mettre à jour l'objet avec les IDs
+            $userId = $this->db->lastInsertId();
             $tuteur->setIdUtilisateur($userId);
             $tuteur->setIdTuteur($userId);
             
+            // Insertion dans tuteur
+            $stmt = $this->db->prepare("INSERT INTO tuteur(id_tuteur, profession, adresse, lien_parental, piece_identite) VALUES (:id_tuteur, :profession, :adresse, :lien_parental, :piece_identite)");
+            $stmt->execute([
+                ':id_tuteur' => $userId,
+                ':profession' => $tuteur->getProfession(),
+                ':adresse' => $tuteur->getAdresse(),
+                ':lien_parental' => $tuteur->getLienParental(),
+                ':piece_identite' => $tuteur->getPieceIdentite()
+            ]);
+            
             $this->db->commit();
             return true;
+
             
-        } catch (\Exception $e) {
+        }catch(PDOException $e){
             $this->db->rollBack();
-            error_log("Erreur save Tuteur: " . $e->getMessage());
-            return false;
+            die("Erreur lors de la sauvegarde du tuteur : " . $e->getMessage());
         }
     }
     
+    /**
+     * Modifier un tuteur
+     */
+    public function updateTuteur(Tuteur $tuteur)
+    {   // recuperatio de l'ID du tuteur pour la mise à jour de l'utilisateur
+        $id = $tuteur->getIdTuteur();
+        if(!$this->find($id)){
+            throw new \Exception("Tuteur with ID $id not found.");
+        }
+
+        $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
+        $stmt->execute([
+            ':nom' => $tuteur->getNom(),
+            ':prenom' => $tuteur->getPrenom(),
+            ':email' => $tuteur->getEmail(),
+            ':mot_de_passe' => $tuteur->getMotDePasse(),
+            ':statut' => $tuteur->getStatut(),
+            ':telephone' => $tuteur->getTelephone(),
+            ':id_utilisateur' => $tuteur->getIdUtilisateur()
+        ]); 
+
+        // Mise à jour de tuteur
+        $stmt = $this->db->prepare("UPDATE tuteur SET profession = :profession, adresse = :adresse, lien_parental = :lien_parental, piece_identite = :piece_identite WHERE id_tuteur = :id_tuteur");
+        $stmt->execute([    
+            ':profession' => $tuteur->getProfession(),
+            ':adresse' => $tuteur->getAdresse(),
+            ':lien_parental' => $tuteur->getLienParental(),
+            ':piece_identite' => $tuteur->getPieceIdentite(),
+            ':id_tuteur' => $id
+        ]);
+        return true;
+
+    }
     /**
      * Trouver un tuteur par son ID (avec jointure)
      */

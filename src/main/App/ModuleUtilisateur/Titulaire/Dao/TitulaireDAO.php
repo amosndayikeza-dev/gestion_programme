@@ -1,15 +1,17 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\Titulaire\Dao;
 
-use App\Models\Utilisateur\Tuteur;
-use App\Config\Model;
+use App\ModuleUtilisateur\Models\Utilisateur;
+use App\ModuleUtilisateur\Titulaire\Models\Titulaire;
+use App\core\Config\Model;
 use PDO;
+use PDOException;
 
-class TuteurDAO extends Model
+class TitulaireDAO extends Model
 {
     // Propriétés spécifiques au DAO Tuteur
-    protected $table = "tuteur";           // Table spécifique
-    protected $primaryKey = "id_tuteur";    // Clé primaire spécifique
+    protected $table = "titulaire";           // Table spécifique
+    protected $primaryKey = "id_titulaire";    // Clé primaire spécifique
     private $userTable = "utilisateur";     // Table parent
     
     /**
@@ -17,88 +19,89 @@ class TuteurDAO extends Model
      */
     public function createEntity($row)
     {
-        $tuteur = new Tuteur();
-        return $tuteur->hydrate($row);
+        $titulaire = new Titulaire();
+        return $titulaire->hydrate($row);
     }
     
     /**
-     * Sauvegarder un tuteur (création ou mise à jour)
+     * Sauvegarder un titulaire (création ou mise à jour)
      */
-    public function save(Tuteur $tuteur)
-    {
-        try {
-            $this->db->beginTransaction();
+    
+    public function save(Titulaire $titulaire){
+        try{
+            //insertion utilisateur
+            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, statut, telephone) VALUES (:nom, :prenom, :email, :mot_de_passe, :statut, :telephone)");
+            $stmt->execute([
+                ':nom' => $titulaire->getNom(),
+                ':prenom' => $titulaire->getPrenom(),
+                ':email' => $titulaire->getEmail(),
+                ':mot_de_passe' => $titulaire->getMotDePasse(),
+                ':statut' => $titulaire->getStatut(),
+                ':telephone' => $titulaire->getTelephone()
+            ]);
+            // Récupération de l'ID utilisateur généré
+            $idUtilisateur = $this->db->lastInsertId();
+            // Mise à jour de l'objet Titulaire avec l'ID utilisateur
+            $titulaire->setIdUtilisateur($idUtilisateur);
             
-            // Préparer les données
-            $userData = [
-                'nom' => $tuteur->getNom(),
-                'prenom' => $tuteur->getPrenom(),
-                'email' => $tuteur->getEmail(),
-                'telephone' => $tuteur->getTelephone(),
-                'mot_de_passe' => $tuteur->getMotDePasse(),
-                'role' => 'parent',
-                'statut' => $tuteur->getStatut() ?? 'actif',
-                'photo_profil' => $tuteur->getPhotoProfil(),
-                'date_creation' => $tuteur->getDateCreation() ?? date('Y-m-d H:i:s')
-            ];
-            
-            $tuteurData = [
-                'profession' => $tuteur->getProfession(),
-                'adresse' => $tuteur->getAdresse(),
-                'lien_parental' => $tuteur->getLienParental(),
-                'piece_identite' => $tuteur->getPieceIdentite()
-            ];
-            
-            // CAS MISE À JOUR
-            if ($tuteur->getIdTuteur()) {
-                // Mettre à jour utilisateur (requête manuelle car pas dans Model)
-                $this->updateUser($tuteur->getIdUtilisateur(), $userData);
-                
-                // Mettre à jour tuteur (utilise la méthode update du parent)
-                $this->update($tuteur->getIdTuteur(), $tuteurData);
-                
-                $this->db->commit();
-                return true;
-            }
-            
-            // CAS CRÉATION
-            // 1. Créer l'utilisateur d'abord
-            $userId = $this->createUser($userData);
-            if (!$userId) {
-                throw new \Exception("Erreur création utilisateur");
-            }
-            
-            // 2. Ajouter l'id_utilisateur aux données tuteur
-            $tuteurData['id_tuteur'] = $userId;
-            
-            // 3. Créer le tuteur (utilise la méthode create du parent)
-            $tuteurId = $this->create($tuteurData);
-            if (!$tuteurId) {
-                throw new \Exception("Erreur création tuteur");
-            }
-            
-            // 4. Mettre à jour l'objet avec les IDs
-            $tuteur->setIdUtilisateur($userId);
-            $tuteur->setIdTuteur($userId);
-            
-            $this->db->commit();
+            // Insertion dans la table titulaire
+            $stmt = $this->db->prepare("INSERT INTO titulaire(id_utilisateur, matiere_principale, volume_horaire, date_titularisation) VALUES (:id_utilisateur, :matiere_principale, :volume_horaire, :date_titularisation)");
+            $stmt->execute([
+                ":id_utilisateur" => $titulaire->getIdUtilisateur(),
+                ":matiere_principale" => $titulaire->getMatierePrincipale(),
+                ":volume_horaire" => $titulaire->getVolumeHoraire(),
+                ":date_titularisation" => $titulaire->getDateTitularisation()
+            ]);
             return true;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur save Tuteur: " . $e->getMessage());
-            return false;
+        }catch(PDOException $e){
+            // En cas d'erreur, on peut faire un rollback ou gérer l'exception
+            die("Erreur lors de la sauvegarde du titulaire : " . $e->getMessage());
         }
     }
-    
     /**
-     * Trouver un tuteur par son ID (avec jointure)
+     * Modifier un titulaire (mise à jour des deux tables)
+     */
+    public function updateTitulaire(Titulaire $titulaire){
+        try{
+            // verifier si l'ID de l'utilisateur existe
+            $id = $titulaire->getIdTitulaire();
+            if(!$this->find($id)){
+                throw new \Exception("Titulaire with ID $id not found.");
+            }
+
+            // mise a jours de l'utilisateur
+            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
+            $stmt->execute([
+                ':nom' => $titulaire->getNom(),
+                ':prenom' => $titulaire->getPrenom(),
+                ':email' => $titulaire->getEmail(),
+                ':mot_de_passe' => $titulaire->getMotDePasse(),
+                ':statut' => $titulaire->getStatut(),
+                ':telephone' => $titulaire->getTelephone(),
+                ':id_utilisateur' => $titulaire->getIdUtilisateur()
+            ]);
+            // mise a jours du titulaire
+            $stmt = $this->db->prepare("UPDATE titulaire SET matiere_principale = :matiere_principale, volume_horaire = :volume_horaire, date_titularisation = :date_titularisation WHERE id_titulaire = :id_titulaire");
+            $stmt->execute([
+                ":matiere_principale" => $titulaire->getMatierePrincipale(),
+                ":volume_horaire" => $titulaire->getVolumeHoraire(),
+                ":date_titularisation" => $titulaire->getDateTitularisation(),
+                ":id_titulaire" => $id
+            ]);
+            return true;
+        }catch (\Exception $e) {
+            die("Erreur: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Trouver un titulaire par son ID (avec jointure)
      */
     public function find($id)
     {
         $sql = "SELECT u.*, t.* 
                 FROM {$this->userTable} u
-                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_tuteur
+                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_titulaire
                 WHERE t.{$this->primaryKey} = :id";
         
         $stmt = $this->db->prepare($sql);
@@ -259,22 +262,22 @@ class TuteurDAO extends Model
     // === MÉTHODES PRIVÉES POUR LA TABLE UTILISATEUR ===
     
     /**
-     * Créer un utilisateur
+     * trouver un utilisateur par son ID
      */
-    private function createUser($data)
+    public function findWithUser($id)
     {
-        $columns = implode(',', array_keys($data));
-        $placeholders = implode(',', array_fill(0, count($data), '?'));
+        $sql = "SELECT u.*, t.* 
+                FROM {$this->userTable} u
+                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_titulaire
+                WHERE t.{$this->primaryKey} = :id";
         
-        $sql = "INSERT INTO {$this->userTable} ({$columns}) VALUES ({$placeholders})";
         $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($stmt->execute(array_values($data))) {
-            return $this->db->lastInsertId();
-        }
-        
-        return false;
+        return $row ? $this->createEntity($row) : null;
     }
+   
     
     /**
      * Mettre à jour un utilisateur

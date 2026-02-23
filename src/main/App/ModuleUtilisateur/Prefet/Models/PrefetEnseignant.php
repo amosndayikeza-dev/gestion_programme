@@ -1,5 +1,7 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Prefet\Models;
+
+use App\ModuleUtilisateur\Models\Utilisateur;
 
 use DateTime;
 

@@ -1,7 +1,12 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Tuteur\Models;
+
+use App\ModuleUtilisateur\Models\Utilisateur;
 
 use DateTime;
+use PDO;
+use PDOException;
+use Exception;
 
 class Tuteur extends Utilisateur
 {
@@ -134,7 +139,7 @@ class Tuteur extends Utilisateur
     /**
      * Vérifier si le tuteur a des enfants (via DAO)
      */
-    public function aEnfants(EleveDAO $eleveDAO): bool
+    public function aEnfants( $eleveDAO): bool
     {
         return count($eleveDAO->findByTuteur($this->idTuteur)) > 0;
     }
@@ -142,7 +147,7 @@ class Tuteur extends Utilisateur
     /**
      * Obtenir le nombre d'enfants
      */
-    public function getNombreEnfants(EleveDAO $eleveDAO): int
+    public function getNombreEnfants( $eleveDAO): int
     {
         return count($eleveDAO->findByTuteur($this->idTuteur));
     }

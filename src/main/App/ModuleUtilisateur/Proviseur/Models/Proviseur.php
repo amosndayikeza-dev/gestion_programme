@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Proviseur\Models;
 use DateTime;
 use DateInterval;
 use PDO;
@@ -10,39 +10,45 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-use App\Models\Utilisateur\utilisateur;
-use App\Models\Utilisateur\RoleEnum;
+use App\ModuleUtilisateur\Models\Utilisateur;
+use App\ModuleUtilisateur\Models\RoleEnum;
 
-//require_once __DIR__ . '/utilisateur.php';
-//require_once __DIR__ . '/RoleEnum.php';
 
 class Proviseur extends Utilisateur
 {
     private $etablissement;
     private $bureau;
     private $telephonePro;
-    private $dateDebutMandat;
+    //private $dureeMandat;
+    private $idProviseur;
+    private $dureeMandat ; // Durée standard du mandat en années
 
     public function __construct(
-        $idUtilisateur,
-        $nom,
-        $prenom,
-        $email,
-        $motDePasse,
-        $role = RoleEnum::PROVISEUR,
-        $dateCreation,
+        $idProviseur = null,
+        $idUtilisateur = NULL,
+        $nom = NULL,
+        $prenom = NULL,
+        $email = NULL,
+        $motDePasse = NULL,
+        $role = RoleEnum::PROVISEUR ,
+        $dateCreation = NULL,
         $etablissement = null,
         $bureau = null,
         $telephonePro = null,
-        $dateDebutMandat = null,
-        $photoProfil = null
+        $dureeMandat = null,
+        $photoProfil = null,
+        //$dureeMandat = null
+
     ) {
         parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->etablissement = $etablissement;
         $this->bureau = $bureau;
         $this->telephonePro = $telephonePro;
-        $this->dateDebutMandat = $dateDebutMandat;
+        $this->dureeMandat = $dureeMandat;
     }
+
+    public function getIdProviseur() { return $this->idProviseur; } 
+    public function setIdProviseur($id) { $this->idProviseur = $id; }
 
     public function getEtablissement() { return $this->etablissement; }
     public function setEtablissement($etablissement) { $this->etablissement = $etablissement; }
@@ -53,8 +59,8 @@ class Proviseur extends Utilisateur
     public function getTelephonePro() { return $this->telephonePro; }
     public function setTelephonePro($telephone) { $this->telephonePro = $telephone; }
 
-    public function getDateDebutMandat() { return $this->dateDebutMandat; }
-    public function setDateDebutMandat($date) { $this->dateDebutMandat = $date; }
+    public function getdureeMandat() { return $this->dureeMandat; }
+    public function setdureeMandat($date) { $this->dureeMandat = $date; }
 
     public function peutGererPersonnel(): bool {
         return true;

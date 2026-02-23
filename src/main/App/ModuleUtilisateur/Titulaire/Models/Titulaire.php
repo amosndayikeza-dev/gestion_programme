@@ -1,8 +1,8 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Titulaire\Models;
 
 use DateTime;
-
+use App\ModuleUtilisateur\Models\Utilisateur;
 class Titulaire extends Utilisateur
 {
     // === ATTRIBUTS SPÉCIFIQUES (table titulaire) ===
