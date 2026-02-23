@@ -1,5 +1,5 @@
 <?php
-namespace App\Config;
+namespace App\core\Config;
 
 abstract class Model{
     protected $db;//database connection
@@ -42,25 +42,6 @@ abstract class Model{
     
     $stmt->execute();
     return $this->db->lastInsertId();
-}
-
-   public function update($id, array $data)
-{
-    $sets = [];
-    foreach (array_keys($data) as $key) {
-        $sets[] = "{$key} = :{$key}";
-    }
-    $sets = implode(', ', $sets);
-    
-    $sql = "UPDATE {$this->table} SET {$sets} WHERE {$this->primaryKey} = :id";
-    $stmt = $this->db->prepare($sql);
-    
-    foreach ($data as $key => $value) {
-        $stmt->bindValue(":{$key}", $value);
-    }
-    $stmt->bindValue(":id", $id);
-    
-    return $stmt->execute();
 }
 
     public function delete($id){

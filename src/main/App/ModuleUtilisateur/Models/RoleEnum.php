@@ -1,5 +1,5 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\Models;
 use DateTime;
 use DateInterval;
 use PDO;

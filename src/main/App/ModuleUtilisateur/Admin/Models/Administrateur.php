@@ -1,7 +1,7 @@
 <?php
-namespace App\Models\Admin;
+namespace App\ModuleUtilisateur\Models\Admin;
 
-use App\Models\Utilisateur\Utilisateur;
+use App\ModuleUtilisateur\Models\Utilisateur;
 
 class Administrateur extends Utilisateur
 {
@@ -36,7 +36,6 @@ class Administrateur extends Utilisateur
         $photoProfil = null,
         $tokenReset = null,
         $dateExpirationToken = null,
-        $estSuperAdmin = false,          // ✅ Commun à tous, géré par parent
         
         // === PARAMÈTRES SPÉCIFIQUES ADMIN (SA TABLE À LUI) ===
         $idAdministrateur = null,
@@ -55,22 +54,21 @@ class Administrateur extends Utilisateur
     ) {
         // === 1. APPEL DU CONSTRUCTEUR PARENT (TOUS LES PARAMÈTRES) ===
         parent::__construct(
-            $idUtilisateur,
-            $nom,
-            $prenom,
-            $email,
-            $motDePasse,
-            $role,              // 'administrateur' (forcé ci-dessus)
-            $statut,
-            $telephone,
-            $dateCreation,
-            $derniereConnexion,
-            $photoProfil,
-            $tokenReset,
-            $dateExpirationToken,
-            $estSuperAdmin
-        );
-        
+        $idUtilisateur,
+        $nom,
+        $prenom,
+        $email,
+        $motDePasse,
+        $role,
+        $statut,
+        $telephone,
+        $dateCreation,
+        $derniereConnexion,
+        $photoProfil,
+        $tokenReset,
+        $dateExpirationToken  // ← PLUS DE VIRGULE ICI !
+    );
+            
         // === 2. INITIALISATION DES PROPRIÉTÉS SPÉCIFIQUES ADMIN ===
         $this->idAdministrateur = $idAdministrateur ?? $idUtilisateur;
         $this->niveauAcces = $niveauAcces;

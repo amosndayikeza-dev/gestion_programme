@@ -1,5 +1,6 @@
 <?php
-namespace App\Models\Utilisateur;
+namespace App\ModuleUtilisateur\DirecteurDiscipline\Models;
+use App\ModuleUtilisateur\Models\Utilisateur;
 
 class DirecteurDiscipline extends Utilisateur
 {

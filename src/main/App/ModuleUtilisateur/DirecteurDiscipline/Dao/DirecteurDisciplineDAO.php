@@ -1,9 +1,10 @@
 <?php
-namespace App\Dao\Utilisateur;
+namespace App\ModuleUtilisateur\DirecteurDiscipline\Dao;
 
-use App\Models\Utilisateur\DirecteurDiscipline;
-use App\config\Model;
+use App\ModuleUtilisateur\DirecteurDiscipline\Models\DirecteurDiscipline;
+use App\core\config\Model;
 use PDO;
+use PDOException;
 
 class DirecteurDisciplineDAO extends Model
 {
@@ -33,116 +34,185 @@ class DirecteurDisciplineDAO extends Model
     public function save(DirecteurDiscipline $directeur)
 {
     try {
-        $this->db->beginTransaction();
-        echo "🔍 Transaction démarrée\n";
+        // Insertion utilisateur
+        $stmt = $this->db->prepare("INSERT INTO utilisateur 
+            (nom, prenom, email, mot_de_passe, role, statut, date_creation) 
+            VALUES (?, ?, ?, ?, ?, ?, NOW())");
         
-        // Données utilisateur
-        $userData = [
-            'nom' => $directeur->getNom(),
-            'prenom' => $directeur->getPrenom(),
-            'email' => $directeur->getEmail(),
-            'telephone' => $directeur->getTelephone(),
-            'mot_de_passe' => $directeur->getMotDePasse(),
-            'role' => 'directeur_discipline',
-            'statut' => $directeur->getStatut(),
-            'photo_profil' => $directeur->getPhotoProfil()
-        ];
-        echo "📦 Données utilisateur préparées\n";
+        $stmt->execute([
+            $directeur->getNom(),
+            $directeur->getPrenom(),
+            $directeur->getEmail(),
+            $directeur->getMotDePasse(),
+            $directeur->getRole(),
+            $directeur->getStatut()
+        ]);
         
-        // Données spécifiques
-        $directeurData = [
-            'bureau' => $directeur->getBureau(),
-            'telephone_pro' => $directeur->getTelephonePro(),
-            'plages_disponibilite' => $directeur->getPlagesDisponibilite(),
-            'date_debut' => $directeur->getDateDebut(),
-            'date_fin' => $directeur->getDateFin()
-        ];
-        echo "📦 Données directeur préparées\n";
-
-        // Cas création
-        echo "   Création utilisateur...\n";
-        $userId = $this->createUser($userData);
-        if (!$userId) {
-            throw new \Exception("Erreur création utilisateur");
-        }
-        echo "   ✅ Utilisateur créé ID: $userId\n";
+        $id = $this->db->lastInsertId();
+        $directeur->setIdUtilisateur($id);
+        $directeur->setIdDirecteur($id);
         
-        $directeurData['id_directeur'] = $userId;
+        // Insertion directeur
+        $stmt = $this->db->prepare("INSERT INTO directeur_discipline 
+            (id_directeur, bureau, telephone_pro) 
+            VALUES (?, ?, ?)");
         
-        echo "   Création directeur...\n";
-        $directeurId = $this->create($directeurData);
-        if (!$directeurId) {
-            throw new \Exception("Erreur création directeur");
-        }
-        echo "   ✅ Directeur créé ID: $directeurId\n";
+        $stmt->execute([
+            $id,
+            $directeur->getBureau(),
+            $directeur->getTelephonePro()
+        ]);
         
-        $directeur->setIdUtilisateur($userId);
-        $directeur->setIdDirecteur($userId);
-        
-        $this->db->commit();
-        echo "✅ COMMIT réussi\n";
         return true;
         
-    } catch (\Exception $e) {
-        $this->db->rollBack();
-        echo "❌ EXCEPTION: " . $e->getMessage() . "\n";
-        return false;
+    } catch (PDOException $e) {
+        die("Erreur: " . $e->getMessage());
     }
 }
+    /**
+     * METTRE À JOUR un directeur existant
+     */
+    public function update(DirecteurDiscipline $directeur)
+    {
+        try {
+            $id = $directeur->getIdUtilisateur();
+            
+            if (!$id) {
+                throw new \Exception("ID utilisateur manquant pour la mise à jour");
+            }
+            
+            // 1. Mettre à jour la table utilisateur
+            $stmt = $this->db->prepare("UPDATE utilisateur SET
+                nom = ?,
+                prenom = ?,
+                email = ?,
+                mot_de_passe = ?,
+                statut = ?
+                WHERE id_utilisateur = ?");
+            
+            $stmt->execute([
+                $directeur->getNom(),
+                $directeur->getPrenom(),
+                $directeur->getEmail(),
+                $directeur->getMotDePasse(),
+                $directeur->getStatut(),
+                $id
+            ]);
+            
+            // 2. Mettre à jour la table directeur_discipline
+            $stmt = $this->db->prepare("UPDATE directeur_discipline SET
+                bureau = ?,
+                telephone_pro = ?,
+                plages_disponibilite = ?,
+                date_debut = ?,
+                date_fin = ?
+                WHERE id_directeur = ?");
+            
+            $stmt->execute([
+                $directeur->getBureau(),
+                $directeur->getTelephonePro(),
+                $directeur->getPlagesDisponibilite(),
+                $directeur->getDateDebut(),
+                $directeur->getDateFin(),
+                $id
+            ]);
+            
+            return true;
+            
+        } catch (PDOException $e) {
+            die("Erreur update: " . $e->getMessage());
+        }
+    }
+
+     // ============================================
+    // MÉTHODES SIMPLES (via le parent)
+    // ============================================
+    
     /**
      * Trouver un directeur par son ID
      */
     public function find($id)
     {
-        $sql = "SELECT u.*, d.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} d ON u.id_utilisateur = d.id_directeur
-                WHERE d.{$this->primaryKey} = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $row ? $this->createEntity($row) : null;
+        $resultat = parent::find($id);
+        return $resultat ? $this->createEntity($resultat) : null;
     }
 
     /**
-     * Trouver tous les directeurs
+     * Récupérer tous les directeurs
      */
-    public function findAll()
+    public function all($columns = ['*'])
     {
-        $sql = "SELECT u.*, d.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} d ON u.id_utilisateur = d.id_directeur
-                ORDER BY u.nom, u.prenom";
-        
-        $stmt = $this->db->query($sql);
-        
+        $resultats = parent::all($columns);
         $directeurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $directeurs[] = $this->createEntity($row);
+        
+        foreach ($resultats as $data) {
+            $directeurs[] = $this->createEntity($data);
         }
         
         return $directeurs;
     }
 
     /**
-     * Trouver les directeurs actuellement en fonction
+     * Supprimer un directeur par ID
      */
-    public function findEnFonction()
+    public function delete($id)
+    {
+        return parent::delete($id);
+    }
+
+    /**
+     * Compter le nombre de directeurs
+     */
+    public function count()
+    {
+        return parent::count();
+    }
+
+    /**
+     * Vérifier si un directeur existe
+     */
+    public function exists($id)
+    {
+        return $this->find($id) !== null;
+    }
+
+    // ============================================
+    // MÉTHODES DE RECHERCHE SPÉCIFIQUES
+    // ============================================
+    
+    /**
+     * Trouver un directeur avec ses infos utilisateur (jointure)
+     */
+    public function findWithUser($id)
     {
         $sql = "SELECT u.*, d.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} d ON u.id_utilisateur = d.id_directeur
-                WHERE (d.date_fin IS NULL OR d.date_fin >= CURDATE())
-                AND u.statut = 'actif'
+                FROM utilisateur u
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE u.id_utilisateur = ?";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        $data = $stmt->fetch();
+        
+        return $data ? $this->createEntity($data) : null;
+    }
+
+    /**
+     * Trouver tous les directeurs avec leurs infos utilisateur
+     */
+    public function findAllWithUser()
+    {
+        $sql = "SELECT u.*, d.* 
+                FROM utilisateur u
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE u.role = 'directeur_discipline'
                 ORDER BY u.nom, u.prenom";
         
         $stmt = $this->db->query($sql);
-        
         $directeurs = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $directeurs[] = $this->createEntity($row);
+        
+        while ($data = $stmt->fetch()) {
+            $directeurs[] = $this->createEntity($data);
         }
         
         return $directeurs;
@@ -154,144 +224,109 @@ class DirecteurDisciplineDAO extends Model
     public function findByEmail($email)
     {
         $sql = "SELECT u.*, d.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} d ON u.id_utilisateur = d.id_directeur
-                WHERE u.email = :email";
+                FROM utilisateur u
+                LEFT JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE u.email = ?";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['email' => $email]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([$email]);
+        $data = $stmt->fetch();
         
-        return $row ? $this->createEntity($row) : null;
+        return $data ? $this->createEntity($data) : null;
     }
 
     /**
-     * Rechercher des directeurs par critères
+     * Trouver les directeurs par bureau
      */
-    public function search($criteria = [])
-    {   // Construire la requête de recherche dynamiquement en fonction des critères fournis
+    public function findByBureau($bureau)
+    {
         $sql = "SELECT u.*, d.* 
-                FROM {$this->userTable} u
-                INNER JOIN {$this->table} d ON u.id_utilisateur = d.id_directeur
-                WHERE 1=1";
-        
-        $params = [];
-        // Ajouter des conditions en fonction des critères
-        if (!empty($criteria['nom'])) {
-            $sql .= " AND u.nom LIKE :nom";
-            $params['nom'] = '%' . $criteria['nom'] . '%';
-        }
-        
-        // Ajouter des conditions en fonction des critères
-        if (!empty($criteria['bureau'])) {
-            $sql .= " AND d.bureau LIKE :bureau";
-            $params['bureau'] = '%' . $criteria['bureau'] . '%';
-        }
-        
-        if (!empty($criteria['en_fonction'])) {
-            $sql .= " AND (d.date_fin IS NULL OR d.date_fin >= CURDATE())";
-        }
-        
-        $sql .= " ORDER BY u.nom, u.prenom";
+                FROM utilisateur u
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE d.bureau = ?";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        
+        $stmt->execute([$bureau]);
         $directeurs = [];
-        // Parcourir les résultats et créer des objets DirecteurDiscipline
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $directeurs[] = $this->createEntity($row);
+        
+        while ($data = $stmt->fetch()) {
+            $directeurs[] = $this->createEntity($data);
         }
         
         return $directeurs;
     }
 
     /**
-     * Compter le nombre de directeurs
+     * Vérifier si un email existe déjà
      */
-    public function count()
+    public function emailExists($email, $excludeId = null)
     {
-        $sql = "SELECT COUNT(*) FROM {$this->table}";
-        return $this->db->query($sql)->fetchColumn();
-    }
-
-    /**
-     * Compter les directeurs en fonction
-     */
-    public function countEnFonction()
-    {
-        $sql = "SELECT COUNT(*) FROM {$this->table} 
-                WHERE date_fin IS NULL OR date_fin >= CURDATE()";
-        return $this->db->query($sql)->fetchColumn();
-    }
-
-    /**
-     * Supprimer un directeur
-     */
-    public function delete($id)
-    {
-        try {
-            $this->db->beginTransaction();
-            
-            $directeur = $this->find($id);
-            if (!$directeur) {
-                return false;
-            }
-            
-            $userId = $directeur->getIdUtilisateur();
-            
-            // Supprimer d'abord de la table spécifique
-            parent::delete($id);
-            
-            // Puis de la table utilisateur
-            $sqlUser = "DELETE FROM {$this->userTable} WHERE id_utilisateur = ?";
-            $stmtUser = $this->db->prepare($sqlUser);
-            $stmtUser->execute([$userId]);
-            
-            $this->db->commit();
-            return true;
-            
-        } catch (\Exception $e) {
-            $this->db->rollBack();
-            error_log("Erreur delete DirecteurDiscipline: " . $e->getMessage());
-            return false;
+        $sql = "SELECT COUNT(*) FROM utilisateur WHERE email = ?";
+        $params = [$email];
+        
+        if ($excludeId) {
+            $sql .= " AND id_utilisateur != ?";
+            $params[] = $excludeId;
         }
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        
+        return $stmt->fetchColumn() > 0;
     }
 
-    // === MÉTHODES PRIVÉES ===
-
-    private function createUser($data)
-{
-    $columns = implode(',', array_keys($data));
-    $placeholders = ':' . implode(', :', array_keys($data));
-    
-    $sql = "INSERT INTO {$this->userTable} ({$columns}) VALUES ({$placeholders})";
-    $stmt = $this->db->prepare($sql);
-    
-    foreach ($data as $key => $value) {
-        $stmt->bindValue(":{$key}", $value);
+    /**
+     * Compter les directeurs par statut
+     */
+    public function countByStatut($statut)
+    {
+        $sql = "SELECT COUNT(*) FROM utilisateur u
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE u.statut = ?";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$statut]);
+        
+        return (int) $stmt->fetchColumn();
     }
+
+    /**
+     * Récupérer les directeurs actifs
+     */
+    public function findActifs()
+    {
+        return $this->findByStatut('actif');
+    }
+
+    /**
+     * Récupérer les directeurs inactifs
+     */
+    public function findInactifs()
+    {
+        return $this->findByStatut('inactif');
+    }
+
+    /**
+     * Méthode interne pour filtrer par statut
+     */
+    private function findByStatut($statut)
+    {
+        $sql = "SELECT u.*, d.* 
+                FROM utilisateur u
+                INNER JOIN directeur_discipline d ON u.id_utilisateur = d.id_directeur
+                WHERE u.statut = ?
+                ORDER BY u.nom, u.prenom";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$statut]);
+        $directeurs = [];
+        
+        while ($data = $stmt->fetch()) {
+            $directeurs[] = $this->createEntity($data);
+        }
+        
+        return $directeurs;
+    }
+
     
-    return $stmt->execute() ? $this->db->lastInsertId() : false;
 }
-
-    private function updateUser($id, $data)
-{
-    $sets = [];
-    foreach (array_keys($data) as $key) {
-        $sets[] = "{$key} = :{$key}";
-    }
-    $sets = implode(', ', $sets);
-    
-    $sql = "UPDATE {$this->userTable} SET {$sets} WHERE id_utilisateur = :id_utilisateur";
-    $stmt = $this->db->prepare($sql);
-    
-    foreach ($data as $key => $value) {
-        $stmt->bindValue(":{$key}", $value);
-    }
-    $stmt->bindValue(":id_utilisateur", $id);
-    
-    return $stmt->execute();
-}
-}
-

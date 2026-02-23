@@ -1,126 +1,291 @@
 <?php
-namespace App\Dao\Admin;
-use App\Models\Admin\Administrateur;
-use App\Config\Model;
-use DateTime;
-use DateInterval;
+namespace App\ModuleUtilisateur\Admin\Dao;
+
+use App\ModuleUtilisateur\Models\Admin\Administrateur;
+use App\core\Config\Model;
 use PDO;
 use Exception;
 
-class AdminDao extends Model
+class AdminDAO extends Model
 {
     protected $table = "administrateurs";
-    protected $primaryKey = "id";
+    protected $primaryKey = "id_administrateur";
+
 
     public function __construct()
     {
-        return parent::__construct();
+        parent::__construct();
+    }
+
+    /**
+     * Sauvegarder un admin (création ou mise à jour)
+     */
+    public function save($administrateur)
+    {
+        try {
+            // 1. D'abord insérer dans utilisateurs
+            $sqlUser = "INSERT INTO utilisateur (
+                nom, prenom, email, mot_de_passe, role, statut, 
+                telephone, date_creation, photo_profil
+            ) VALUES (
+                :nom, :prenom, :email, :mot_de_passe, :role, :statut,
+                :telephone, :date_creation, :photo_profil
+            )";
+            
+            $stmtUser = $this->db->prepare($sqlUser);
+            $resultUser = $stmtUser->execute([
+                ':nom' => $administrateur->getNom(),
+                ':prenom' => $administrateur->getPrenom(),
+                ':email' => $administrateur->getEmail(),
+                ':mot_de_passe' => $administrateur->getMotDePasse(),
+                ':role' => $administrateur->getRole(),
+                ':statut' => $administrateur->getStatut(),
+                ':telephone' => $administrateur->getTelephone(),
+                ':date_creation' => date('Y-m-d H:i:s'),
+                ':photo_profil' => $administrateur->getPhotoProfil()
+            ]);
+            
+            if (!$resultUser) {
+                return false;
+            }
+            
+            // Récupérer l'ID généré
+            $idUtilisateur = $this->db->lastInsertId();
+            $administrateur->setIdUtilisateur($idUtilisateur);
+            $administrateur->setIdAdministrateur($idUtilisateur);
+            
+            // 2. Ensuite insérer dans administrateurs
+            $sqlAdmin = "INSERT INTO administrateurs (
+                id_administrateur, niveau_acces, departement, 
+                date_prise_fonction, date_fin_fonction, permissions_speciales,
+                dernier_audit, adresse_ip_autorisees, authentification_2facteurs,
+                cle_2fa, niveau_audit, zone_intervention, superviseur
+            ) VALUES (
+                :id_administrateur, :niveau_acces, :departement,
+                :date_prise_fonction, :date_fin_fonction, :permissions_speciales,
+                :dernier_audit, :adresse_ip_autorisees, :authentification_2facteurs,
+                :cle_2fa, :niveau_audit, :zone_intervention, :superviseur
+            )";
+            
+            $stmtAdmin = $this->db->prepare($sqlAdmin);
+            $resultAdmin = $stmtAdmin->execute([
+                ':id_administrateur' => $idUtilisateur,
+                ':niveau_acces' => $administrateur->getNiveauAcces(),
+                ':departement' => $administrateur->getDepartement(),
+                ':date_prise_fonction' => $administrateur->getDatePriseFonction(),
+                ':date_fin_fonction' => $administrateur->getDateFinFonction(),
+                ':permissions_speciales' => $administrateur->getPermissionsSpeciales(),
+                ':dernier_audit' => $administrateur->getDernierAudit(),
+                ':adresse_ip_autorisees' => $administrateur->getAdresseIpAutorisees(),
+                ':authentification_2facteurs' => $administrateur->getAuthentification2Facteurs() ? 1 : 0,
+                ':cle_2fa' => $administrateur->getCle2FA(),
+                ':niveau_audit' => $administrateur->getNiveauAudit(),
+                ':zone_intervention' => $administrateur->getZoneIntervention(),
+                ':superviseur' => $administrateur->getSuperviseur()
+            ]);
+            
+            return $resultAdmin;
+            
+        } catch (Exception $e) {
+            // Log l'erreur
+            error_log("Erreur save admin: " . $e->getMessage());
+            return false;
+        }
     }
     /**
-     * convertir un tableaux en un objet
+     * Mettre à jour un administrateur existant
      */
-    public function createEntity(array $data){
+    public function update($administrateur)
+    {
+        try {
+            $id = $administrateur->getIdUtilisateur();
+            
+            if (!$id) {
+                return false; // Pas d'ID = pas de mise à jour
+            }
+            
+            // 1. Mettre à jour utilisateurs
+            $sqlUser = "UPDATE utilisateur SET
+                nom = :nom,
+                prenom = :prenom,
+                email = :email,
+                telephone = :telephone,
+                statut = :statut,
+                photo_profil = :photo_profil
+                WHERE id_utilisateur = :id";
+            
+            $stmtUser = $this->db->prepare($sqlUser);
+            $resultUser = $stmtUser->execute([
+                ':nom' => $administrateur->getNom(),
+                ':prenom' => $administrateur->getPrenom(),
+                ':email' => $administrateur->getEmail(),
+                ':telephone' => $administrateur->getTelephone(),
+                ':statut' => $administrateur->getStatut(),
+                ':photo_profil' => $administrateur->getPhotoProfil(),
+                ':id' => $id
+            ]);
+            
+            if (!$resultUser) {
+                return false;
+            }
+            
+            // 2. Mettre à jour administrateurs
+            $sqlAdmin = "UPDATE administrateurs SET
+                niveau_acces = :niveau_acces,
+                departement = :departement,
+                date_prise_fonction = :date_prise_fonction,
+                date_fin_fonction = :date_fin_fonction,
+                permissions_speciales = :permissions_speciales,
+                dernier_audit = :dernier_audit,
+                adresse_ip_autorisees = :adresse_ip_autorisees,
+                authentification_2facteurs = :authentification_2facteurs,
+                cle_2fa = :cle_2fa,
+                niveau_audit = :niveau_audit,
+                zone_intervention = :zone_intervention,
+                superviseur = :superviseur
+                WHERE id_administrateur = :id";
+            
+            $stmtAdmin = $this->db->prepare($sqlAdmin);
+            $resultAdmin = $stmtAdmin->execute([
+                ':id' => $id,
+                ':niveau_acces' => $administrateur->getNiveauAcces(),
+                ':departement' => $administrateur->getDepartement(),
+                ':date_prise_fonction' => $administrateur->getDatePriseFonction(),
+                ':date_fin_fonction' => $administrateur->getDateFinFonction(),
+                ':permissions_speciales' => $administrateur->getPermissionsSpeciales(),
+                ':dernier_audit' => $administrateur->getDernierAudit(),
+                ':adresse_ip_autorisees' => $administrateur->getAdresseIpAutorisees(),
+                ':authentification_2facteurs' => $administrateur->getAuthentification2Facteurs() ? 1 : 0,
+                ':cle_2fa' => $administrateur->getCle2FA(),
+                ':niveau_audit' => $administrateur->getNiveauAudit(),
+                ':zone_intervention' => $administrateur->getZoneIntervention(),
+                ':superviseur' => $administrateur->getSuperviseur()
+            ]);
+            
+            return $resultAdmin;
+            
+        } catch (Exception $e) {
+            error_log("Erreur update admin: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Trouver un admin avec ses infos utilisateur
+     */
+    public function findWithUser($id)
+    {
+        $sql = "SELECT u.*, a.* 
+                FROM utilisateur u
+                LEFT JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
+                WHERE u.id_utilisateur = ?";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    /**
+     * Convertir un tableau en objet
+     */
+    public function createEntity(array $data)
+    {
         $administrateur = new Administrateur();
         return $administrateur->hydrate($data);
     }
+
+    
+    // ============================================
+    // MÉTHODES SIMPLES (qui utilisent le parent)
+    // ============================================
+    
     /**
-     * suvegarder un admin (creation ou sauvegarder)
+     * Trouver un administrateur par son ID (table administrateurs seulement)
      */
-    public function save($administrateur){
-        $data = [
-            'niveau'=>$administrateur->getNiveauAcces(),
-            'departement'=>$administrateur->getDepartement(),
-            'date_prise_fonction'=>$administrateur->getDatePriseFonction(),
-            'date_fin_fonction'=>$administrateur->getDateFonction(),
-            'permission_speciale'=>$administrateur->getPermissionSpeciale(),
-            'dernier_audit'=>$administrateur->getDernierAudit(),
-            'authentification2Facteurs' =>$administrateur->getAuthentification2Facteurs(),
-            'cle_2FA' => $administrateur->getCle2FA(),
-            'niveau_audit'=>$administrateur->getNiveauAudit(),
-            'zone_intervention'=>$administrateur->getZoneIntervention()
-        ];
-
-        // si c'est une mise a jours
-        if($administrateur->getIdAdministrateur()){
-            return $this->update($administrateur->getIdAdministrateur(),$data);
-        }
-        //SI C'EST UNE CREATION
-        $id = $this->Create($data);
-        if($id){
-            $administrateur->setIdAdministrateur($id);
-            return true;
-        }  
-    }
-    //supprimer un utilisateur
-        public function delete($id){
-            return parent::delete($id);
-
-        } 
-    //trouver un utilisateur par son ID
     public function find($id)
     {
-        return parent::find($id);
+        $resultat = parent::find($id);
+        
+        // Si rien trouvé
+        if (!$resultat) {
+            return null;
+        }
+        
+        // Convertir en objet Administrateur
+        return $this->createEntity($resultat);
     }
-    //trouver un admin par son email
-    public function findByEmail($email){
-        return parent::findByEmail($email);
-    }
-    //trouver tout les admin
+
+    /**
+     * Récupérer tous les administrateurs (table administrateurs seulement)
+     */
+     /**
+     * Récupérer tous les admins AVEC leurs infos utilisateur
+     */
     public function all($columns = ['*'])
     {
-        return parent::all($columns);
+        // Requête avec JOINTURE pour avoir les deux tables
+        $sql = "SELECT u.*, a.* 
+                FROM utilisateur u
+                INNER JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
+                WHERE u.role = 'administrateur'
+                ORDER BY u.nom, u.prenom";
+        
+        $stmt = $this->db->query($sql);
+        $admins = [];
+        
+        while ($data = $stmt->fetch()) {
+            $admins[] = $this->createEntity($data);
+        }
+        
+        return $admins;
     }
     /**
-     * changer le statut d'un utilisateur
+     * selectionner seulement les elemenents de la table administrateurs
      */
-    public function changerStatut($id,$statut){
-        $sql = "UPDATE {$this->table} SET statut = ? WHERE {$this->primaryKey} = ?";
-        $stmt = $this->db->prepare($sql); 
-        return $stmt->execute([$statut,$id]);
-    }    
-    /**
-     * mettre a jours la derniere connexion d'un utilisateur
-     */
-    public function updateLastLogin($id){
-        $sql = "UPDATE {$this->table} SET derniere_connexion = NOW() WHERE {$this->primaryKey} = ?";
-        $stmt = $this->db->prepare($sql); 
-        return $stmt->execute([$id]);
-    }
-    /** 
-     * compter les utilisateur par role
-     */
-    public function countByRole($role){
-        $sql = "SELECT COUNT("*") AS total FROM {$this->table} WHERE role = ? ANS statut = 'actif";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$role]);
-        $resultat = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (int) $resultat['total'];
+    public function AllAdmin($columns = ['*'])
+        {
+            $resultats = parent::all($columns);
+            $admins = [];
+            
+            foreach ($resultats as $data) {
+                $admins[] = $this->createEntity($data);
+            }
+            
+            return $admins;
+        }
 
+    /**
+     * Supprimer un administrateur par ID
+     */
+    public function delete($id)
+    {
+        return parent::delete($id);
     }
+
+    /**
+     * Compter le nombre d'administrateurs
+     */
+    public function count()
+    {
+        return parent::count();
+    }
+
+    /**
+     * Compter avec condition WHERE
+     */
+    public function countWhere($condition, $params = [])
+    {
+        return parent::countWhere($condition, $params);
+    }
+
+    /**
+     * Vérifier si un administrateur existe
+     */
+    public function exists($id)
+    {
+        return $this->find($id) !== null;
+    }
+
+    
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>
