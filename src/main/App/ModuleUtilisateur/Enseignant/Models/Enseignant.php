@@ -61,7 +61,10 @@ class Enseignant extends Utilisateur
     public function getDateEmbauche() { return $this->dateEmbauche; }
 
     // Setters
-    public function setIdEnseignant($idEnseignant) { $this->idEnseignant = $idEnseignant; }
+    public function setIdEnseignant($idEnseignant) { 
+        $this->idEnseignant = $idEnseignant;
+        $this->setIdUtilisateur($idEnseignant); // Synchroniser avec idUtilisateur
+    }
     public function setNom($nom) { $this->nom = $nom; }
     public function setPrenom($prenom) { $this->prenom = $prenom; }
     public function setSexe($sexe) { $this->sexe = $sexe; }
@@ -526,6 +529,21 @@ class Enseignant extends Utilisateur
             'fonctions_possibles' => $this->getFonctionsPossibles(),
             'stabilite' => $this->getAnciennete() >= 5 ? 'Stable' : 'En période d\'essai'
         ];
+    }
+
+    public function hydrate(array $data){
+        parent::hydrate($data); // Hydrate les propriétés de Utilisateur
+            
+        $mapping = [
+                'id_enseignant'=>'id_enseignant',
+        ];
+        foreach($mapping as $dbkey => $property){
+            if(isset($dat[$dbkey])){
+                $this->$property = $data[$dbkey];
+            }
+        }
+        
+    return $this;
     }
 }
 ?>

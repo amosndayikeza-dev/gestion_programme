@@ -71,6 +71,10 @@ class Administrateur extends Utilisateur
             
         // === 2. INITIALISATION DES PROPRIÉTÉS SPÉCIFIQUES ADMIN ===
         $this->idAdministrateur = $idAdministrateur ?? $idUtilisateur;
+        // s'assurer que si idAdministrateur est fourni mais pas idUtilisateur, on les synchronise
+        if($this->idAdministrateur && !$this->getIdUtilisateur()){
+            $this->setIdUtilisateur($this->idAdministrateur); // Synchronise les IDs
+        }
         $this->niveauAcces = $niveauAcces;
         $this->departement = $departement;
         $this->datePriseFonction = $datePriseFonction;
@@ -102,10 +106,12 @@ class Administrateur extends Utilisateur
 
     // === 4. SETTERS SPÉCIFIQUES ADMIN (AVEC CHAÎNAGE) ===
     public function setIdAdministrateur($id) { 
-        $this->idAdministrateur = $id; 
+        $this->idAdministrateur = $id;
+        $this->setIdUtilisateur($id); // Synchronise avec id_utilisateur du parent
         return $this; 
     }
     
+
     public function setNiveauAcces($niveauAcces) { 
         $this->niveauAcces = $niveauAcces; 
         return $this; 

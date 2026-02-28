@@ -18,7 +18,7 @@ try {
     $dao = new AdminDAO();
     
     // CHANGE CET ID SELON TON ADMIN
-    $id = 105;
+    $id = 191;
     
     echo "Suppression de l'admin avec ID: " . $id . "<br>";
     

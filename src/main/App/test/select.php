@@ -58,9 +58,9 @@ try {
         
         $admin = $dao->findWithUser($id);
         if ($admin) {
-            echo "Nom: " . $admin->getNom() . "<br>";
-            echo "Email: " . $admin->getEmail() . "<br>";
-            echo "Département: " . $admin->getDepartement() . "<br>";
+            echo "Nom: " . $admin['nom'] . "<br>";
+            echo "Email: " . $admin['email'] . "<br>";
+            echo "Département: " . $admin['departement'] . "<br>";
         } else {
             echo "Admin non trouvé<br>";
         }
