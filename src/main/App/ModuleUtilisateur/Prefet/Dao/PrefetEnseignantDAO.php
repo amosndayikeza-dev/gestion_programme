@@ -30,8 +30,10 @@ class PrefetEnseignantDAO extends Model
     /**
      * Sauvegarder un préfet (création ou mise à jour)
      */public function save(PrefetEnseignant $prefet)
-{ 
+    { 
+        $this->db->beginTransaction();
     try{
+        
         // 1. Insertion dans utilisateur
         $stmt = $this->db->prepare("INSERT INTO utilisateur 
             (nom, prenom, email, mot_de_passe, role, statut, telephone, date_creation) 
@@ -75,11 +77,12 @@ class PrefetEnseignantDAO extends Model
             $error = $stmt->errorInfo();
             throw new \Exception("Erreur insertion prefet: " . $error[2]);
         }
-        
-        return true;
-        
+
+        $this->db->commit();
+        return true;  // ← N'OUBLIEZ PAS DE RETOURNER true !     
     } catch (\Exception $e) {
         error_log("Erreur save PrefetEnseignant: " . $e->getMessage());
+        $this->db->rollBack();
         return false;  // ← Retourne false en cas d'erreur
     }
 }
@@ -88,32 +91,29 @@ class PrefetEnseignantDAO extends Model
      */
     public function updatePrefet(PrefetEnseignant $prefet)
     {   
+    try {
         $id = $prefet->getIdPrefet();
-        if (!$this->find($id)) {
-            throw new \Exception("Préfet avec ID $id non trouvé.");
-        }
-
-        try {
-            // Mise à jour de l'utilisateur
-            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
-            $stmt->execute([
-                ':nom' => $prefet->getNom(),
-                ':prenom' => $prefet->getPrenom(),
-                ':email' => $prefet->getEmail(),
-                ':mot_de_passe' => $prefet->getMotDePasse(),
-                ':statut' => $prefet->getStatut(),
-                ':telephone' => $prefet->getTelephone(),
-                ':id_utilisateur' => $prefet->getIdPrefet()
-            ]);
+        
+        // ✅ AJOUTEZ role = :role
+        $stmt = $this->db->prepare("UPDATE utilisateur SET 
+            nom = :nom, 
+            prenom = :prenom, 
+            email = :email, 
+            telephone = :telephone, 
+            role = :role,           // ← À AJOUTER
+            statut = :statut 
+            WHERE id_utilisateur = :id_utilisateur");
             
-            // Mise à jour du préfet
-            $stmt = $this->db->prepare("UPDATE prefet_enseignant SET departement = :departement, specialite = :specialite, echelle_traitement = :echelle_traitement WHERE id_prefet = :id_prefet");
-            $stmt->execute([
-                ':departement' => $prefet->getDepartement(),
-                ':specialite' => $prefet->getSpecialite(),
-                ':echelle_traitement' => $prefet->getEchelleTraitement(),
-                ':id_prefet' => $id
-            ]);
+        $stmt->execute([
+            ':nom' => $prefet->getNom(),
+            ':prenom' => $prefet->getPrenom(),
+            ':email' => $prefet->getEmail(),
+            ':telephone' => $prefet->getTelephone(),
+            ':role' => $prefet->getRole(),  // ← À AJOUTER
+            ':statut' => $prefet->getStatut(),
+            ':id_utilisateur' => $prefet->getIdUtilisateur()
+        ]);
+        
             
             return true;
         } catch (\Exception $e) {
@@ -157,6 +157,23 @@ class PrefetEnseignantDAO extends Model
         }
         
         return $prefets;
+    }
+    /**
+     * Trouver tous les préfets avec infos utilisateur
+     */
+    public function findAllWithUserInfo(){
+        $sql = "SELECT u.*, p.* 
+                FROM {$this->userTable} u
+                INNER JOIN {$this->table} p ON u.id_utilisateur = p.id_prefet
+                ORDER BY p.departement, u.nom, u.prenom";
+    
+        $stmt = $this->db->query($sql);
+        $prefets = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $prefets[] = $this->createEntity($row);
+        }
+        return $prefets;
+        
     }
 
     /**

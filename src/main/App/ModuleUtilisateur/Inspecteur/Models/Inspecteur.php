@@ -1,26 +1,41 @@
 <?php
-namespace App\ModuleUtilisateur\Inspcteur\Models;
+namespace App\ModuleUtilisateur\Inspecteur\Models;  // ← CORRIGÉ (pas Inspcteur)
 
 use App\ModuleUtilisateur\Models\Utilisateur;
+
 use DateTime;
 
 class Inspecteur extends Utilisateur
 {
-    // === ATTRIBUTS SPÉCIFIQUES (table inspecteur) ===
+    // === ATTRIBUTS SPÉCIFIQUES ===
     private $idInspecteur;
-    private $zoneInspection;        // Zone géographique d'inspection
-    private $niveauHabilitation;     // 1-4 (niveau d'expérience)
+    private $zoneGeographique;        // ← UN SEUL nom, celui de la table
+    private $niveauHabilitation;   
+    private $specialite;
+    private $grade;
+    private $etablissementsAssignes;
+    private $dateNomination;
+    private $dateFinMission;
+    private $statutMission;
+    private $rapportsEmis;
+    private $derniereInspection;
+    private $prochaineInspection;
+    private $typeInspections;
+    private $vehiculeDeFonction;
+    private $primeInspection;
+    private $formationsSuivies;
+    private $certifications;
 
     // === CONSTRUCTEUR ===
     public function __construct(
-        // Paramètres du parent (Utilisateur)
+        // Paramètres du parent
         $idUtilisateur = null,
         $nom = null,
         $prenom = null,
         $email = null,
         $telephone = null,
         $motDePasse = null,
-        $role = 'inspecteur',  // Forcé
+        $role = 'inspecteur',
         $statut = 'actif',
         $dateCreation = null,
         $derniereConnexion = null,
@@ -28,12 +43,15 @@ class Inspecteur extends Utilisateur
         $tokenReset = null,
         $dateExpirationToken = null,
         
-        // Paramètres spécifiques Inspecteur
+        // Paramètres spécifiques
         $idInspecteur = null,
-        $zoneInspection = null,
-        $niveauHabilitation = 1
+        $zoneGeographique = null,        // ← CORRIGÉ
+        $niveauHabilitation = 1,
+        $specialite = null,
+        $grade = null,
+        $dateNomination = null
     ) {
-        // Appel du constructeur parent
+        // Appel du parent
         parent::__construct(
             $idUtilisateur,
             $nom,
@@ -50,35 +68,111 @@ class Inspecteur extends Utilisateur
             $dateExpirationToken
         );
         
-        // Initialisation des attributs spécifiques
+        // Initialisation
         $this->idInspecteur = $idInspecteur ?? $idUtilisateur;
-        $this->zoneInspection = $zoneInspection;
+        $this->zoneGeographique = $zoneGeographique;
         $this->niveauHabilitation = $niveauHabilitation;
+        $this->specialite = $specialite;
+        $this->grade = $grade;
+        $this->dateNomination = $dateNomination;
     }
 
-    // === GETTERS SPÉCIFIQUES ===
+    // === GETTERS ===
     public function getIdInspecteur() { return $this->idInspecteur; }
-    public function getZoneInspection() { return $this->zoneInspection; }
+    public function getZoneGeographique() { return $this->zoneGeographique; }  // ← UN SEUL
     public function getNiveauHabilitation() { return $this->niveauHabilitation; }
+    public function getSpecialite() { return $this->specialite; }
+    public function getGrade() { return $this->grade; }
+    public function getEtablissementsAssignes() { return $this->etablissementsAssignes; }
+    public function getDateNomination() { return $this->dateNomination; }
+    public function getDateFinMission() { return $this->dateFinMission; }
+    public function getStatutMission() { return $this->statutMission; }
+    public function getRapportsEmis() { return $this->rapportsEmis; }
+    public function getDerniereInspection() { return $this->derniereInspection; }
+    public function getProchaineInspection() { return $this->prochaineInspection; }
+    public function getTypeInspections() { return $this->typeInspections; }
+    public function getVehiculeDeFonction() { return $this->vehiculeDeFonction; }
+    public function getPrimeInspection() { return $this->primeInspection; }
+    public function getFormationsSuivies() { return $this->formationsSuivies; }
+    public function getCertifications() { return $this->certifications; }
 
-    // === SETTERS SPÉCIFIQUES ===
-    public function setIdInspecteur($id) { $this->idInspecteur = $id; return $this; }
-    public function setZoneInspection($zone) { $this->zoneInspection = $zone; return $this; }
-    public function setNiveauHabilitation($niveau) { $this->niveauHabilitation = $niveau; return $this; }
+    // === SETTERS ===
+    public function setIdInspecteur($id) { 
+        $this->idInspecteur = $id;
+        $this->setIdUtilisateur($id);
+        return $this; 
+    }
+    public function setZoneGeographique($zone) { 
+        $this->zoneGeographique = $zone; 
+        return $this; 
+    }
+    public function setNiveauHabilitation($niveau) { 
+        $this->niveauHabilitation = $niveau; 
+        return $this; 
+    }
+    public function setSpecialite($specialite) { 
+        $this->specialite = $specialite; 
+        return $this; 
+    }
+    public function setGrade($grade) { 
+        $this->grade = $grade; 
+        return $this; 
+    }
+    public function setEtablissementsAssignes($etablissements) { 
+        $this->etablissementsAssignes = $etablissements; 
+        return $this; 
+    }
+    public function setDateNomination($date) { 
+        $this->dateNomination = $date; 
+        return $this; 
+    }
+    public function setDateFinMission($date) { 
+        $this->dateFinMission = $date; 
+        return $this; 
+    }
+    public function setStatutMission($statut) { 
+        $this->statutMission = $statut; 
+        return $this; 
+    }
+    public function setRapportsEmis($rapports) { 
+        $this->rapportsEmis = $rapports; 
+        return $this; 
+    }
+    public function setDerniereInspection($date) { 
+        $this->derniereInspection = $date; 
+        return $this; 
+    }   
+    public function setProchaineInspection($date) { 
+        $this->prochaineInspection = $date; 
+        return $this; 
+    }
+    public function setTypeInspections($types) { 
+        $this->typeInspections = $types; 
+        return $this; 
+    }
+    public function setVehiculeDeFonction($vehicule) { 
+        $this->vehiculeDeFonction = $vehicule; 
+        return $this; 
+    }
+    public function setPrimeInspection($prime) { 
+        $this->primeInspection = $prime; 
+        return $this; 
+    }
+    public function setFormationsSuivies($formations) { 
+        $this->formationsSuivies = $formations; 
+        return $this; 
+    }
+    public function setCertifications($certifications) { 
+        $this->certifications = $certifications; 
+        return $this; 
+    }
 
     // === MÉTHODES MÉTIER ===
-
-    /**
-     * Obtenir le nom complet
-     */
     public function getNomComplet(): string
     {
         return trim($this->getPrenom() . ' ' . $this->getNom());
     }
 
-    /**
-     * Obtenir le libellé du niveau d'habilitation
-     */
     public function getNiveauLibelle(): string
     {
         $niveaux = [
@@ -87,101 +181,82 @@ class Inspecteur extends Utilisateur
             3 => 'Inspecteur principal',
             4 => 'Inspecteur général'
         ];
-        
         return $niveaux[$this->niveauHabilitation] ?? 'Niveau inconnu';
     }
 
-    /**
-     * Obtenir la couleur associée au niveau
-     */
     public function getNiveauCouleur(): string
     {
         $couleurs = [
-            1 => 'info',      // Bleu
-            2 => 'success',   // Vert
-            3 => 'warning',   // Orange
-            4 => 'danger'     // Rouge
+            1 => 'info',
+            2 => 'success',
+            3 => 'warning',
+            4 => 'danger'
         ];
-        
         return $couleurs[$this->niveauHabilitation] ?? 'secondary';
     }
 
-    /**
-     * Vérifier si l'inspecteur peut inspecter un établissement
-     */
     public function peutInspecter($etablissementZone): bool
     {
-        if ($this->zoneInspection === 'National') {
-            return true; // Les inspecteurs nationaux inspectent partout
+        if ($this->zoneGeographique === 'National') {
+            return true;
         }
-        
-        return $this->zoneInspection === $etablissementZone;
+        return $this->zoneGeographique === $etablissementZone;
     }
 
-    /**
-     * Vérifier si l'inspecteur a un niveau suffisant
-     */
     public function niveauSuffisant($niveauRequis): bool
     {
         return $this->niveauHabilitation >= $niveauRequis;
     }
 
-    /**
-     * Obtenir l'expérience (nombre d'années depuis création)
-     */
     public function getExperience(): int
     {
         if (!$this->getDateCreation()) return 0;
-        
         $debut = new DateTime($this->getDateCreation());
         $today = new DateTime();
-        
         return $today->diff($debut)->y;
     }
 
-    /**
-     * Vérifier si inspecteur senior (niveau 3+)
-     */
     public function estSenior(): bool
     {
         return $this->niveauHabilitation >= 3;
     }
 
-    /**
-     * Vérifier si inspecteur général (niveau 4)
-     */
     public function estInspecteurGeneral(): bool
     {
         return $this->niveauHabilitation === 4;
     }
 
-    /**
-     * Obtenir la zone d'inspection formatée
-     */
     public function getZoneFormatee(): string
     {
-        if ($this->zoneInspection === 'National') {
+        if ($this->zoneGeographique === 'National') {
             return 'Nationale (tout le pays)';
         }
-        
-        return "Zone de {$this->zoneInspection}";
+        return "Zone de {$this->zoneGeographique}";
     }
 
-    // === HYDRATE (tableau → objet) ===
-
-    /**
-     * Hydrate l'objet Inspecteur
-     */
+    // === HYDRATE ===
     public function hydrate(array $data)
     {
-        // 1. Hydrate d'abord le parent
         parent::hydrate($data);
         
-        // 2. Hydrate les propriétés spécifiques
         $mapping = [
             'id_inspecteur' => 'idInspecteur',
-            'zone_inspection' => 'zoneInspection',
-            'niveau_habilitation' => 'niveauHabilitation'
+            'zone_geographique' => 'zoneGeographique',  // ← CORRIGÉ
+            'niveau_habilitation' => 'niveauHabilitation',
+            'specialite' => 'specialite',
+            'grade' => 'grade',
+            'etablissements_assignes' => 'etablissementsAssignes',
+            'date_nomination' => 'dateNomination',
+            'date_fin_mission' => 'dateFinMission',
+            'statut_mission' => 'statutMission',
+            'rapports_emis' => 'rapportsEmis',
+            'derniere_inspection' => 'derniereInspection',
+            'prochaine_inspection' => 'prochaineInspection',
+            'type_inspections' => 'typeInspections',
+            'vehicule_de_fonction' => 'vehiculeDeFonction',
+            'prime_inspection' => 'primeInspection',
+            'formations_suivies' => 'formationsSuivies',
+            'certifications' => 'certifications'
         ];
         
         foreach ($mapping as $dbKey => $property) {
@@ -193,24 +268,31 @@ class Inspecteur extends Utilisateur
         return $this;
     }
 
-    // === TOARRAY (objet → tableau) ===
-
-    /**
-     * Convertit l'objet en tableau
-     */
+    // === TOARRAY ===
     public function toArray($mode = 'db')
     {
-        // 1. Tableau du parent
         $parentArray = parent::toArray();
         
-        // 2. Tableau spécifique
         $specificArray = [
             'id_inspecteur' => $this->idInspecteur,
-            'zone_inspection' => $this->zoneInspection,
-            'niveau_habilitation' => $this->niveauHabilitation
+            'zone_geographique' => $this->zoneGeographique,  // ← CORRIGÉ
+            'niveau_habilitation' => $this->niveauHabilitation,
+            'specialite' => $this->specialite,
+            'grade' => $this->grade,
+            'etablissements_assignes' => $this->etablissementsAssignes,
+            'date_nomination' => $this->dateNomination,
+            'date_fin_mission' => $this->dateFinMission,
+            'statut_mission' => $this->statutMission,
+            'rapports_emis' => $this->rapportsEmis,
+            'derniere_inspection' => $this->derniereInspection,
+            'prochaine_inspection' => $this->prochaineInspection,
+            'type_inspections' => $this->typeInspections,
+            'vehicule_de_fonction' => $this->vehiculeDeFonction,
+            'prime_inspection' => $this->primeInspection,
+            'formations_suivies' => $this->formationsSuivies,
+            'certifications' => $this->certifications
         ];
         
-        // 3. Mode API (avec données formatées)
         if ($mode === 'api') {
             $specificArray = array_merge($specificArray, [
                 'nom_complet' => $this->getNomComplet(),
@@ -226,46 +308,10 @@ class Inspecteur extends Utilisateur
         return array_merge($parentArray, $specificArray);
     }
 
-    /**
-     * Version simplifiée pour le DAO
-     */
-    public function toArrayForDb()
-    {
-        // Données pour la table utilisateur
-        $userData = [
-            'nom' => $this->getNom(),
-            'prenom' => $this->getPrenom(),
-            'email' => $this->getEmail(),
-            'telephone' => $this->getTelephone(),
-            'mot_de_passe' => $this->getMotDePasse(),
-            'role' => 'inspecteur',
-            'statut' => $this->getStatut(),
-            'photo_profil' => $this->getPhotoProfil(),
-            'date_creation' => $this->getDateCreation() ?? date('Y-m-d H:i:s')
-        ];
-        
-        // Données pour la table inspecteur
-        $inspecteurData = [
-            'zone_inspection' => $this->zoneInspection,
-            'niveau_habilitation' => $this->niveauHabilitation
-        ];
-        
-        return [
-            'user' => $userData,
-            'inspecteur' => $inspecteurData
-        ];
-    }
-
-    // === VALIDATION ===
-
-    /**
-     * Valider les données
-     */
     public function valider(): array
     {
         $erreurs = [];
         
-        // Validation du parent
         if (empty($this->getNom())) {
             $erreurs[] = 'Le nom est obligatoire';
         }
@@ -280,9 +326,20 @@ class Inspecteur extends Utilisateur
             $erreurs[] = "L'email n'est pas valide";
         }
         
-        // Validation spécifique
-        if (empty($this->zoneInspection)) {
-            $erreurs[] = 'La zone d\'inspection est obligatoire';
+        if (empty($this->zoneGeographique)) {  // ← CORRIGÉ
+            $erreurs[] = 'La zone géographique est obligatoire';
+        }
+        
+        if (empty($this->specialite)) {
+            $erreurs[] = 'La spécialité est obligatoire';
+        }
+        
+        if (empty($this->grade)) {
+            $erreurs[] = 'Le grade est obligatoire';
+        }
+        
+        if (empty($this->dateNomination)) {
+            $erreurs[] = 'La date de nomination est obligatoire';
         }
         
         if (!is_numeric($this->niveauHabilitation) || $this->niveauHabilitation < 1 || $this->niveauHabilitation > 4) {
@@ -292,10 +349,7 @@ class Inspecteur extends Utilisateur
         return $erreurs;
     }
 
-    /**
-     * Liste des zones d'inspection possibles
-     */
-    public static function getZonesInspection(): array
+    public static function getZonesGeographiques(): array
     {
         return [
             'Dakar' => 'Dakar',
@@ -314,9 +368,6 @@ class Inspecteur extends Utilisateur
         ];
     }
 
-    /**
-     * Créer un objet à partir d'un tableau (factory)
-     */
     public static function fromArray(array $data): self
     {
         $inspecteur = new self();

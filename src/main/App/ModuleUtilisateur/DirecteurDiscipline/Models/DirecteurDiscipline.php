@@ -72,7 +72,9 @@ class DirecteurDiscipline extends Utilisateur
     public function getDateFin() { return $this->dateFin; }
 
     // === SETTERS SPÉCIFIQUES ===
-    public function setIdDirecteur($id) { $this->idDirecteur = $id; return $this; }
+    public function setIdDirecteur($id) { $this->idDirecteur = $id;
+    $this->setIdUtilisateur($id);
+    return $this; }
     public function setBureau($bureau) { $this->bureau = $bureau; return $this; }
     public function setTelephonePro($tel) { $this->telephonePro = $tel; return $this; }
     public function setPlagesDisponibilite($plages) { $this->plagesDisponibilite = $plages; return $this; }

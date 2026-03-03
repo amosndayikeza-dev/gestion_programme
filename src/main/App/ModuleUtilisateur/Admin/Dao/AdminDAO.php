@@ -8,7 +8,7 @@ use Exception;
 
 class AdminDAO extends Model
 {
-    protected $table = "administrateurs";
+    protected $table = "administrateur";
     protected $primaryKey = "id_administrateur";
 
 
@@ -16,91 +16,108 @@ class AdminDAO extends Model
     {
         parent::__construct();
     }
-
     /**
      * Sauvegarder un admin (création ou mise à jour)
      */
-    public function save($administrateur)
-    {
-        try {
-            // 1. D'abord insérer dans utilisateurs
-            $sqlUser = "INSERT INTO utilisateur (
-                nom, prenom, email, mot_de_passe, role, statut, 
-                telephone, date_creation, photo_profil
-            ) VALUES (
-                :nom, :prenom, :email, :mot_de_passe, :role, :statut,
-                :telephone, :date_creation, :photo_profil
-            )";
-            
-            $stmtUser = $this->db->prepare($sqlUser);
-            $resultUser = $stmtUser->execute([
-                ':nom' => $administrateur->getNom(),
-                ':prenom' => $administrateur->getPrenom(),
-                ':email' => $administrateur->getEmail(),
-                ':mot_de_passe' => $administrateur->getMotDePasse(),
-                ':role' => $administrateur->getRole(),
-                ':statut' => $administrateur->getStatut(),
-                ':telephone' => $administrateur->getTelephone(),
-                ':date_creation' => date('Y-m-d H:i:s'),
-                ':photo_profil' => $administrateur->getPhotoProfil()
-            ]);
-            
-            if (!$resultUser) {
-                return false;
-            }
-            
-            // Récupérer l'ID généré
-            $idUtilisateur = $this->db->lastInsertId();
-            $administrateur->setIdUtilisateur($idUtilisateur);
-            $administrateur->setIdAdministrateur($idUtilisateur);
-            
-            // 2. Ensuite insérer dans administrateurs
-            $sqlAdmin = "INSERT INTO administrateurs (
-                id_administrateur, niveau_acces, departement, 
-                date_prise_fonction, date_fin_fonction, permissions_speciales,
-                dernier_audit, adresse_ip_autorisees, authentification_2facteurs,
-                cle_2fa, niveau_audit, zone_intervention, superviseur
-            ) VALUES (
-                :id_administrateur, :niveau_acces, :departement,
-                :date_prise_fonction, :date_fin_fonction, :permissions_speciales,
-                :dernier_audit, :adresse_ip_autorisees, :authentification_2facteurs,
-                :cle_2fa, :niveau_audit, :zone_intervention, :superviseur
-            )";
-            
-            $stmtAdmin = $this->db->prepare($sqlAdmin);
-            $resultAdmin = $stmtAdmin->execute([
-                ':id_administrateur' => $idUtilisateur,
-                ':niveau_acces' => $administrateur->getNiveauAcces(),
-                ':departement' => $administrateur->getDepartement(),
-                ':date_prise_fonction' => $administrateur->getDatePriseFonction(),
-                ':date_fin_fonction' => $administrateur->getDateFinFonction(),
-                ':permissions_speciales' => $administrateur->getPermissionsSpeciales(),
-                ':dernier_audit' => $administrateur->getDernierAudit(),
-                ':adresse_ip_autorisees' => $administrateur->getAdresseIpAutorisees(),
-                ':authentification_2facteurs' => $administrateur->getAuthentification2Facteurs() ? 1 : 0,
-                ':cle_2fa' => $administrateur->getCle2FA(),
-                ':niveau_audit' => $administrateur->getNiveauAudit(),
-                ':zone_intervention' => $administrateur->getZoneIntervention(),
-                ':superviseur' => $administrateur->getSuperviseur()
-            ]);
-            
-            return $resultAdmin;
-            
-        } catch (Exception $e) {
-            // Log l'erreur
-            error_log("Erreur save admin: " . $e->getMessage());
+    // Dans AdminDAO.php - méthode save()
+public function save($administrateur)
+{
+    $this->db->beginTransaction();
+    try {
+        // 1. D'abord insérer dans utilisateurs
+        $sqlUser = "INSERT INTO utilisateur (
+            nom, prenom, email, mot_de_passe, role, statut, 
+            telephone, date_creation, photo_profil
+        ) VALUES (
+            :nom, :prenom, :email, :mot_de_passe, :role, :statut,
+            :telephone, :date_creation, :photo_profil
+        )";
+        
+        $stmtUser = $this->db->prepare($sqlUser);
+        $resultUser = $stmtUser->execute([
+            ':nom' => $administrateur->getNom(),
+            ':prenom' => $administrateur->getPrenom(),
+            ':email' => $administrateur->getEmail(),
+            ':mot_de_passe' => $administrateur->getMotDePasse(),
+            ':role' => $administrateur->getRole(),
+            ':statut' => $administrateur->getStatut(),
+            ':telephone' => $administrateur->getTelephone(),
+            ':date_creation' => date('Y-m-d H:i:s'),
+            ':photo_profil' => $administrateur->getPhotoProfil()
+        ]);
+        
+        if (!$resultUser) {
+            // AFFICHER L'ERREUR SQL
+            $error = $stmtUser->errorInfo();
+            echo "Erreur SQL utilisateur: " . $error[2] . "<br>";
+            $this->db->rollBack();
             return false;
         }
+        
+        // Récupérer l'ID généré
+        $idUtilisateur = $this->db->lastInsertId();
+        $administrateur->setIdUtilisateur($idUtilisateur);
+        $administrateur->setIdAdministrateur($idUtilisateur);
+        
+        // 2. Ensuite insérer dans administrateurs
+        $sqlAdmin = "INSERT INTO administrateur (
+            id_administrateur, niveau_acces, departement, 
+            date_prise_fonction, date_fin_fonction, permissions_speciales,
+            dernier_audit, adresse_ip_autorisees, authentification_2facteurs,
+            cle_2fa, niveau_audit, zone_intervention, superviseur
+        ) VALUES (
+            :id_administrateur, :niveau_acces, :departement,
+            :date_prise_fonction, :date_fin_fonction, :permissions_speciales,
+            :dernier_audit, :adresse_ip_autorisees, :authentification_2facteurs,
+            :cle_2fa, :niveau_audit, :zone_intervention, :superviseur
+        )";
+        
+        $stmtAdmin = $this->db->prepare($sqlAdmin);
+        $resultAdmin = $stmtAdmin->execute([
+            ':id_administrateur' => $idUtilisateur,
+            ':niveau_acces' => $administrateur->getNiveauAcces(),
+            ':departement' => $administrateur->getDepartement(),
+            ':date_prise_fonction' => $administrateur->getDatePriseFonction(),
+            ':date_fin_fonction' => $administrateur->getDateFinFonction(),
+            ':permissions_speciales' => $administrateur->getPermissionsSpeciales(),
+            ':dernier_audit' => $administrateur->getDernierAudit(),
+            ':adresse_ip_autorisees' => $administrateur->getAdresseIpAutorisees(),
+            ':authentification_2facteurs' => $administrateur->getAuthentification2Facteurs() ? 1 : 0,
+            ':cle_2fa' => $administrateur->getCle2FA(),
+            ':niveau_audit' => $administrateur->getNiveauAudit(),
+            ':zone_intervention' => $administrateur->getZoneIntervention(),
+            ':superviseur' => $administrateur->getSuperviseur()
+        ]);
+
+        if (!$resultAdmin) {
+            // AFFICHER L'ERREUR SQL
+            $error = $stmtAdmin->errorInfo();
+            echo "Erreur SQL administrateur: " . $error[2] . "<br>";
+            $this->db->rollBack();
+            return false;
+        }
+        
+        $this->db->commit();
+        return true;
+        
+    } catch (Exception $e) {
+        $this->db->rollBack();
+        echo "Exception: " . $e->getMessage() . "<br>";
+        error_log("Erreur save admin: " . $e->getMessage());
+        return false;
     }
+}
     /**
      * Mettre à jour un administrateur existant
      */
     public function update($administrateur)
     {
+        $this->db->beginTransaction();
         try {
             $id = $administrateur->getIdUtilisateur();
             
             if (!$id) {
+                $this->db->rollBack();
                 return false; // Pas d'ID = pas de mise à jour
             }
             
@@ -126,11 +143,12 @@ class AdminDAO extends Model
             ]);
             
             if (!$resultUser) {
+                $this->db->rollBack();
                 return false;
             }
             
             // 2. Mettre à jour administrateurs
-            $sqlAdmin = "UPDATE administrateurs SET
+            $sqlAdmin = "UPDATE administrateur SET
                 niveau_acces = :niveau_acces,
                 departement = :departement,
                 date_prise_fonction = :date_prise_fonction,
@@ -161,10 +179,17 @@ class AdminDAO extends Model
                 ':zone_intervention' => $administrateur->getZoneIntervention(),
                 ':superviseur' => $administrateur->getSuperviseur()
             ]);
+
+            if (!$resultAdmin) {
+                $this->db->rollBack();
+                return false;
+            }
             
-            return $resultAdmin;
+            $this->db->commit();
+            return true;
             
         } catch (Exception $e) {
+            $this->db->rollBack();
             error_log("Erreur update admin: " . $e->getMessage());
             return false;
         }
@@ -177,7 +202,7 @@ class AdminDAO extends Model
     {
         $sql = "SELECT u.*, a.* 
                 FROM utilisateur u
-                LEFT JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
+                LEFT JOIN administrateur a ON u.id_utilisateur = a.id_administrateur
                 WHERE u.id_utilisateur = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -226,7 +251,7 @@ class AdminDAO extends Model
         // Requête avec JOINTURE pour avoir les deux tables
         $sql = "SELECT u.*, a.* 
                 FROM utilisateur u
-                INNER JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
+                INNER JOIN administrateur a ON u.id_utilisateur = a.id_administrateur
                 WHERE u.role = 'administrateur'
                 ORDER BY u.nom, u.prenom";
         

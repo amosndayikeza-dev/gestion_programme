@@ -19,7 +19,7 @@ echo "<h2>🧪 TEST DIRECTEUR DISCIPLINE</h2>";
 
    try {
     $directeur = new DirecteurDiscipline();
-    $directeur->setNom('Kalenga');
+    $directeur->setNom('jvm');
     $directeur->setPrenom('Marcel');
     $directeur->setEmail('Marcel' . time() . '@gmail.com');
     $directeur->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
@@ -28,6 +28,8 @@ echo "<h2>🧪 TEST DIRECTEUR DISCIPLINE</h2>";
     $directeur->setBureau('Bureau 30');
     $directeur->setTelephonePro('70143569');
     $directeur->setDateDebut(date('Y-m-d'));    // ← OBLIGATOIRE (NOT NULL)
+
+    // SAUVEGARDER
     $dao = new DirecteurDisciplineDAO();
     $resultat = $dao->save($directeur);
     

@@ -67,7 +67,11 @@ class PrefetEnseignant extends Utilisateur
     public function getEchelleTraitement() { return $this->echelleTraitement; }
 
     // === SETTERS SPÉCIFIQUES ===
-    public function setIdPrefet($id) { $this->idPrefet = $id; return $this; }
+    public function setIdPrefet($id) { 
+        $this->idPrefet = $id;
+        $this->setIdUtilisateur($id);  // Synchroniser avec id_utilisateur
+         return $this;
+          }
     public function setDepartement($departement) { $this->departement = $departement; return $this; }
     public function setSpecialite($specialite) { $this->specialite = $specialite; return $this; }
     public function setEchelleTraitement($echelle) { $this->echelleTraitement = $echelle; return $this; }

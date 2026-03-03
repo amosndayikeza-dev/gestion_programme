@@ -93,7 +93,7 @@ class Utilisateur
     'parent','prefet','chef_classe','president_eleves','comite_parents',
     'secretaire','inspecteur','enseignant','bibliothecaire','surveillant',
     'prefet_enseignant'  // ← AJOUTE ICI !
-];
+    ];
         if(!in_array($role,$allowedRoles)){
             throw new Exception("Le rôle n'est pas valide.");  
         }    

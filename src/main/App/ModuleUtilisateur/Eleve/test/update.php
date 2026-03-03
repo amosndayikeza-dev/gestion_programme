@@ -18,25 +18,24 @@ use App\ModuleUtilisateur\Eleve\Models\Eleve;
 echo "<h2>🧪 TEST ELEVE</h2>";
 
 try{
-    $eleve = new Eleve();
-    $eleve->setNom('DUSHIMIMANA');
-    $eleve->setPrenom('Jean');
-    $eleve->setEmail('jean' . time() . '@gmail.com');
-    $eleve->setMotDePasse('123');
-    $eleve->setStatut('actif');
-    $eleve->setDateNaissance('2005-01-01');
-    $eleve->setLieuNaissance('BUJUMBURA');
-    $eleve->setSexe('F');
-    $eleve->setAdresse('Bujumbura, Burundi');
-    $eleve->setDateInscription(date('Y-m-d'));
-    $eleve->setMatricule('MAT-'.time());
-
+    
     $eleveDAO = new EleveDAO();
-    $result = $eleveDAO->save( $eleve);
-    if(!$result){
-        die("Erreur lors de la création de l'élève.");
+    $eleve = $eleveDAO->findWithUser(205);
+    if(!$eleve){
+        die("Élève non trouvé.");
     }
-    echo "<p>✅ Élève créé avec succès !</p>";
+    // 3. Modifier
+    $eleve->setNom('Flora' . time());
+    $eleve->setAdresse('Nouvelle adresse, Kigali');
+    $eleve->setSexe('Feminin');
+    // 4. Sauvegarder
+    $result = $eleveDAO->updateEleve($eleve);
+        if($result){
+            echo "<p>✅ Élève modifié avec succès !</p>";
+        } else {
+            echo "<p>❌ Échec de la modification.</p>";
+        }
+
 }catch(Exception $e){
     die("ERREUR: " . $e->getMessage());  
 }

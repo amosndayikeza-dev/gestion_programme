@@ -61,7 +61,11 @@ class Enseignant extends Utilisateur
     public function getDateEmbauche() { return $this->dateEmbauche; }
 
     // Setters
-    public function setIdEnseignant($idEnseignant) { $this->idEnseignant = $idEnseignant; }
+    public function setIdEnseignant($idEnseignant) { 
+        $this->idEnseignant = $idEnseignant;
+        $this->setIdUtilisateur($idEnseignant);
+        return $this;
+        }
     public function setNom($nom) { $this->nom = $nom; }
     public function setPrenom($prenom) { $this->prenom = $prenom; }
     public function setSexe($sexe) { $this->sexe = $sexe; }

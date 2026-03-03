@@ -24,13 +24,13 @@ class Proviseur extends Utilisateur
     private $dureeMandat ; // Durée standard du mandat en années
 
     public function __construct(
-        $idProviseur = null,
+        $idProviseur = Null,
         $idUtilisateur = NULL,
         $nom = NULL,
         $prenom = NULL,
         $email = NULL,
         $motDePasse = NULL,
-        $role = RoleEnum::PROVISEUR ,
+        $role = RoleEnum::PROVISEUR,
         $dateCreation = NULL,
         $etablissement = null,
         $bureau = null,
@@ -40,7 +40,7 @@ class Proviseur extends Utilisateur
         //$dureeMandat = null
 
     ) {
-        parent::__construct($idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
+        parent::__construct($idProviseur,$idUtilisateur, $nom, $prenom, $email, $motDePasse, $role, $dateCreation, $photoProfil);
         $this->etablissement = $etablissement;
         $this->bureau = $bureau;
         $this->telephonePro = $telephonePro;
@@ -48,7 +48,10 @@ class Proviseur extends Utilisateur
     }
 
     public function getIdProviseur() { return $this->idProviseur; } 
-    public function setIdProviseur($id) { $this->idProviseur = $id; }
+    public function setIdProviseur($id) { 
+        $this->idProviseur = $id;
+        $this->setIdUtilisateur($id);
+        }
 
     public function getEtablissement() { return $this->etablissement; }
     public function setEtablissement($etablissement) { $this->etablissement = $etablissement; }

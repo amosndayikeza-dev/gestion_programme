@@ -30,47 +30,59 @@ class EleveDAO extends Model
      * Sauvegarder un élève (dans les 2 tables)
      */
     public function save(Eleve $eleve){
+        $this->db->beginTransaction();
         try{
             //insertion utilisateur
-            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, statut, telephone) VALUES (:nom, :prenom, :email, :mot_de_passe, :statut, :telephone)");
+            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, role, statut, telephone,date_creation,photo_profil) VALUES (:nom, :prenom, :email, :mot_de_passe, :role, :statut, :telephone, :date_creation, :photo_profil)");
             $stmt->execute([
                 ':nom' => $eleve->getNom(),
                 ':prenom' => $eleve->getPrenom(),
                 ':email' => $eleve->getEmail(),
                 ':mot_de_passe' => $eleve->getMotDePasse(),
+                ':role' => $eleve->getRole(),
                 ':statut' => $eleve->getStatut(),
-                ':telephone' => $eleve->getTelephone()
+                ':telephone' => $eleve->getTelephone(),
+                ':date_creation' => $eleve->getDateCreation(),
+                ':photo_profil' => $eleve->getPhotoProfil()
+
             ]);
             // Récupération de l'ID utilisateur généré
             $idUtilisateur = $this->db->lastInsertId();
             // Mise à jour de l'objet Eleve avec l'ID utilisateur
             $eleve->setIdUtilisateur($idUtilisateur);
-            
-            // Insertion dans la table eleve
-            $stmt = $this->db->prepare("INSERT INTO eleve(id_utilisateur, id_classe_actuelle, id_tuteur, date_naissance, lieu_naissance, sexe, adresse, date_inscription, matricule) VALUES (:id_utilisateur, :id_classe_actuelle, :id_tuteur, :date_naissance, :lieu_naissance, :sexe, :adresse, :date_inscription, :matricule)");
-            $stmt->execute([
-                ":id_utilisateur" => $eleve->getIdUtilisateur(),
-                ":id_classe_actuelle" => $eleve->getIdClasse(),
-                ":id_tuteur" => $eleve->getIdTuteur(),
-                ":date_naissance" => $eleve->getDateNaissance(),
-                ":lieu_naissance" => $eleve->getLieuNaissance(),
-                ":sexe" => $eleve->getSexe(),
-                ":adresse" => $eleve->getAdresse(),
-                ":date_inscription" => $eleve->getDateInscription(),
-                ":matricule" => $eleve->getMatricule()
+            $eleve->setIdEleve($idUtilisateur); // ID de l'élève = ID de l'utilisateur
+            //insertion eleve
+            $stmt = $this->db->prepare("INSERT INTO eleve(id_utilisateur, id_classe_actuelle, id_tuteur, date_naissance, lieu_naissance, sexe, adresse, date_inscription, matricule)
+             VALUES (:id_utilisateur, :id_classe_actuelle, :id_tuteur, :date_naissance, :lieu_naissance, :sexe, :adresse, :date_inscription, :matricule)");
+            $resultEleve = $stmt->execute([
+                ':id_utilisateur' => $idUtilisateur,
+                ':id_classe_actuelle' => $eleve->getIdClasse(),
+                ':id_tuteur' => $eleve->getIdTuteur(),  
+                ':date_naissance' => $eleve->getDateNaissance(),
+                ':lieu_naissance' => $eleve->getLieuNaissance(),
+                ':sexe' => $eleve->getSexe(),
+                ':adresse' => $eleve->getAdresse(),
+                ':date_inscription' => $eleve->getDateInscription(),
+                ':matricule' => $eleve->getMatricule(),
             ]);
+            
+            if(!$resultEleve){
+                throw new \Exception("Erreur lors de l'insertion de l'élève");
+            }
+            $this->db->commit();
             return true;
         }catch(PDOException $e){
-            // En cas d'erreur, on peut faire un rollback ou gérer l'exception
-            die("Erreur lors de la sauvegarde de l'élève : " . $e->getMessage());
+            $this->db->rollBack();
+            throw $e;
         }
     }
 
     //Modifier un eleve
     public function updateEleve(Eleve $eleve){
+        $this->db->beginTransaction();
         try{
             //verifier si l'ID de l'utilisateur existe
-            $id = $eleve->getIdEleve();
+            $id = $eleve->getIdUtilisateur();
             if(!$id){
                 throw new \Exception("ID de l'élève manquant pour la mise à jour");
             }
@@ -88,7 +100,7 @@ class EleveDAO extends Model
 
             // Mise à jour de l'élève
             $stmt = $this->db->prepare("UPDATE eleve SET id_classe_actuelle = :id_classe_actuelle, id_tuteur = :id_tuteur, date_naissance = :date_naissance, lieu_naissance = :lieu_naissance, sexe = :sexe, adresse = :adresse, date_inscription = :date_inscription, matricule = :matricule WHERE id_eleve = :id_eleve");
-            $stmt->execute([
+            $resultEleve =$stmt->execute([
                 ":id_classe_actuelle" => $eleve->getIdClasse(),
                 ":id_tuteur" => $eleve->getIdTuteur(),
                 ":date_naissance" => $eleve->getDateNaissance(),
@@ -99,9 +111,14 @@ class EleveDAO extends Model
                 ":matricule" => $eleve->getMatricule(),
                 ":id_eleve" => $eleve->getIdEleve()
             ]);
+                if(!$resultEleve){
+                    throw new \Exception("Erreur lors de la mise à jour de l'élève");
+                }
+                $this->db->commit();
             return true;
         }catch(PDOException $e){
-            die("Erreur lors de la mise à jour de l'élève : " . $e->getMessage());
+            $this->db->rollBack();
+            throw $e;
         }
     }
 
@@ -136,11 +153,23 @@ class EleveDAO extends Model
     }
     // trouver un eleve avec les infos de l'utilisateur
     public function findWithUser($id){
-        $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur WHERE e.id_eleve = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        return $this->createEntity($stmt->fetch(PDO::FETCH_ASSOC));
+           $sql = "SELECT u.*, e.* 
+            FROM utilisateur u
+            INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur
+            WHERE u.id_utilisateur = ?";
+    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute([$id]);
+    $data = $stmt->fetch();
+    
+    // Retourner null si rien trouvé
+    if (!$data) {
+        return null;
     }
+    
+    return $this->createEntity($data);
+}
+    
     // trouver tous les eleves avec les infos de l'utilisateur
     public function findAllWithUser($columns = ['*']){
         $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur";
@@ -156,7 +185,7 @@ class EleveDAO extends Model
 
     // trouver un eleve par son Email
     public function findByEmail($email){    
-        $sql = "SELECT u.*, e.* FROM utilisateur u LEFT JOIN eleve e ON u.id_utilisateur = e.id_eleve WHERE u.email = :email";
+        $sql = "SELECT u.*, e.* FROM utilisateur u LEFT JOIN eleve e ON u.id_utilisateur = e.id_utilisateur WHERE u.email = :email";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':email' => $email]);
         return $this->createEntity($stmt->fetch(PDO::FETCH_ASSOC));

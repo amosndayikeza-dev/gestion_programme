@@ -23,11 +23,13 @@ try{
     $prefetEnseignant->setNom('KABURA');
     $prefetEnseignant->setPrenom('Jean');
     $prefetEnseignant->setEmail('jean' . time() . '@gmail.com');
+    $prefetEnseignant->setTelephone("0701234567");
     $prefetEnseignant->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
+    $prefetEnseignant->setRole("prefet");
     $prefetEnseignant->setStatut('actif');
+
     $prefetEnseignant->setDateCreation(date('Y-m-d H:i:s'));
     $prefetEnseignant->setDerniereConnexion(date('Y-m-d H:i:s'));
-    $prefetEnseignant->setRole("prefet_enseignant");
     //$prefetEnseignant->setDateEmbauche(date('Y-m-d'));
     $prefetEnseignant->setTelephone('0701234567');
     $prefetEnseignant->setDepartement('Informatique');

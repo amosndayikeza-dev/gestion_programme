@@ -1,8 +1,8 @@
 <?php
 namespace App\ModuleUtilisateur\Inspecteur\Dao;
 
-use App\ModuleUtilisateur\Models\Utilisateur;
-use App\ModuleUtilisateur\Inspcteur\Models\Inspecteur;
+//use App\ModuleUtilisateur\Inspecteur\Models\Inspecteur;
+use App\ModuleUtilisateur\Inspecteur\Models\Inspecteur;  // ✅ Correct
 use App\core\Config\Model;
 use PDO;
 use PDOException;
@@ -31,86 +31,139 @@ class InspecteurDAO extends Model
     /**
      * Sauvegarder un inspecteur (création ou mise à jour)
      */
-    public function save(Inspecteur $inspecteur)
-{   
+    public function save(Inspecteur $inspecteur){
+    $this->db->beginTransaction();
     try{
         // 1. Insertion dans utilisateur
-        $stmt = $this->db->prepare("INSERT INTO utilisateur 
-            (nom, prenom, email, telephone, mot_de_passe, role, statut, photo_profil, date_creation) 
-            VALUES (:nom, :prenom, :email, :telephone, :mot_de_passe, :role, :statut, :photo_profil, :date_creation)");
+        $stmt = $this->db->prepare("INSERT INTO utilisateur(
+            nom, prenom, email, mot_de_passe, role, statut, telephone
+        ) VALUES (
+            :nom, :prenom, :email, :mot_de_passe, :role, :statut, :telephone
+        )");
         
-        $stmt->execute([
+        $result = $stmt->execute([
             ':nom' => $inspecteur->getNom(),
             ':prenom' => $inspecteur->getPrenom(),
             ':email' => $inspecteur->getEmail(),
-            ':telephone' => $inspecteur->getTelephone(),
             ':mot_de_passe' => $inspecteur->getMotDePasse(),
             ':role' => $inspecteur->getRole(),
             ':statut' => $inspecteur->getStatut(),
-            ':photo_profil' => $inspecteur->getPhotoProfil(),
-            ':date_creation' => date('Y-m-d H:i:s')
+            ':telephone' => $inspecteur->getTelephone()
         ]);
+        
+        if(!$result){
+            $this->db->rollBack();
+            throw new \Exception("Failed to save utilisateur.");
+        }
         
         $idUtilisateur = $this->db->lastInsertId();
+        $inspecteur->setIdUtilisateur($idUtilisateur);
+        $inspecteur->setIdInspecteur($idUtilisateur);  // Même ID !
         
-        // 2. Insertion dans inspecteur (avec la bonne colonne : id_utilisateur)
-        $stmt = $this->db->prepare("INSERT INTO inspecteur 
-            (id_utilisateur, zone_inspection, niveau_habilitation) 
-            VALUES (:id_utilisateur, :zone_inspection, :niveau_habilitation)");
+        // 2. Insertion dans inspecteur - ✅ avec id_inspecteur
+        $stmt = $this->db->prepare("INSERT INTO inspecteur(
+            id_inspecteur, specialite, grade, zone_geographique, 
+            etablissements_assignes, date_nomination, date_fin_mission, 
+            statut_mission, rapports_emis, derniere_inspection, 
+            prochaine_inspection, type_inspections, niveau_habilitation, 
+            vehicule_de_fonction, prime_inspection, formations_suivies, 
+            certifications
+        ) VALUES (
+            :id_inspecteur, :specialite, :grade, :zone_geographique,
+            :etablissements_assignes, :date_nomination, :date_fin_mission,
+            :statut_mission, :rapports_emis, :derniere_inspection,
+            :prochaine_inspection, :type_inspections, :niveau_habilitation,
+            :vehicule_de_fonction, :prime_inspection, :formations_suivies,
+            :certifications
+        )");
         
-        $stmt->execute([
-            ':id_utilisateur' => $idUtilisateur,  // ← La clé étrangère
-            ':zone_inspection' => $inspecteur->getZoneInspection(),
-            ':niveau_habilitation' => $inspecteur->getNiveauHabilitation()
+        $result = $stmt->execute([
+            ':id_inspecteur' => $inspecteur->getIdInspecteur(),
+            ':specialite' => $inspecteur->getSpecialite(),
+            ':grade' => $inspecteur->getGrade(),
+            ':zone_geographique' => $inspecteur->getZoneGeographique(),
+            ':etablissements_assignes' => $inspecteur->getEtablissementsAssignes(),
+            ':date_nomination' => $inspecteur->getDateNomination(),
+            ':date_fin_mission' => $inspecteur->getDateFinMission(),
+            ':statut_mission' => $inspecteur->getStatutMission(),
+            ':rapports_emis' => $inspecteur->getRapportsEmis(),
+            ':derniere_inspection' => $inspecteur->getDerniereInspection(),
+            ':prochaine_inspection' => $inspecteur->getProchaineInspection(),
+            ':type_inspections' => $inspecteur->getTypeInspections(),
+            ':niveau_habilitation' => $inspecteur->getNiveauHabilitation(),
+            ':vehicule_de_fonction' => $inspecteur->getVehiculeDeFonction(),
+            ':prime_inspection' => $inspecteur->getPrimeInspection(),
+            ':formations_suivies' => $inspecteur->getFormationsSuivies(),
+            ':certifications' => $inspecteur->getCertifications()
         ]);
         
-        // Optionnel : mettre à jour l'objet
-        $inspecteur->setIdUtilisateur($idUtilisateur);
+        if(!$result){
+            $this->db->rollBack();
+            throw new \Exception("Failed to save inspecteur.");
+        }
         
+        $this->db->commit();
         return true;
         
-    } catch (PDOException $e) {
-        throw new \Exception("Erreur : " . $e->getMessage());
+    } catch(PDOException $e){
+        $this->db->rollBack();
+        error_log("Error saving inspecteur: " . $e->getMessage());
+        return false;
     }
 }
     /**
      * mettre a jour l'inspecteur
      */
-    public function updateInspecteur(Inspecteur $inspecteur)
-    {
-        try{
-            // Vérifier si l'inspecteur existe
-            $id = $inspecteur->getIdInspecteur();
-            if (!$this->find($id)) {
-                throw new \Exception("Inspecteur with ID $id not found.");
-            }
-            
-            // Mettre à jour l'utilisateur
-            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, telephone = :telephone, mot_de_passe = :mot_de_passe, statut = :statut, photo_profil = :photo_profil WHERE id_utilisateur = :id_utilisateur");
-            $stmt->execute([
-                ':nom' => $inspecteur->getNom(),
-                ':prenom' => $inspecteur->getPrenom(),
-                ':email' => $inspecteur->getEmail(),
-                ':telephone' => $inspecteur->getTelephone(),
-                ':mot_de_passe' => $inspecteur->getMotDePasse(),
-                ':statut' => $inspecteur->getStatut(),
-                ':photo_profil' => $inspecteur->getPhotoProfil(),
-                ':id_utilisateur' => $inspecteur->getIdUtilisateur()
-            ]);
-
-            // mettre a jours l'inspecteur
-            $stmt = $this->db->prepare("UPDATE inspecteur SET zone_inspection = :zone_inspection, niveau_habilitation = :niveau_habilitation WHERE id_inspecteur = :id_inspecteur");
-            $stmt->execute([
-                ':zone_inspection' => $inspecteur->getZoneInspection(),
-                ':niveau_habilitation' => $inspecteur->getNiveauHabilitation(),
-                ':id_inspecteur' => $id
-            ]);
-            return true;
-
-        }catch(PDOException $e){
-            throw new \Exception("Erreur lors de la mise à jour de l'inspecteur : " . $e->getMessage());
+public function updateInspecteur(Inspecteur $inspecteur)
+{
+    try {
+        $id = $inspecteur->getIdInspecteur();
+        if (!$this->find($id)) {
+            throw new \Exception("Inspecteur with ID $id not found.");
         }
+        
+        // Mettre à jour l'utilisateur
+        $stmt = $this->db->prepare("UPDATE utilisateur SET 
+            nom = :nom, 
+            prenom = :prenom, 
+            email = :email, 
+            telephone = :telephone, 
+            statut = :statut 
+            WHERE id_utilisateur = :id_utilisateur");
+            
+        $stmt->execute([
+            ':nom' => $inspecteur->getNom(),
+            ':prenom' => $inspecteur->getPrenom(),
+            ':email' => $inspecteur->getEmail(),
+            ':telephone' => $inspecteur->getTelephone(),
+            ':statut' => $inspecteur->getStatut(),
+            ':id_utilisateur' => $inspecteur->getIdUtilisateur()
+        ]);
+
+        // Mettre à jour l'inspecteur (seulement les champs modifiables)
+        $stmt = $this->db->prepare("UPDATE inspecteur SET 
+            specialite = :specialite,
+            grade = :grade,
+            zone_geographique = :zone_geographique,
+            niveau_habilitation = :niveau_habilitation,
+            statut_mission = :statut_mission
+            WHERE id_inspecteur = :id_inspecteur");
+            
+        $stmt->execute([
+            ':specialite' => $inspecteur->getSpecialite(),
+            ':grade' => $inspecteur->getGrade(),
+            ':zone_geographique' => $inspecteur->getZoneGeographique(),
+            ':niveau_habilitation' => $inspecteur->getNiveauHabilitation(),
+            ':statut_mission' => $inspecteur->getStatutMission(),
+            ':id_inspecteur' => $id
+        ]);
+        
+        return true;
+
+    } catch(PDOException $e) {
+        throw new \Exception("Erreur : " . $e->getMessage());
     }
+}
 
     // trouver l'inspectur par son ID
     public function find($id)
@@ -150,7 +203,7 @@ class InspecteurDAO extends Model
      // afficher un innspecteur avec les infos de l'utilisateur
      public function findWithUserInfo($id)
      {
-         $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_utilisateur WHERE i.id_inspecteur = :id";
+         $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_inspecteur WHERE i.id_inspecteur = :id";
          $stmt = $this->db->prepare($sql);
          $stmt->execute([':id' => $id]);
          $result = $stmt->fetch();
@@ -160,7 +213,7 @@ class InspecteurDAO extends Model
      // afficher tout les inspecteurs avec les infos de l'utilisateur
      public function findAllWithUserInfo()
      {
-        $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_utilisateur";
+        $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_inspecteur";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);

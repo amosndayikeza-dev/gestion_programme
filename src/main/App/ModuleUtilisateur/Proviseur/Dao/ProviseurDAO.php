@@ -17,7 +17,7 @@ class ProviseurDAO extends Model
     }
     // creer un objet proviseur a partir d'un tableau
     public function createEntity($row){
-        $proviseur = new Proviseur();
+        $proviseur = new Proviseur("");
         return $proviseur->hydrate($row);
     }   
 
