@@ -290,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `contenu_cours` (
 --
 
 INSERT INTO `contenu_cours` (`id_contenu`, `id_cours`, `titre_section`, `contenu`, `type_contenu`, `ordre`, `date_creation`, `date_modification`) VALUES
-(3, 1, 'les nombres complexes', 'le nombre complexe resout un probleme principal sur la racine d\'un nombre negative comme par exemole -1', 'texte', 1, '2026-01-21 09:35:01', '2026-01-21 09:35:01');
+(3, 1, 'les nombres complexes', "le nombre complexe resout un probleme principal sur la racine d'un nombre negative comme par exemole -1", 'texte', 1, '2026-01-21 09:35:01', '2026-01-21 09:35:01');
 
 -- --------------------------------------------------------
 
