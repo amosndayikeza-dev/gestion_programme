@@ -13,50 +13,35 @@ class Titulaire extends Utilisateur
 
     // === CONSTRUCTEUR ===
     public function __construct(
-        // Paramètres du parent (Utilisateur)
-        $idUtilisateur = null,
-        $nom = null,
-        $prenom = null,
-        $email = null,
-        $telephone = null,
-        $motDePasse = null,
-        $role = 'enseignant',  // Forcé
-        $statut = 'actif',
-        $dateCreation = null,
-        $derniereConnexion = null,
-        $photoProfil = null,
-        $tokenReset = null,
-        $dateExpirationToken = null,
-        
-        // Paramètres spécifiques Titulaire
-        $idTitulaire = null,
-        $matierePrincipale = null,
-        $volumeHoraire = null,
-        $dateTitularisation = null
-    ) {
-        // Appel du constructeur parent
-        parent::__construct(
-            $idUtilisateur,
-            $nom,
-            $prenom,
-            $email,
-            $telephone,
-            $motDePasse,
-            $role,
-            $statut,
-            $dateCreation,
-            $derniereConnexion,
-            $photoProfil,
-            $tokenReset,
-            $dateExpirationToken
-        );
-        
-        // Initialisation des attributs spécifiques
-        $this->idTitulaire = $idTitulaire ?? $idUtilisateur;
-        $this->matierePrincipale = $matierePrincipale;
-        $this->volumeHoraire = $volumeHoraire;
-        $this->dateTitularisation = $dateTitularisation;
-    }
+    $idUtilisateur = null,
+    $nom = null,
+    $prenom = null,
+    $email = null,
+    $motDePasse = null,
+    $role = 'titulaire',          // ou RoleEnum::TITULAIRE
+    $statut = 'actif',
+    $telephone = null,
+    $dateCreation = null,
+    $derniereConnexion = null,
+    $photoProfil = null,
+    $tokenReset = null,
+    $dateExpirationToken = null,
+    // Spécifiques Titulaire
+    $idTitulaire = null,
+    $matierePrincipale = null,
+    $volumeHoraire = null,
+    $dateTitularisation = null
+) {
+    parent::__construct(
+        $idUtilisateur, $nom, $prenom, $email, $motDePasse,
+        $role, $statut, $telephone, $dateCreation,
+        $derniereConnexion, $photoProfil, $tokenReset, $dateExpirationToken
+    );
+    $this->idTitulaire = $idTitulaire;
+    $this->matierePrincipale = $matierePrincipale;
+    $this->volumeHoraire = $volumeHoraire;
+    $this->dateTitularisation = $dateTitularisation;
+}
 
     // === GETTERS SPÉCIFIQUES ===
     public function getIdTitulaire() { return $this->idTitulaire; }
@@ -65,7 +50,10 @@ class Titulaire extends Utilisateur
     public function getDateTitularisation() { return $this->dateTitularisation; }
 
     // === SETTERS SPÉCIFIQUES ===
-    public function setIdTitulaire($id) { $this->idTitulaire = $id; return $this; }
+    public function setIdTitulaire($id) { 
+        $this->idTitulaire = $id; return $this;
+        $this->setIdUtilisateur($id); // Synchronisation avec id_utilisateur
+        }
     public function setMatierePrincipale($matiere) { $this->matierePrincipale = $matiere; return $this; }
     public function setVolumeHoraire($volume) { $this->volumeHoraire = $volume; return $this; }
     public function setDateTitularisation($date) { $this->dateTitularisation = $date; return $this; }

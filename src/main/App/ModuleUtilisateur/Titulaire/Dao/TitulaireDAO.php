@@ -27,37 +27,49 @@ class TitulaireDAO extends Model
      * Sauvegarder un titulaire (création ou mise à jour)
      */
     
-    public function save(Titulaire $titulaire){
-        try{
-            //insertion utilisateur
-            $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, statut, telephone) VALUES (:nom, :prenom, :email, :mot_de_passe, :statut, :telephone)");
-            $stmt->execute([
-                ':nom' => $titulaire->getNom(),
-                ':prenom' => $titulaire->getPrenom(),
-                ':email' => $titulaire->getEmail(),
-                ':mot_de_passe' => $titulaire->getMotDePasse(),
-                ':statut' => $titulaire->getStatut(),
-                ':telephone' => $titulaire->getTelephone()
-            ]);
-            // Récupération de l'ID utilisateur généré
-            $idUtilisateur = $this->db->lastInsertId();
-            // Mise à jour de l'objet Titulaire avec l'ID utilisateur
-            $titulaire->setIdUtilisateur($idUtilisateur);
-            
-            // Insertion dans la table titulaire
-            $stmt = $this->db->prepare("INSERT INTO titulaire(id_utilisateur, matiere_principale, volume_horaire, date_titularisation) VALUES (:id_utilisateur, :matiere_principale, :volume_horaire, :date_titularisation)");
-            $stmt->execute([
-                ":id_utilisateur" => $titulaire->getIdUtilisateur(),
-                ":matiere_principale" => $titulaire->getMatierePrincipale(),
-                ":volume_horaire" => $titulaire->getVolumeHoraire(),
-                ":date_titularisation" => $titulaire->getDateTitularisation()
-            ]);
-            return true;
-        }catch(PDOException $e){
-            // En cas d'erreur, on peut faire un rollback ou gérer l'exception
-            die("Erreur lors de la sauvegarde du titulaire : " . $e->getMessage());
+public function save(Titulaire $titulaire){
+    try{
+        $this->db->beginTransaction();
+        // Insertion utilisateur
+        $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_passe, role, statut, telephone, date_creation) VALUES (:nom, :prenom, :email, :mot_de_passe, :role, :statut, :telephone, NOW())");
+        $stmt->execute([
+            ':nom' => $titulaire->getNom(),
+            ':prenom' => $titulaire->getPrenom(),
+            ':email' => $titulaire->getEmail(),
+            ':mot_de_passe' => $titulaire->getMotDePasse(),
+            ':role' => $titulaire->getRole(), // devrait être 'titulaire'
+            ':statut' => $titulaire->getStatut(),
+            ':telephone' => $titulaire->getTelephone()
+        ]);
+        $userId = $this->db->lastInsertId();
+        $titulaire->setIdUtilisateur($userId);
+
+        // Insertion dans la table titulaire (en utilisant id_titulaire)
+        $stmt = $this->db->prepare("INSERT INTO titulaire(id_titulaire, matiere_principale, volume_horaire, date_titularisation) VALUES (:id_titulaire, :matiere_principale, :volume_horaire, :date_titularisation)");
+        $result = $stmt->execute([
+            ':id_titulaire' => $userId,
+            ':matiere_principale' => $titulaire->getMatierePrincipale(),
+            ':volume_horaire' => $titulaire->getVolumeHoraire(),
+            ':date_titularisation' => $titulaire->getDateTitularisation()
+        ]);
+
+        if (!$result) {
+            throw new \Exception("Erreur lors de l'insertion du titulaire.");
         }
+
+        // Synchroniser l'ID titulaire dans l'objet
+        $titulaire->setIdTitulaire($userId);
+
+        $this->db->commit();
+        return true;
+    } catch (PDOException $e) {
+        $this->db->rollBack();
+        die("Erreur lors de la sauvegarde du titulaire : " . $e->getMessage());
+    } catch (\Exception $e) {
+        $this->db->rollBack();
+        die("Erreur : " . $e->getMessage());
     }
+}
     /**
      * Modifier un titulaire (mise à jour des deux tables)
      */
@@ -69,25 +81,29 @@ class TitulaireDAO extends Model
                 throw new \Exception("Titulaire with ID $id not found.");
             }
 
+            $this->db->beginTransaction();
+
             // mise a jours de l'utilisateur
-            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
+            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, role = :role, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
             $stmt->execute([
                 ':nom' => $titulaire->getNom(),
                 ':prenom' => $titulaire->getPrenom(),
                 ':email' => $titulaire->getEmail(),
                 ':mot_de_passe' => $titulaire->getMotDePasse(),
+                ':role' => $titulaire->getRole(),
                 ':statut' => $titulaire->getStatut(),
                 ':telephone' => $titulaire->getTelephone(),
                 ':id_utilisateur' => $titulaire->getIdUtilisateur()
             ]);
             // mise a jours du titulaire
-            $stmt = $this->db->prepare("UPDATE titulaire SET matiere_principale = :matiere_principale, volume_horaire = :volume_horaire, date_titularisation = :date_titularisation WHERE id_titulaire = :id_titulaire");
+            $stmt = $this->db->prepare("UPDATE {$this->table} SET matiere_principale = :matiere_principale, volume_horaire = :volume_horaire, date_titularisation = :date_titularisation WHERE id_titulaire = :id_titulaire");
             $stmt->execute([
                 ":matiere_principale" => $titulaire->getMatierePrincipale(),
                 ":volume_horaire" => $titulaire->getVolumeHoraire(),
                 ":date_titularisation" => $titulaire->getDateTitularisation(),
                 ":id_titulaire" => $id
             ]);
+            $this->db->commit();
             return true;
         }catch (\Exception $e) {
             die("Erreur: " . $e->getMessage());
@@ -119,7 +135,7 @@ class TitulaireDAO extends Model
         // On ignore $columns car on fait une jointure
         $sql = "SELECT u.*, t.* 
                 FROM {$this->userTable} u
-                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_tuteur
+                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_titulaire
                 ORDER BY u.nom, u.prenom";
         
         $stmt = $this->db->query($sql);
@@ -139,7 +155,7 @@ class TitulaireDAO extends Model
     {
         $sql = "SELECT u.*, t.* 
                 FROM {$this->userTable} u
-                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_tuteur
+                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_titulaire
                 WHERE u.email = :email";
         
         $stmt = $this->db->prepare($sql);
@@ -276,6 +292,25 @@ class TitulaireDAO extends Model
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         
         return $row ? $this->createEntity($row) : null;
+    }
+
+    /**
+     * Trouver tous les tuteurs avec les infos de l'utilisateur
+     */
+    public function findAllWithUserInfos(){
+        $sql = "SELECT u.*, t.* 
+                FROM {$this->userTable} u
+                INNER JOIN {$this->table} t ON u.id_utilisateur = t.id_titulaire
+                ORDER BY u.nom, u.prenom";
+        
+        $stmt = $this->db->query($sql);
+
+        $tuteurs = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $tuteurs[] = $this->createEntity($row);
+        }
+        return $tuteurs;
     }
    
     

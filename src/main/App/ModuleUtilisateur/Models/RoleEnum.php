@@ -1,5 +1,7 @@
 <?php
 namespace App\ModuleUtilisateur\Models;
+
+use App\ModuleUtilisateur\Titulaire\Models\Titulaire;
 use DateTime;
 use DateInterval;
 use PDO;
@@ -24,7 +26,7 @@ class RoleEnum {
     const CHEF_CLASSE = 'chef_classe';
     const PRESIDENT_ELEVES = 'president_eleves';
     const COMITE_PARENTS = 'comite_parents';
-    
+    const TITULAIRE = 'titulaire';    
     /**
      * Retourne tous les rôles disponibles
      */
@@ -40,7 +42,8 @@ class RoleEnum {
             self::PROVISEUR,
             self::CHEF_CLASSE,
             self::PRESIDENT_ELEVES,
-            self::COMITE_PARENTS
+            self::COMITE_PARENTS,
+            self::TITULAIRE
         ];
     }
     
@@ -73,7 +76,8 @@ class RoleEnum {
                 self::COMITE_PARENTS
             ],
             'encadrement' => [
-                self::PARENT
+                self::PARENT,
+                self::TITULAIRE
             ]
         ];
     }
@@ -93,7 +97,8 @@ class RoleEnum {
             self::PROVISEUR => 'Proviseur',
             self::CHEF_CLASSE => 'Chef de classe',
             self::PRESIDENT_ELEVES => 'Président des élèves',
-            self::COMITE_PARENTS => 'Comité de parents'
+            self::COMITE_PARENTS => 'Comité de parents',
+            self::TITULAIRE => 'Titulaire'
         ];
         
         return $labels[$role] ?? $role;

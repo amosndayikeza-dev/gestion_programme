@@ -92,7 +92,7 @@ class Utilisateur
     'administrateur','proviseur','censeur','directeur_discipline','eleve',
     'parent','prefet','chef_classe','president_eleves','comite_parents',
     'secretaire','inspecteur','enseignant','bibliothecaire','surveillant',
-    'prefet_enseignant'  // ← AJOUTE ICI !
+    'prefet_enseignant','titulaire'  // ← AJOUTE ICI !
     ];
         if(!in_array($role,$allowedRoles)){
             throw new Exception("Le rôle n'est pas valide.");  
@@ -150,7 +150,8 @@ class Utilisateur
             'prefet' => 'assets/images/default/prefect.png',
             'chef_classe' => 'assets/images/default/chef.png',
             'president_eleves' => 'assets/images/default/president.png',
-            'comite_parents' => 'assets/images/default/comite.png'
+            'comite_parents' => 'assets/images/default/comite.png',
+            'titulaire' => 'assets/images/default/titulaire.png'
         ];
         
         return $defaultImages[$this->role] ?? 'assets/images/default/user.png';
@@ -352,6 +353,9 @@ class Utilisateur
                 return ['represent_parents', 'participate_meetings'];
             case RoleEnum::INSPECTEUR:
                 return ['inspect_teaching', 'evaluate_teachers', 'view_reports'];
+            case RoleEnum::TITULAIRE:
+                return ['manage_courses', 'view_surveillant'];
+                
             default:
                 return [];
         }

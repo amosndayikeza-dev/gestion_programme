@@ -63,6 +63,7 @@ class Enseignant extends Utilisateur
     // Setters
     public function setIdEnseignant($idEnseignant) { 
         $this->idEnseignant = $idEnseignant;
+
         $this->setIdUtilisateur($idEnseignant);
         return $this;
         }
@@ -530,6 +531,21 @@ class Enseignant extends Utilisateur
             'fonctions_possibles' => $this->getFonctionsPossibles(),
             'stabilite' => $this->getAnciennete() >= 5 ? 'Stable' : 'En période d\'essai'
         ];
+    }
+
+    public function hydrate(array $data){
+        parent::hydrate($data); // Hydrate les propriétés de Utilisateur
+            
+        $mapping = [
+                'id_enseignant'=>'id_enseignant',
+        ];
+        foreach($mapping as $dbkey => $property){
+            if(isset($dat[$dbkey])){
+                $this->$property = $data[$dbkey];
+            }
+        }
+        
+    return $this;
     }
 }
 ?>

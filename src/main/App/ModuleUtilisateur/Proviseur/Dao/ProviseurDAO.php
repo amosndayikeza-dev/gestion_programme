@@ -16,15 +16,27 @@ class ProviseurDAO extends Model
         parent::__construct();
     }
     // creer un objet proviseur a partir d'un tableau
-    public function createEntity($row){
-        $proviseur = new Proviseur("");
-        return $proviseur->hydrate($row);
-    }   
+   public function createEntity($row) {
+    $proviseur = new Proviseur();
+    
+    // Hydrate avec TOUTES les données
+    if (isset($row['id_utilisateur'])) {
+        $proviseur->setIdUtilisateur($row['id_utilisateur']);
+    }
+    if (isset($row['id_proviseur'])) {
+        $proviseur->setIdProviseur($row['id_proviseur']);
+    }
+    
+    // Appel à hydrate pour le reste
+    return $proviseur->hydrate($row);
+ }  
 
     // sauvegarder un proviseur (dans les 2 tables)
 
+
     public function save(Proviseur $proviseur)
-{
+   {
+    $this->db->beginTransaction();
     try {
         // 1. Vérifier que l'objet a les données requises
         if (empty($proviseur->getNom()) || empty($proviseur->getEmail())) {
@@ -33,17 +45,18 @@ class ProviseurDAO extends Model
         
         // 2. Insertion utilisateur - REQUÊTE SIMPLIFIÉE
         $sql = "INSERT INTO utilisateur 
-                (nom, prenom, email, mot_de_passe, role, statut, date_creation) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW())";
+                (nom, prenom, email, mot_de_passe, role, statut, telephone,date_creation) 
+                VALUES (:nom, :prenom, :email, :mot_de_passe, :role, :statut, :telephone, NOW())";
         
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
-            $proviseur->getNom(),
-            $proviseur->getPrenom(),
-            $proviseur->getEmail(),
-            $proviseur->getMotDePasse(),
-            'proviseur',
-            $proviseur->getStatut()
+            ':nom' => $proviseur->getNom(),
+            ':prenom' => $proviseur->getPrenom(),
+            ':email' => $proviseur->getEmail(),
+            ':mot_de_passe' => $proviseur->getMotDePasse(),
+            ':role' => 'proviseur',
+            ':statut' => $proviseur->getStatut(),
+            ":telephone" => $proviseur->getTelephone()
         ]);
         
         // 3. VÉRIFICATION OBLIGATOIRE
@@ -53,26 +66,21 @@ class ProviseurDAO extends Model
         }
         
         $userId = $this->db->lastInsertId();
+        $proviseur->setIdUtilisateur($userId);
         
-        if (!$userId || $userId == 0) {
-            throw new \Exception("ID USER INVALIDE: " . $userId);
-        }
-        
-        // 4. ICI on est SÛR que l'utilisateur existe
-        echo "✅ ID utilisateur créé: " . $userId . "<br>";
-        
+       
         // 5. Insertion proviseur
         $sql = "INSERT INTO proviseur 
-                (id_proviseur, etablissement, duree_mandat, bureau, id_utilisateur) 
-                VALUES (?, ?, ?, ?, ?)";
+                ( id_proviseur, etablissement, duree_mandat, bureau) 
+                VALUES (:id_utilisateur, :etablissement, :duree_mandat, :bureau)";
+
         
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
-            $userId,
-            $proviseur->getEtablissement(),
-            $proviseur->getDureeMandat(),
-            $proviseur->getBureau(),
-            $userId
+            ':id_utilisateur' => $userId,
+            ':etablissement' => $proviseur->getEtablissement(),
+            ':duree_mandat' => $proviseur->getDureeMandat(),
+            ':bureau' => $proviseur->getBureau()
         ]);
         
         if (!$result) {
@@ -80,6 +88,7 @@ class ProviseurDAO extends Model
             throw new \Exception("ÉCHEC INSERT PROVISEUR: " . $error[2]);
         }
         
+        $this->db->commit();
         return true;
         
     } catch (\Exception $e) {
@@ -91,38 +100,66 @@ class ProviseurDAO extends Model
 }
 
     //modifier un proviseur
-    public function updateProviseur(Proviseur $proviseur){  
-        try{
-            $id = $proviseur->getIdProviseur();
-            if(!$this->find($id)){
-                throw new \Exception("Proviseur with ID $id not found.");
-            }
-            // Mise à jour de l'utilisateur
-            $stmt = $this->db->prepare("UPDATE utilisateur SET nom = :nom, prenom = :prenom, email = :email, mot_de_passe = :mot_de_passe, statut = :statut, telephone = :telephone WHERE id_utilisateur = :id_utilisateur");
-            $stmt->execute([
-                ':nom' => $proviseur->getNom(),
-                ':prenom' => $proviseur->getPrenom(),
-                ':email' => $proviseur->getEmail(),
-                ':mot_de_passe' => $proviseur->getMotDePasse(),
-                ':statut' => $proviseur->getStatut(),
-                ':telephone' => $proviseur->getTelephone(),
-                ':id_utilisateur' => $proviseur->getIdUtilisateur()
-            ]);
-            // Mise à jour de la table proviseur
-            $stmt = "UPDATE proviseur SET etablissement = :etablissement, bureau = :bureau WHERE id_utilisateur = :id_utilisateur";
-            $stmt = $this->db->prepare($stmt);
-            $stmt->execute([
-                ':etablissement' => $proviseur->getEtablissement(),
-                ':bureau' => $proviseur->getBureau(),
-                ':id_utilisateur' => $proviseur->getIdUtilisateur()
-             ]);
-
-        }catch(PDOException $e){
-            echo "Error updating proviseur: " . $e->getMessage();
-        }catch(\Exception $e){
-            echo "Error: " . $e->getMessage();
+    public function update(Proviseur $proviseur): bool
+{
+    try {
+        // Vérifier que le proviseur existe (par son id_proviseur)
+        if (!$this->exists($proviseur->getIdProviseur())) {
+            throw new \Exception("Proviseur avec l'ID " . $proviseur->getIdProviseur() . " introuvable.");
         }
+
+        // Démarrer une transaction
+        $this->db->beginTransaction();
+
+        // 1. Mise à jour de la table utilisateur
+        $sqlUser = "UPDATE utilisateur SET 
+                    nom = :nom, 
+                    prenom = :prenom, 
+                    email = :email, 
+                    mot_de_passe = :mot_de_passe, 
+                    statut = :statut, 
+                    telephone = :telephone 
+                    WHERE id_utilisateur = :id_utilisateur";
+        $stmtUser = $this->db->prepare($sqlUser);
+        $stmtUser->execute([
+            ':nom'            => $proviseur->getNom(),
+            ':prenom'         => $proviseur->getPrenom(),
+            ':email'          => $proviseur->getEmail(),
+            ':mot_de_passe'   => $proviseur->getMotDePasse(),
+            ':statut'         => $proviseur->getStatut(),
+            ':telephone'      => $proviseur->getTelephone(),
+            ':id_utilisateur' => $proviseur->getIdUtilisateur()
+        ]);
+
+        // 2. Mise à jour de la table proviseur (avec tous les champs)
+        $sqlProv = "UPDATE proviseur SET 
+                    etablissement = :etablissement, 
+                    bureau = :bureau,
+                    duree_mandat = :duree_mandat
+                    WHERE id_utilisateur = :id_utilisateur";
+        $stmtProv = $this->db->prepare($sqlProv);
+        $stmtProv->execute([
+            ':etablissement'  => $proviseur->getEtablissement(),
+            ':bureau'         => $proviseur->getBureau(),
+            ':duree_mandat'   => $proviseur->getDureeMandat(),
+            ':id_utilisateur' => $proviseur->getIdUtilisateur()
+        ]);
+
+        // Tout s'est bien passé → validation
+        $this->db->commit();
+        return true;
+
+    } catch (\PDOException $e) {
+        $this->db->rollBack();
+        error_log("Erreur PDO dans updateProviseur : " . $e->getMessage());
+        // Vous pouvez choisir de retourner false ou de relancer une exception
+        return false;
+    } catch (\Exception $e) {
+        $this->db->rollBack();
+        error_log("Erreur dans updateProviseur : " . $e->getMessage());
+        return false;
     }
+}
 
     // trouver proviseur par ID
     public function find($id)
@@ -138,12 +175,12 @@ class ProviseurDAO extends Model
     public function all($columns = ['*'])
     {
         //requette avec jointure pour avoir les deux tables
-        $sql = "SELECT u.*,p.* FROM utilisateur u INNER JOIN proviseur ON u.id_utilisateur = p.id_proviseur WHERE U.role = 'proviseur'";
+        $sql = "SELECT u.*,p.* FROM utilisateur u INNER JOIN proviseur p ON u.id_utilisateur = p.id_proviseur WHERE U.role = 'proviseur'";
         $stmt = $this->db->query($sql);
 
         $proviseur = [];
 
-        while($data = $stmt->fetch()){
+        while($data = $stmt->fetch(PDO::FETCH_ASSOC)){
             $proviseur[] = $this->createEntity($data);
         }
         return $proviseur;
@@ -180,6 +217,28 @@ class ProviseurDAO extends Model
         return $this->find($id) !== null;
     }
 
+    // trouver une proviseur avec les infos de l'utilisateur
+    public function findWithUser($id){
+        $sql = "SELECT u.*, p.* FROM utilisateur u INNER JOIN proviseur p ON u.id_utilisateur = p.id_proviseur WHERE u.id_utilisateur = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$result) {
+            return null;
+        }
+        return $this->createEntity($result);
+    }
+
+    // afficher un proviseur avec les infos de l'utilisateur
+    public function findAllWithUserInfos(){
+        $sql = "SELECT u.*, p.* FROM utilisateur u INNER JOIN proviseur p ON u.id_utilisateur = p.id_proviseur WHERE u.role = 'proviseur'";
+        $stmt = $this->db->query($sql);
+        $proviseurs = [];
+        while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $proviseurs[] = $this->createEntity($result);
+        }
+        return $proviseurs;
+    }
 
 
 }
