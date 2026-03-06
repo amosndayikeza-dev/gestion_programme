@@ -10,7 +10,7 @@ use PDOException;
 
 class InspecteurDAO extends Model
 {
-    protected $table = "inspecteur";
+    protected $table = "inspecteurs";
     protected $primaryKey = "id_inspecteur";
     private $userTable = "utilisateur";
 
@@ -61,7 +61,7 @@ class InspecteurDAO extends Model
         $inspecteur->setIdInspecteur($idUtilisateur);  // Même ID !
         
         // 2. Insertion dans inspecteur - ✅ avec id_inspecteur
-        $stmt = $this->db->prepare("INSERT INTO inspecteur(
+        $stmt = $this->db->prepare("INSERT INTO inspecteurs(
             id_inspecteur, specialite, grade, zone_geographique, 
             etablissements_assignes, date_nomination, date_fin_mission, 
             statut_mission, rapports_emis, derniere_inspection, 
@@ -135,13 +135,14 @@ public function updateInspecteur(Inspecteur $inspecteur)
             ':nom' => $inspecteur->getNom(),
             ':prenom' => $inspecteur->getPrenom(),
             ':email' => $inspecteur->getEmail(),
+            ":role"=> $inspecteur->getRapportsEmis(),
             ':telephone' => $inspecteur->getTelephone(),
             ':statut' => $inspecteur->getStatut(),
             ':id_utilisateur' => $inspecteur->getIdUtilisateur()
         ]);
 
         // Mettre à jour l'inspecteur (seulement les champs modifiables)
-        $stmt = $this->db->prepare("UPDATE inspecteur SET 
+        $stmt = $this->db->prepare("UPDATE inspecteurs SET 
             specialite = :specialite,
             grade = :grade,
             zone_geographique = :zone_geographique,
@@ -203,7 +204,7 @@ public function updateInspecteur(Inspecteur $inspecteur)
      // afficher un innspecteur avec les infos de l'utilisateur
      public function findWithUserInfo($id)
      {
-         $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_inspecteur WHERE i.id_inspecteur = :id";
+         $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteurs i ON u.id_utilisateur = i.id_inspecteur WHERE i.id_inspecteur = :id";
          $stmt = $this->db->prepare($sql);
          $stmt->execute([':id' => $id]);
          $result = $stmt->fetch();
@@ -211,19 +212,22 @@ public function updateInspecteur(Inspecteur $inspecteur)
      }
 
      // afficher tout les inspecteurs avec les infos de l'utilisateur
-     public function findAllWithUserInfo()
-     {
-        $sql = "SELECT u.*, i.* FROM utilisateur u JOIN inspecteur i ON u.id_utilisateur = i.id_inspecteur";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $inspecteurs = [];
-        foreach ($results as $row) {
-            $inspecteurs[] = $this->createEntity($row);
-        }
-        return $inspecteurs;
-
-     }
+    public function findAllWithUser() {
+    $sql = "SELECT u.*, i.* 
+            FROM utilisateur u
+            INNER JOIN inspecteurs i ON u.id_utilisateur = i.id_inspecteur
+            ORDER BY u.nom, u.prenom";
+    
+    $stmt = $this->db->query($sql);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $inspecteurs = [];
+    foreach ($results as $row) {
+        $inspecteurs[] = $this->createEntity($row);
+    }
+    
+    return $inspecteurs;
+}
      // verifier si l'email existe 
      public function emailExists($email)
      {

@@ -20,7 +20,7 @@ echo "<h2>🧪 TEST ELEVE</h2>";
 try{
     
     $eleveDAO = new EleveDAO();
-    $eleve = $eleveDAO->findWithUser(205);
+    $eleve = $eleveDAO->findWithUser(79);
     if(!$eleve){
         die("Élève non trouvé.");
     }

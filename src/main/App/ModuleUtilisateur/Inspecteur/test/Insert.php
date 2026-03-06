@@ -22,7 +22,7 @@ try{
     $inspecteur->setEmail('fifia' . time() . '@gmail.com');
     $inspecteur->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
     $inspecteur->setStatut('actif');
-    $inspecteur->setRole('inspecteur');  // ← Vérifiez que 'inspecteur' existe dans ENUM
+    $inspecteur->setRole('inspecteurs');  // ← Vérifiez que 'inspecteur' existe dans ENUM
     $inspecteur->setTelephone('0701234567');
 
     // !!! CHAMPS OBLIGATOIRES POUR INSPECTEUR !!!

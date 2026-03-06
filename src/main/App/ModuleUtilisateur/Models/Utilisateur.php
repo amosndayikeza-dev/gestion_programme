@@ -87,13 +87,13 @@ class Utilisateur
     public function setMotDePasse( $mdp) { $this->motDePasse = $mdp; }
 
     public function getRole() { return $this->role; }
-    public function setRole( $role) { 
+    public function setRole($role) { 
         $allowedRoles = [
-    'administrateur','proviseur','censeur','directeur_discipline','eleve',
-    'parent','prefet','chef_classe','president_eleves','comite_parents',
-    'secretaire','inspecteur','enseignant','bibliothecaire','surveillant',
-    'prefet_enseignant','titulaire'  // ← AJOUTE ICI !
-    ];
+        'administrateur','proviseur','censeur','directeur_discipline','eleve',
+        'parent','prefet','chef_classe','president_eleves','comite_parents',
+        'secretaire','enseignant','bibliothecaire','surveillant',
+        'prefet_enseignant','titulaire','tuteur','inspecteurs', // ← AJOUTE ICI !
+        ];
         if(!in_array($role,$allowedRoles)){
             throw new Exception("Le rôle n'est pas valide.");  
         }    
@@ -151,7 +151,14 @@ class Utilisateur
             'chef_classe' => 'assets/images/default/chef.png',
             'president_eleves' => 'assets/images/default/president.png',
             'comite_parents' => 'assets/images/default/comite.png',
-            'titulaire' => 'assets/images/default/titulaire.png'
+            'titulaire' => 'assets/images/default/titulaire.png',
+            'tuteur' => 'assets/images/default/tuteur.png',
+            'inspecteurs' => 'assets/images/default/inspecteur.png',
+            'secretaire' => 'assets/images/default/secretaire.png',
+            'bibliothecaire' => 'assets/images/default/bibliothecaire.png',
+            'surveillant' => 'assets/images/default/surveillant.png',
+            'prefet_enseignant' => 'assets/images/default/prefect_enseignant.png',
+             // Ajoutez d'autres rôles et leurs images par défaut ici
         ];
         
         return $defaultImages[$this->role] ?? 'assets/images/default/user.png';
@@ -351,11 +358,14 @@ class Utilisateur
                 return ['represent_students', 'organize_events'];
             case RoleEnum::COMITE_PARENTS:
                 return ['represent_parents', 'participate_meetings'];
-            case RoleEnum::INSPECTEUR:
+            case RoleEnum::INSPECTEURS:
                 return ['inspect_teaching', 'evaluate_teachers', 'view_reports'];
             case RoleEnum::TITULAIRE:
                 return ['manage_courses', 'view_surveillant'];
-                
+            case RoleEnum::TUTEUR:
+                return ['manage_tutoring', 'view_tutees'];
+            case RoleEnum::INSPECTEURS:
+                return ['manage_discipline', 'view_student_records', 'sanction_students'];
             default:
                 return [];
         }

@@ -15,7 +15,7 @@ class RoleEnum {
     // Rôles existants
     const ELEVE = 'eleve';
     const ENSEIGNANT = 'enseignant';
-    const INSPECTEUR = 'inspecteur';
+    const INSPECTEURS = 'inspecteurs';
     const ADMINISTRATEUR = 'administrateur';
     
     // Nouveaux rôles ajoutés
@@ -26,7 +26,8 @@ class RoleEnum {
     const CHEF_CLASSE = 'chef_classe';
     const PRESIDENT_ELEVES = 'president_eleves';
     const COMITE_PARENTS = 'comite_parents';
-    const TITULAIRE = 'titulaire';    
+    const TITULAIRE = 'titulaire';  
+    const TUTEUR = 'tuteur';  
     /**
      * Retourne tous les rôles disponibles
      */
@@ -34,7 +35,7 @@ class RoleEnum {
         return [
             self::ELEVE,
             self::ENSEIGNANT,
-            self::INSPECTEUR,
+            self::INSPECTEURS,
             self::ADMINISTRATEUR,
             self::PARENT,
             self::PREFET,
@@ -43,7 +44,9 @@ class RoleEnum {
             self::CHEF_CLASSE,
             self::PRESIDENT_ELEVES,
             self::COMITE_PARENTS,
-            self::TITULAIRE
+            self::TITULAIRE,
+            self::TUTEUR,
+             // Ajoutez d'autres rôles ici
         ];
     }
     
@@ -62,7 +65,7 @@ class RoleEnum {
             'academique' => [
                 self::ELEVE,
                 self::ENSEIGNANT,
-                self::INSPECTEUR
+                self::INSPECTEURS
             ],
             'administratif' => [
                 self::ADMINISTRATEUR,
@@ -89,7 +92,7 @@ class RoleEnum {
         $labels = [
             self::ELEVE => 'Élève',
             self::ENSEIGNANT => 'Enseignant',
-            self::INSPECTEUR => 'Inspecteur',
+            self::INSPECTEURS => 'Inspecteurs',
             self::ADMINISTRATEUR => 'Administrateur',
             self::PARENT => 'Parent',
             self::PREFET => 'Préfet',
@@ -98,7 +101,9 @@ class RoleEnum {
             self::CHEF_CLASSE => 'Chef de classe',
             self::PRESIDENT_ELEVES => 'Président des élèves',
             self::COMITE_PARENTS => 'Comité de parents',
-            self::TITULAIRE => 'Titulaire'
+            self::TITULAIRE => 'Titulaire',
+            self::TUTEUR => 'Tuteur',
+             // Ajoutez d'autres rôles et leurs libellés ici
         ];
         
         return $labels[$role] ?? $role;

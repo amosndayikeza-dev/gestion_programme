@@ -145,11 +145,11 @@ public function findWithUser($id){
     return $result ? $this->createEntity($result) : null;
 }
 
-public function fincAllWithUser($columns = ['*']){
+public function findAllWithUser(){
     $sql = "SELECT u.*, e.* FROM utilisateur u 
             INNER JOIN enseignant e ON u.id_utilisateur = e.id_enseignant";
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute();
+    $stmt = $this->db->query($sql);
+    // $stmt->execute(); // ← Supprimez cette ligne
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $enseignants = [];
     foreach($results as $row){

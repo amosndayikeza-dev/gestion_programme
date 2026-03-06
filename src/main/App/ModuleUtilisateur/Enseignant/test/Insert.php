@@ -15,7 +15,7 @@ use App\ModuleUtilisateur\Enseignant\Models\Enseignant;
 echo "<h2>🧪 TEST ENSEIGNANT</h2>";
 try{
     $enseignant = new Enseignant();
-    $enseignant->setNom('NDUWIMANA');
+    $enseignant->setNom('VT');
     $enseignant->setPrenom('Alice');
     $enseignant->setEmail('alice' . time() . '@gmail.com');
     $enseignant->setMotDePasse(password_hash('123', PASSWORD_DEFAULT)); 

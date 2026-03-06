@@ -8,7 +8,7 @@ use Exception;
 
 class AdminDAO extends Model
 {
-    protected $table = "administrateur";
+    protected $table = "administrateurs";
     protected $primaryKey = "id_administrateur";
 
 
@@ -60,7 +60,7 @@ public function save($administrateur)
         $administrateur->setIdAdministrateur($idUtilisateur);
         
         // 2. Ensuite insérer dans administrateurs
-        $sqlAdmin = "INSERT INTO administrateur (
+        $sqlAdmin = "INSERT INTO administrateurs (
             id_administrateur, niveau_acces, departement, 
             date_prise_fonction, date_fin_fonction, permissions_speciales,
             dernier_audit, adresse_ip_autorisees, authentification_2facteurs,
@@ -148,7 +148,7 @@ public function save($administrateur)
             }
             
             // 2. Mettre à jour administrateurs
-            $sqlAdmin = "UPDATE administrateur SET
+            $sqlAdmin = "UPDATE administrateurs SET
                 niveau_acces = :niveau_acces,
                 departement = :departement,
                 date_prise_fonction = :date_prise_fonction,
@@ -202,7 +202,7 @@ public function save($administrateur)
     {
         $sql = "SELECT u.*, a.* 
                 FROM utilisateur u
-                LEFT JOIN administrateur a ON u.id_utilisateur = a.id_administrateur
+                LEFT JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
                 WHERE u.id_utilisateur = ?";
         
         $stmt = $this->db->prepare($sql);
@@ -251,7 +251,7 @@ public function save($administrateur)
         // Requête avec JOINTURE pour avoir les deux tables
         $sql = "SELECT u.*, a.* 
                 FROM utilisateur u
-                INNER JOIN administrateur a ON u.id_utilisateur = a.id_administrateur
+                INNER JOIN administrateurs a ON u.id_utilisateur = a.id_administrateur
                 WHERE u.role = 'administrateur'
                 ORDER BY u.nom, u.prenom";
         

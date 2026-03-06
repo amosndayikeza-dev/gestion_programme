@@ -33,7 +33,7 @@ try {
     $inspecteur->setEmail('jean.dupont.' . $timestamp . '@gmail.com');
     $inspecteur->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
     $inspecteur->setStatut('actif');
-    $inspecteur->setRole('inspecteur');  // ✅ 'inspecteur' est dans la liste
+    //$inspecteur->setRole('inspecteurs');  // ✅ 'inspecteur' est dans la liste
     $inspecteur->setTelephone('0701234567');
 
     $result = $inspecteurDAO->updateInspecteur($inspecteur);

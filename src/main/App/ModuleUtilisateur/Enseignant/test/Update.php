@@ -16,7 +16,7 @@ echo "<h2>🧪 TEST ENSEIGNANT</h2>";
 
 try{
     $enseignantDao = new EnseignantDAO();
-    $enseignant = $enseignantDao->findWithUser(52);
+    $enseignant = $enseignantDao->findWithUser(85);
     if(!$enseignant){
         die("Enseignant non trouvé.");
     }

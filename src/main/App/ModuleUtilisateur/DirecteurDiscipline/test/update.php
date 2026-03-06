@@ -20,10 +20,10 @@ try {
     $dao = new DirecteurDisciplineDAO();
     
     // 1. Récupérer le directeur (déjà un objet !)
-    $directeur = $dao->findWithUser(195);  // ← C'est déjà un objet DirecteurDiscipline
+    $directeur = $dao->findWithUser(68);  // ← C'est déjà un objet DirecteurDiscipline
     
     if (!$directeur) {
-        die("❌ Directeur avec ID 193 non trouvé !");
+        die("❌ Directeur avec ID 68 non trouvé !");
     }
     
     echo "✅ Directeur trouvé: " . $directeur->getNom() . " " . $directeur->getPrenom() . "<br>";

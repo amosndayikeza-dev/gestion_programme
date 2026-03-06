@@ -46,25 +46,31 @@ class EleveDAO extends Model
                 ':photo_profil' => $eleve->getPhotoProfil()
 
             ]);
-            // Récupération de l'ID utilisateur généré
-            $idUtilisateur = $this->db->lastInsertId();
-            // Mise à jour de l'objet Eleve avec l'ID utilisateur
-            $eleve->setIdUtilisateur($idUtilisateur);
-            $eleve->setIdEleve($idUtilisateur); // ID de l'élève = ID de l'utilisateur
-            //insertion eleve
-            $stmt = $this->db->prepare("INSERT INTO eleve(id_utilisateur, id_classe_actuelle, id_tuteur, date_naissance, lieu_naissance, sexe, adresse, date_inscription, matricule)
-             VALUES (:id_utilisateur, :id_classe_actuelle, :id_tuteur, :date_naissance, :lieu_naissance, :sexe, :adresse, :date_inscription, :matricule)");
-            $resultEleve = $stmt->execute([
-                ':id_utilisateur' => $idUtilisateur,
-                ':id_classe_actuelle' => $eleve->getIdClasse(),
-                ':id_tuteur' => $eleve->getIdTuteur(),  
-                ':date_naissance' => $eleve->getDateNaissance(),
-                ':lieu_naissance' => $eleve->getLieuNaissance(),
-                ':sexe' => $eleve->getSexe(),
-                ':adresse' => $eleve->getAdresse(),
-                ':date_inscription' => $eleve->getDateInscription(),
-                ':matricule' => $eleve->getMatricule(),
-            ]);
+                    // Récupération de l'ID utilisateur généré
+        $userId = $this->db->lastInsertId();
+        $eleve->setIdUtilisateur($userId);
+        $eleve->setIdEleve($userId);  // Important : le même ID !
+
+        // Insertion dans eleve
+        $stmt = $this->db->prepare("INSERT INTO eleve(
+            id_eleve, matricule, date_naissance, lieu_naissance, sexe,
+             adresse, id_classe_actuelle, id_tuteur, date_inscription
+        ) VALUES (
+            :id_eleve, :matricule, :date_naissance, :lieu_naissance, :sexe,
+             :adresse, :id_classe_actuelle, :id_tuteur, :date_inscription
+        )");
+
+        $resultEleve = $stmt->execute([
+            ':id_eleve' => $userId,
+            ':matricule' => $eleve->getMatricule(),
+            ':date_naissance' => $eleve->getDateNaissance(),
+            ':lieu_naissance' => $eleve->getLieuNaissance(),
+            ':sexe' => $eleve->getSexe(),
+            ':adresse' => $eleve->getAdresse(),
+            ':id_classe_actuelle' => $eleve->getIdClasse(),
+            ':id_tuteur' => $eleve->getIdTuteur(),
+            ':date_inscription' => $eleve->getDateInscription()
+        ]);
             
             if(!$resultEleve){
                 throw new \Exception("Erreur lors de l'insertion de l'élève");
@@ -155,7 +161,7 @@ class EleveDAO extends Model
     public function findWithUser($id){
            $sql = "SELECT u.*, e.* 
             FROM utilisateur u
-            INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur
+            INNER JOIN eleve e ON u.id_utilisateur = e.id_eleve
             WHERE u.id_utilisateur = ?";
     
     $stmt = $this->db->prepare($sql);
@@ -172,7 +178,7 @@ class EleveDAO extends Model
     
     // trouver tous les eleves avec les infos de l'utilisateur
     public function findAllWithUser($columns = ['*']){
-        $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_utilisateur";
+        $sql = "SELECT u.*, e.* FROM utilisateur u INNER JOIN eleve e ON u.id_utilisateur = e.id_eleve ORDER BY u.nom, u.prenom";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -185,7 +191,7 @@ class EleveDAO extends Model
 
     // trouver un eleve par son Email
     public function findByEmail($email){    
-        $sql = "SELECT u.*, e.* FROM utilisateur u LEFT JOIN eleve e ON u.id_utilisateur = e.id_utilisateur WHERE u.email = :email";
+        $sql = "SELECT u.*, e.* FROM utilisateur u LEFT JOIN eleve e ON u.id_utilisateur = e.id_eleve WHERE u.email = :email";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':email' => $email]);
         return $this->createEntity($stmt->fetch(PDO::FETCH_ASSOC));

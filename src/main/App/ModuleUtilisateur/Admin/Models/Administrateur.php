@@ -107,7 +107,7 @@ class Administrateur extends Utilisateur
     // === 4. SETTERS SPÉCIFIQUES ADMIN (AVEC CHAÎNAGE) ===
     public function setIdAdministrateur($id) { 
         $this->idAdministrateur = $id;
-        $this->setIdUtilisateur($id); // Synchronise avec id_utilisateur du parent
+        //$this->setIdUtilisateur($id); // Synchronise avec id_utilisateur du parent
         return $this; 
     }
     

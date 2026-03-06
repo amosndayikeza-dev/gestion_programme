@@ -19,7 +19,7 @@ try {
     $dao = new AdminDAO();
     
     // 1. Récupérer l'admin (tableau)
-    $data = $dao->findWithUser(192);
+    $data = $dao->findWithUser(65);
     
     if (!$data) {
         die("❌ Admin avec ID 192 non trouvé !");
@@ -29,7 +29,7 @@ try {
     $admin = $dao->createEntity($data);
     
     // 3. Modifier
-    $admin->setNom('NouveauNom_' . time());
+    $admin->setNom('NDAYIKEZA' . time());
     $admin->setDepartement('IT');
     
     // 4. Sauvegarder
@@ -42,6 +42,10 @@ try {
     }
     
 } catch (Exception $e) {
-    echo "❌ ERREUR: " . $e->getMessage();
+    $this->db->rollBack();
+    error_log("Erreur update admin: " . $e->getMessage());
+    // Ajoutez ceci pour propager l'erreur
+    throw $e;  // ← Permet d'afficher le message dans le test
+    return false;
 }
 ?>

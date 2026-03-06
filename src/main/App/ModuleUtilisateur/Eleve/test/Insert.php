@@ -19,7 +19,7 @@ echo "<h2>🧪 TEST ELEVE</h2>";
 
 try{
     $eleve = new Eleve();
-    $eleve->setNom('DUSHIMIMANA');
+    $eleve->setNom('NDAYIKEZA');
     $eleve->setPrenom('VT');
     $eleve->setEmail('VT' . time() . '@gmail.com');
     $eleve->setMotDePasse('123');
@@ -31,7 +31,7 @@ try{
     $eleve->setTelephone('70143569');
     $eleve->setAdresse('KIGALI, RWANDA');
     $eleve->setDateInscription(date('Y-m-d'));
-    $eleve->setMatricule('MAT-'.time());
+    $eleve->setMatricule('AMCM-'.time());
 
     $eleveDAO = new EleveDAO();
     $result = $eleveDAO->save( $eleve);

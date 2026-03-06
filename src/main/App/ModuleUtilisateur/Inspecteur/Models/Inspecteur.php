@@ -35,7 +35,7 @@ class Inspecteur extends Utilisateur
         $email = null,
         $telephone = null,
         $motDePasse = null,
-        $role = 'inspecteur',
+        $role ='inspecteurs',
         $statut = 'actif',
         $dateCreation = null,
         $derniereConnexion = null,
@@ -154,6 +154,7 @@ class Inspecteur extends Utilisateur
         $this->vehiculeDeFonction = $vehicule; 
         return $this; 
     }
+
     public function setPrimeInspection($prime) { 
         $this->primeInspection = $prime; 
         return $this; 
