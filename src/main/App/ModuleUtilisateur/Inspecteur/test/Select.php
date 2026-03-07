@@ -26,6 +26,12 @@ try{
             echo "<td>" . htmlspecialchars($ins->getNom()) . "</td>";
             echo "<td>" . htmlspecialchars($ins->getPrenom()) . "</td>";
             echo "<td>" . htmlspecialchars($ins->getEmail()) . "</td>";
+            echo "<td>" . htmlspecialchars($ins->getTelephone()) . "</td>";
+            echo "<td>" . htmlspecialchars($ins->getExperience()) . "</td>";
+            echo "<td>" . htmlspecialchars($ins->getGrade()) . "</td>";
+            echo "<td>" . htmlspecialchars($ins->getZoneGeographique()) . "</td>";
+            echo "<td>" . htmlspecialchars($ins->getStatut()) . "</td>";
+
             echo "</tr>";
         }
         echo "</table>";

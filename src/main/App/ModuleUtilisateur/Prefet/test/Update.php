@@ -20,12 +20,14 @@ echo "<h2>🧪 TEST MISE À JOUR PRÉFET ENSEIGNANT</h2>";
 try{
     $dao = new PrefetEnseignantDAO();
     
-    // 1. Récupérer un préfet existant (vous devez avoir au moins un préfet dans la base)
-    $prefets = $dao->findAllWithUserInfo(67);
+    // 1. Récupérer TOUS les préfets existants
+    $prefets = $dao->findAllWithUserInfo();
     if (empty($prefets)) {
         throw new Exception("Aucun préfet trouvé pour le test de mise à jour.");
     }
     $prefet = $prefets[0]; // Prendre le premier préfet trouvé
+    
+    echo "✅ Préfet trouvé: " . $prefet->getNom() . " " . $prefet->getPrenom() . "<br>";
     
     // 2. Modifier les informations du préfet
     $timestamp = time();

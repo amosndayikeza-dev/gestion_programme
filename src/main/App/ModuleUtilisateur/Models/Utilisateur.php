@@ -65,14 +65,20 @@ class Utilisateur
     public function getNom() { return $this->nom; }
     //settres avec verification
     public function setNom( $nom) { 
-        if(strlen($nom) < 2 || strlen($nom) > 50) {
+        if (empty($nom) || strlen($nom) < 2 || strlen($nom) > 50) {
             throw new Exception("Le nom doit comporter entre 2 et 50 caractères.");
         }
          $this->nom = $nom;
             return $this;
     }
     public function getPrenom() { return $this->prenom; }
-    public function setPrenom( $prenom) { $this->prenom = $prenom; }
+    public function setPrenom( $prenom) { 
+        if (empty($prenom) || strlen($prenom) < 2 || strlen($prenom) > 50) {
+            throw new Exception("Le prénom doit comporter entre 2 et 50 caractères.");
+        }
+        $this->prenom = $prenom; 
+        return $this;
+    }
 
     public function getEmail() { return $this->email; }
     public function setEmail( $email) {

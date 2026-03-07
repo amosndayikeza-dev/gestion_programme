@@ -41,7 +41,6 @@ if ($enseignant) {
 } else {
     echo "<p>Aucun enseignant trouvé.</p>";
 }
-    echo "</table>";
 }catch(Exception $e){
     echo "❌ Erreur : " . $e->getMessage();
 }

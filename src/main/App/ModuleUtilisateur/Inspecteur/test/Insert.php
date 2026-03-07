@@ -17,9 +17,9 @@ try{
         
     $inspecteur = new Inspecteur();
         // Dans votre test, assurez-vous d'avoir TOUS les champs obligatoires :
-    $inspecteur->setNom('FIFA');
-    $inspecteur->setPrenom('FIFA');
-    $inspecteur->setEmail('fifia' . time() . '@gmail.com');
+    $inspecteur->setNom('VT');
+    $inspecteur->setPrenom('VT');
+    $inspecteur->setEmail('vt' . time() . '@gmail.com');
     $inspecteur->setMotDePasse(password_hash('123', PASSWORD_DEFAULT));
     $inspecteur->setStatut('actif');
     $inspecteur->setRole('inspecteurs');  // ← Vérifiez que 'inspecteur' existe dans ENUM

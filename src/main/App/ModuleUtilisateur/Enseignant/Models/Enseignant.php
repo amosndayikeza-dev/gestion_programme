@@ -14,74 +14,106 @@ use Exception;
 class Enseignant extends Utilisateur 
 {
     private $idEnseignant;
-    private $nom;
-    private $prenom;
+    // ✅ SUPPRIMÉES: nom, prenom, email, telephone (les utiliser du parent!)
     private $sexe;
     private $grade;
     private $specialite;
-    private $telephone;
-    private $email;
-    private $statut;
     private $dateEmbauche;
 
     public function __construct(
-        $idEnseignant = null,
+        // Paramètres du parent
+        $idUtilisateur = null,
         $nom = null,
         $prenom = null,
+        $email = null,
+        $telephone = null,
+        $motDePasse = null,
+        $role = 'enseignant',
+        $statut = 'actif',
+        
+        // Paramètres spécifiques
+        $idEnseignant = null,
         $sexe = null,
         $grade = null,
         $specialite = null,
-        $telephone = null,
-        $email = null,
-        $statut = 'Actif',
         $dateEmbauche = null
     ) {
-        $this->idEnseignant = $idEnseignant;
-        $this->nom = $nom;
-        $this->prenom = $prenom;
+        // Appel du parent
+        parent::__construct(
+            $idUtilisateur,
+            $nom,
+            $prenom,
+            $email,
+            $telephone,
+            $motDePasse,
+            $role,
+            $statut
+        );
+        
+        // Initialisation spécifique
+        $this->idEnseignant = $idEnseignant ?? $idUtilisateur;
         $this->sexe = $sexe;
         $this->grade = $grade;
         $this->specialite = $specialite;
-        $this->telephone = $telephone;
-        $this->email = $email;
-        $this->statut = $statut;
         $this->dateEmbauche = $dateEmbauche ?? date('Y-m-d');
     }
 
     // Getters
     public function getIdEnseignant() { return $this->idEnseignant; }
-    public function getNom() { return $this->nom; }
-    public function getPrenom() { return $this->prenom; }
+    // ✅ Utiliser les getters du parent: getNom(), getPrenom(), getEmail(), getTelephone()
     public function getSexe() { return $this->sexe; }
     public function getGrade() { return $this->grade; }
     public function getSpecialite() { return $this->specialite; }
-    public function getTelephone() { return $this->telephone; }
-    public function getEmail() { return $this->email; }
-    public function getStatut() { return $this->statut; }
     public function getDateEmbauche() { return $this->dateEmbauche; }
 
     // Setters
     public function setIdEnseignant($idEnseignant) { 
         $this->idEnseignant = $idEnseignant;
-
         $this->setIdUtilisateur($idEnseignant);
         return $this;
+    }
+    // ✅ Utiliser les setters du parent: setNom(), setPrenom(), setEmail(), setTelephone()
+    public function setSexe($sexe) { $this->sexe = $sexe; return $this; }
+    public function setGrade($grade) { $this->grade = $grade; return $this; }
+    public function setSpecialite($specialite) { $this->specialite = $specialite; return $this; }
+    public function setDateEmbauche($dateEmbauche) { $this->dateEmbauche = $dateEmbauche; return $this; }
+
+    // ✅ HYDRATE: Mapper les données de la BDD aux propriétés
+    public function hydrate(array $data)
+    {
+        // Appeler parent::hydrate() pour mapper les colonnes Utilisateur
+        parent::hydrate($data);
+
+        // Mapper les colonnes spécifiques à Enseignant
+        $mapping = [
+            'id_enseignant' => 'idEnseignant',
+            'sexe' => 'sexe',
+            'grade' => 'grade',
+            'specialite' => 'specialite',
+            'date_embauche' => 'dateEmbauche'
+        ];
+
+        foreach ($mapping as $dbKey => $property) {
+            if (isset($data[$dbKey])) {
+                // Créer le nom du setter correctement
+                $setter = 'set' . ucfirst($property);
+                if (method_exists($this, $setter)) {
+                    $this->$setter($data[$dbKey]);
+                } else {
+                    // Si pas de setter, assigner directement à la propriété
+                    $this->$property = $data[$dbKey];
+                }
+            }
         }
-    public function setNom($nom) { $this->nom = $nom; }
-    public function setPrenom($prenom) { $this->prenom = $prenom; }
-    public function setSexe($sexe) { $this->sexe = $sexe; }
-    public function setGrade($grade) { $this->grade = $grade; }
-    public function setSpecialite($specialite) { $this->specialite = $specialite; }
-    public function setTelephone($telephone) { $this->telephone = $telephone; }
-    public function setEmail($email) { $this->email = $email; }
-    public function setStatut($statut) { $this->statut = $statut; }
-    public function setDateEmbauche($dateEmbauche) { $this->dateEmbauche = $dateEmbauche; }
+
+        return $this;
+    }
 
     // Méthodes utilitaires
   
 
     public function getAbreviation(): string {
-        $noms = explode(' ', $this->nom . ' ' . $this->prenom);
+        $noms = explode(' ', $this->getNom() . ' ' . $this->getPrenom());
         $abreviation = '';
         
         foreach ($noms as $nom) {
@@ -110,41 +142,41 @@ class Enseignant extends Utilisateur
     }
 
     public function estActif(): bool {
-        return $this->statut === 'Actif';
+        return $this->getStatut() === 'actif';
     }
 
     public function estEnConge(): bool {
-        return $this->statut === 'En congé';
+        return $this->getStatut() === 'en_conge';
     }
 
     public function estRetraite(): bool {
-        return $this->statut === 'Retraité';
+        return $this->getStatut() === 'retraite';
     }
 
     public function estSuspendu(): bool {
-        return $this->statut === 'Suspendu';
+        return $this->getStatut() === 'suspendu';
     }
 
     public function getStatutCouleur(): string {
         $couleurs = [
-            'Actif' => 'success',
-            'En congé' => 'info',
-            'Retraité' => 'secondary',
-            'Suspendu' => 'danger'
+            'actif' => 'success',
+            'en_conge' => 'info',
+            'retraite' => 'secondary',
+            'suspendu' => 'danger'
         ];
         
-        return $couleurs[$this->statut] ?? 'secondary';
+        return $couleurs[$this->getStatut()] ?? 'secondary';
     }
 
     public function getStatutIcone(): string {
         $icones = [
-            'Actif' => 'fa-chalkboard-teacher',
-            'En congé' => 'fa-calendar-alt',
-            'Retraité' => 'fa-user-clock',
-            'Suspendu' => 'fa-user-slash'
+            'actif' => 'fa-chalkboard-teacher',
+            'en_conge' => 'fa-calendar-alt',
+            'retraite' => 'fa-user-clock',
+            'suspendu' => 'fa-user-slash'
         ];
         
-        return $icones[$this->statut] ?? 'fa-chalkboard-teacher';
+        return $icones[$this->getStatut()] ?? 'fa-chalkboard-teacher';
     }
 
     public function getAnciennete(): int {
@@ -252,7 +284,7 @@ class Enseignant extends Utilisateur
     }
 
     public function getStatutsDisponibles(): array {
-        return ['Actif', 'En congé', 'Retraité', 'Suspendu'];
+        return ['actif', 'en_conge', 'retraite', 'suspendu'];
     }
 
     public function getInformationsProfessionnelles(): array {
@@ -262,7 +294,7 @@ class Enseignant extends Utilisateur
             'grade_niveau' => $this->getGradeNiveau(),
             'grade_couleur' => $this->getGradeCouleur(),
             'specialite' => $this->specialite,
-            'statut' => $this->statut,
+            'statut' => $this->getStatut(),
             'statut_couleur' => $this->getStatutCouleur(),
             'statut_icone' => $this->getStatutIcone(),
             'date_embauche' => $this->dateEmbauche,
@@ -279,8 +311,8 @@ class Enseignant extends Utilisateur
 
     public function getInformationsContact(): array {
         return [
-            'telephone' => $this->telephone,
-            'email' => $this->email,
+            'telephone' => $this->getTelephone(),
+            'email' => $this->getEmail(),
             'telephone_valide' => $this->validerTelephone(),
             'email_valide' => $this->validerEmail()
         ];
@@ -288,8 +320,7 @@ class Enseignant extends Utilisateur
 
     public function getInformationsPersonnelles(): array {
         return [
-            'nom' => $this->nom,
-            //'nom_affichage' => $this->getNomAffichage(),
+            'nom' => $this->getNom(),
             'prenom' => $this->getPrenom(),
             'abreviation' => $this->getAbreviation(),
             'sexe' => $this->sexe,
@@ -329,7 +360,7 @@ class Enseignant extends Utilisateur
             return false;
         }
         
-        $this->statut = 'En congé';
+        $this->setStatut('en_conge');
         return true;
     }
 
@@ -338,7 +369,7 @@ class Enseignant extends Utilisateur
             return false;
         }
         
-        $this->statut = 'Actif';
+        $this->setStatut('actif');
         return true;
     }
 
@@ -347,7 +378,7 @@ class Enseignant extends Utilisateur
             return false;
         }
         
-        $this->statut = 'Suspendu';
+        $this->setStatut('suspendu');
         return true;
     }
 
@@ -356,7 +387,7 @@ class Enseignant extends Utilisateur
             return false;
         }
         
-        $this->statut = 'Actif';
+        $this->setStatut('actif');
         return true;
     }
 
@@ -365,26 +396,26 @@ class Enseignant extends Utilisateur
             return false;
         }
         
-        $this->statut = 'Retraité';
+        $this->setStatut('retraite');
         return true;
     }
 
     public function validerTelephone(): bool {
-        if (empty($this->telephone)) {
+        if (empty($this->getTelephone())) {
             return true; // Téléphone non obligatoire
         }
-        
+
         // Validation du format téléphonique congolais
         $pattern = '/^(\+243|0)[1-9][0-9]{8}$/';
-        return preg_match($pattern, $this->telephone);
+        return preg_match($pattern, $this->getTelephone());
     }
 
     public function validerEmail(): bool {
-        if (empty($this->email)) {
+        if (empty($this->getEmail())) {
             return true; // Email non obligatoire
         }
-        
-        return filter_var($this->email, FILTER_VALIDATE_EMAIL) !== false;
+
+        return filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL) !== false;
     }
 
     public function validerGrade(): bool {
@@ -399,14 +430,14 @@ class Enseignant extends Utilisateur
         return array_merge(
             [
                 'id_enseignant' => $this->idEnseignant,
-                'nom' => $this->nom,
-                'prenom' => $this->prenom,
+                'nom' => $this->getNom(),
+                'prenom' => $this->getPrenom(),
                 'sexe' => $this->sexe,
                 'grade' => $this->grade,
                 'specialite' => $this->specialite,
-                'telephone' => $this->telephone,
-                'email' => $this->email,
-                'statut' => $this->statut,
+                'telephone' => $this->getTelephone(),
+                'email' => $this->getEmail(),
+                'statut' => $this->getStatut(),
                 'date_embauche' => $this->dateEmbauche
             ],
             $this->getInformationsPersonnelles(),
@@ -417,11 +448,12 @@ class Enseignant extends Utilisateur
 
     // Validation
     public function isValid(): bool {
-        return !empty($this->nomComplet) &&
+        return !empty($this->getNom()) &&
+               !empty($this->getPrenom()) &&
                in_array($this->sexe, ['M', 'F']) &&
                $this->validerGrade() &&
                $this->validerSpecialite() &&
-               in_array($this->statut, $this->getStatutsDisponibles()) &&
+               in_array($this->getStatut(), ['actif', 'en_conge', 'retraite', 'suspendu']) &&
                $this->validerTelephone() &&
                $this->validerEmail();
     }
@@ -429,36 +461,36 @@ class Enseignant extends Utilisateur
     // Recherche textuelle
     public function rechercher(string $terme): bool {
         $terme = strtolower(trim($terme));
-        
+
         if (empty($terme)) {
             return false;
         }
-        
+
         // Recherche dans le nom
-        if (strpos(strtolower($this->nom), $terme) !== false) {
+        if (strpos(strtolower($this->getNom()), $terme) !== false) {
             return true;
         }
-        
+
         // Recherche dans le prénom
-        if (strpos(strtolower($this->prenom), $terme) !== false) {
+        if (strpos(strtolower($this->getPrenom()), $terme) !== false) {
             return true;
         }
-        
+
         // Recherche dans la spécialité
         if (strpos(strtolower($this->specialite), $terme) !== false) {
             return true;
         }
-        
+
         // Recherche dans le grade
         if (strpos(strtolower($this->grade), $terme) !== false) {
             return true;
         }
-        
+
         // Recherche dans l'email
-        if (!empty($this->email) && strpos(strtolower($this->email), $terme) !== false) {
+        if (!empty($this->getEmail()) && strpos(strtolower($this->getEmail()), $terme) !== false) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -472,9 +504,9 @@ class Enseignant extends Utilisateur
             'Sexe' => $this->getGenre(),
             'Grade' => $this->getGradeLibelle(),
             'Spécialité' => $this->specialite,
-            'Téléphone' => $this->telephone,
-            'Email' => $this->email,
-            'Statut' => $this->statut,
+            'Téléphone' => $this->getTelephone(),
+            'Email' => $this->getEmail(),
+            'Statut' => $this->getStatut(),
             'Date d\'embauche' => $this->dateEmbauche,
             'Ancienneté' => $this->getAnciennete() . ' ans'
         ];
@@ -533,7 +565,7 @@ class Enseignant extends Utilisateur
         ];
     }
 
-    public function hydrate(array $data){
+    /*public function hydrate(array $data){
         parent::hydrate($data); // Hydrate les propriétés de Utilisateur
             
         $mapping = [
@@ -545,7 +577,6 @@ class Enseignant extends Utilisateur
             }
         }
         
-    return $this;
+    return $this;*/
     }
-}
-?>
+

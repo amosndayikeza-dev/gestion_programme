@@ -90,38 +90,50 @@ class PrefetEnseignantDAO extends Model
      * mettre a jour un préfet
      */
     public function updatePrefet(PrefetEnseignant $prefet)
-    {   
+    {
     try {
         $id = $prefet->getIdPrefet();
-        
-        // ✅ AJOUTEZ role = :role
-        $stmt = $this->db->prepare("UPDATE utilisateur SET 
-            nom = :nom, 
-            prenom = :prenom, 
-            email = :email, 
-            telephone = :telephone, 
-            role = :role,           // ← À AJOUTER
-            statut = :statut 
+
+        // 1. Mettre à jour la table utilisateur
+        $stmt = $this->db->prepare("UPDATE utilisateur SET
+            nom = :nom,
+            prenom = :prenom,
+            email = :email,
+            telephone = :telephone,
+            role = :role,
+            statut = :statut
             WHERE id_utilisateur = :id_utilisateur");
-            
+
         $stmt->execute([
             ':nom' => $prefet->getNom(),
             ':prenom' => $prefet->getPrenom(),
             ':email' => $prefet->getEmail(),
             ':telephone' => $prefet->getTelephone(),
-            ':role' => $prefet->getRole(),  // ← À AJOUTER
+            ':role' => $prefet->getRole(),
             ':statut' => $prefet->getStatut(),
             ':id_utilisateur' => $prefet->getIdUtilisateur()
         ]);
-        
-            
-            return true;
-        } catch (\Exception $e) {
-            error_log("Erreur update PrefetEnseignant: " . $e->getMessage());
-            return false;
-        }
-    }
 
+        // 2. Mettre à jour la table prefet_enseignant
+        $stmt = $this->db->prepare("UPDATE prefet_enseignant SET
+            departement = :departement,
+            specialite = :specialite,
+            echelle_traitement = :echelle_traitement
+            WHERE id_prefet = :id_prefet");
+
+        $stmt->execute([
+            ':departement' => $prefet->getDepartement(),
+            ':specialite' => $prefet->getSpecialite(),
+            ':echelle_traitement' => $prefet->getEchelleTraitement(),
+            ':id_prefet' => $id
+        ]);
+
+        return true;
+    } catch (\Exception $e) {
+        error_log("Erreur update PrefetEnseignant: " . $e->getMessage());
+        return false;
+    }
+}
     /**
      * Trouver un préfet par ID (avec jointure)
      */

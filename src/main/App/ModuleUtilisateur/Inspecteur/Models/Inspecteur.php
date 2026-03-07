@@ -35,7 +35,7 @@ class Inspecteur extends Utilisateur
         $email = null,
         $telephone = null,
         $motDePasse = null,
-        $role ='inspecteurs',
+        $role = 'inspecteurs',  // ✅ Défaut: TOUJOURS 'inspecteurs'
         $statut = 'actif',
         $dateCreation = null,
         $derniereConnexion = null,
@@ -51,7 +51,7 @@ class Inspecteur extends Utilisateur
         $grade = null,
         $dateNomination = null
     ) {
-        // Appel du parent
+        // Appel du parent - force le rôle à 'inspecteurs'
         parent::__construct(
             $idUtilisateur,
             $nom,
@@ -59,7 +59,7 @@ class Inspecteur extends Utilisateur
             $email,
             $telephone,
             $motDePasse,
-            $role,
+            'inspecteurs',  // ✅ Force TOUJOURS 'inspecteurs'
             $statut,
             $dateCreation,
             $derniereConnexion,
@@ -121,6 +121,15 @@ class Inspecteur extends Utilisateur
     public function setEtablissementsAssignes($etablissements) { 
         $this->etablissementsAssignes = $etablissements; 
         return $this; 
+    }
+
+    // === OVERRIDE SETTERS POUR FORCER LE RÔLE INSPECTEURS ===
+    /**
+     * Force toujours le rôle à 'inspecteurs' pour éviter les incohérences
+     */
+    public function setRole($role = null) {
+        // Toujours forcer 'inspecteurs', ignorer toute autre valeur
+        return parent::setRole('inspecteurs');
     }
     public function setDateNomination($date) { 
         $this->dateNomination = $date; 
@@ -239,6 +248,10 @@ class Inspecteur extends Utilisateur
     public function hydrate(array $data)
     {
         parent::hydrate($data);
+        
+        // ✅ CORRECTION : Forcer le rôle à 'inspecteurs' après hydratation du parent
+        // Cela évite les erreurs si le rôle en BDD est NULL ou invalide
+        parent::setRole('inspecteurs');
         
         $mapping = [
             'id_inspecteur' => 'idInspecteur',

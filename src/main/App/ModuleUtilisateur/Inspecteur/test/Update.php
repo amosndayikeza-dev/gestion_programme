@@ -18,7 +18,7 @@ $reflector = new ReflectionClass('App\ModuleUtilisateur\Models\Utilisateur');
 echo "Fichier Utilisateur chargé: " . $reflector->getFileName() . "<br>";
 try {
     $inspecteurDAO = new InspecteurDAO();
-    $inspecteur = $inspecteurDAO->findWithUserInfo(55);
+    $inspecteur = $inspecteurDAO->findWithUserInfo(95);
     
     if (!$inspecteur) {
         die("❌ Inspecteur non trouvé.");

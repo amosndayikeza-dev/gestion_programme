@@ -135,7 +135,7 @@ public function updateInspecteur(Inspecteur $inspecteur)
             ':nom' => $inspecteur->getNom(),
             ':prenom' => $inspecteur->getPrenom(),
             ':email' => $inspecteur->getEmail(),
-            ":role"=> $inspecteur->getRapportsEmis(),
+            // ❌ SUPPRIMÉ : ":role"=> $inspecteur->getRapportsEmis(), // ← ERREUR: paramètre non utilisé dans la requête
             ':telephone' => $inspecteur->getTelephone(),
             ':statut' => $inspecteur->getStatut(),
             ':id_utilisateur' => $inspecteur->getIdUtilisateur()
