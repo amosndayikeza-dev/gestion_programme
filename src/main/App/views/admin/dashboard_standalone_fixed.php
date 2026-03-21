@@ -249,6 +249,7 @@ class SimpleFooter {
 /**
  * Dashboard Administrateur - Version Standalone Améliorée
  */
+
 class AdminDashboardStandalone extends Component {
     private $user;
     
@@ -270,6 +271,7 @@ class AdminDashboardStandalone extends Component {
             
             <!-- Tailwind CSS -->
             <script src="https://cdn.tailwindcss.com"></script>
+            
             <script>
                 tailwind.config = {
                     theme: {
@@ -463,15 +465,23 @@ class AdminDashboardStandalone extends Component {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center py-3">
                         <div class="flex items-center">
+
+                            <button class="mobileMenuToggle p-2 mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
+                            
+                            <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
+                            
                             <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-3">
                                 <i class="fas fa-shield-alt text-white text-xl"></i>
                             </div>
+
                             <div>
-                                <h1 class="text-2xl font-bold text-gray-900 heading">Administration Système</h1>
-                                <div class="flex items-center mt-1">
+                                <h1 class="text-2xl font-bold text-gray-900 heading hidden lg:block">Administration Système</h1>
+                                <div class="flex items-center mt-1 hidden lg:block">
                                     <span class="text-sm font-medium text-gray-700 mr-2"><?php echo htmlspecialchars($this->user['fonction']); ?></span>
                                     <span class="mx-2 text-gray-300">•</span>
-                                    <span class="text-sm text-gray-600"><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
+                                    <span class="text-sm text-gray-600 "><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
                                 </div>
                             </div>
                         </div>
@@ -537,7 +547,7 @@ class AdminDashboardStandalone extends Component {
 
             <div class="flex min-h-[calc(100vh-74px)]">
                 <!-- Sidebar -->
-                <aside class="sidebar w-64 text-black hidden md:block fixed top-[74px] left-0 h-[calc(100vh-74px)] z-40">
+                <aside id="sidebar" class="sidebar fixed top-[74px] left-0 h-[calc(100vh-74px)] w-64 z-40 transform transition-transform duration-300 ease-in-out -translate-x-full">
                     <div class="p-6 h-full overflow-y-auto">
                         <div class="flex items-center mb-8">
                             <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center mr-3">
@@ -547,21 +557,28 @@ class AdminDashboardStandalone extends Component {
                         </div>
                         
                         <nav class="space-y-2">
+
+  
+                        
                             <?php foreach([
-                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'active' => true, 'badge' => ''],
-                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs', 'badge' => '3'],
-                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'badge' => '245'],
-                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'badge' => '32'],
-                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'badge' => '12'],
-                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'badge' => '8'],
-                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'badge' => ''],
-                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'badge' => ''],
-                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'badge' => ''],
-                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'badge' => '2'],
-                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'badge' => ''],
-                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'badge' => '5']
-                            ] as $item): ?>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url'=>'dashboard_standalone_fixed.php','badge' => ''],
+                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs','url'=>'gestion_utilisateur.php', 'badge' => '3'],
+                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'url'=>'gestion_etudiant.php', 'badge' => '245'],
+                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'url'=>'gestion_enseignant.php', 'badge' => '32'],
+                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'url'=>'gestion_classe.php', 'badge' => '12'],
+                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'url'=>'finances.php', 'badge' => '8'],
+                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '2'],
+                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '5']
+                            ] 
+                            as $item): ?>
+
+
+                            <a href="<?php echo $item['url'] ?? '#'; ?>"   class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+
                                 <i class="<?php echo $item['icon']; ?> w-5 mr-3 text-black"></i>
                                 <span class="flex-1 text-black"><?php echo $item['label']; ?></span>
                                 <?php if(!empty($item['badge'])): ?>
@@ -594,13 +611,11 @@ class AdminDashboardStandalone extends Component {
                     </div>
                 </aside>
 
-                <!-- Mobile Sidebar Toggle -->
-                <button id="mobileMenuToggle" class="md:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-full shadow-lg flex items-center justify-center">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
+               
 
                 <!-- Main Content -->
-                <main class="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in mt-[74px] ml-[230px]">
+                
+                <main class="mainContent flex-1 p-4 md:p-6 lg:p-8 animate-fade-in mt-[74px] ml-0 transition-all duration-300">
                     <!-- Welcome Header -->
                     <div class="mb-8">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -636,7 +651,7 @@ class AdminDashboardStandalone extends Component {
                         </div>
                     </div>
 
-                    <!-- Stats Cards -->
+                    <!-- Stats Caw3rds -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
                         <?php 
                         $statsValues = [
@@ -902,6 +917,62 @@ class AdminDashboardStandalone extends Component {
                     </div>
                 </main>
             </div>
+        
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const button = document.querySelector('.mobileMenuToggle');
+                    const sidebar = document.getElementById('sidebar');
+                    const main = document.querySelector('.mainContent');  // ou getElementsByClassName
+
+                    if (button && sidebar && main) {
+                        // Fonction qui initialise l'état selon la largeur de l'écran
+                        function setInitialState() {
+                            if (window.innerWidth >= 768) {
+                                // Bureau : sidebar visible, contenu décalé
+                                sidebar.classList.remove('-translate-x-full');
+                                main.classList.add('ml-[250px]');
+                            } else {
+                                // Mobile : sidebar cachée, contenu sans marge
+                                sidebar.classList.add('-translate-x-full');
+                                main.classList.remove('ml-[250px]');
+                            }
+                        }
+
+                        setInitialState();  // Applique l'état initial
+
+                        // Toggle au clic sur le bouton
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            sidebar.classList.toggle('-translate-x-full');
+                            // Sur bureau, on décale le main en même temps
+                            if (window.innerWidth >= 768) {
+                                main.classList.toggle('ml-[250px]');
+                            }
+                        });
+
+                        // Clic à l'extérieur sur mobile : ferme le sidebar
+                        document.addEventListener('click', function(e) {
+                            if (window.innerWidth < 768) {
+                                if (!sidebar.contains(e.target) && !button.contains(e.target)) {
+                                    sidebar.classList.add('-translate-x-full');
+                                }
+                            }
+                        });
+
+                        // Adaptation si la fenêtre est redimensionnée
+                        window.addEventListener('resize', function() {
+                            setInitialState();
+                        });
+                    }
+                });
+            </script>
+
+
+
+
+
+
+
 
             <!-- Footer -->
             <?php 
@@ -927,19 +998,9 @@ class AdminDashboardStandalone extends Component {
                 });
                 
                 // Mobile menu toggle
-                const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-                const sidebar = document.querySelector('aside');
-                
-                if (mobileMenuToggle && sidebar) {
-                    mobileMenuToggle.addEventListener('click', () => {
-                        sidebar.classList.toggle('hidden');
-                        sidebar.classList.toggle('fixed');
-                        sidebar.classList.toggle('inset-0');
-                        sidebar.classList.toggle('z-50');
-                    });
-                }
-                
+               
                 // Alert functions
+
                 function resolveAlert(action) {
                     const actions = {
                         'redémarrer': '🔧 Redémarrage du service en cours...',

@@ -341,7 +341,7 @@ class AdminDashboardStandalone extends Component {
                 }
                 
                 body {
-                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                    background:#fff;
                     min-height: 100vh;
                     color: #000000;
                     font-size: 14px;
@@ -379,11 +379,7 @@ class AdminDashboardStandalone extends Component {
                     50% { opacity: 0.5; }
                 }
                 
-                .glass-card {
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                }
+
                 
                 .hover-lift {
                     transition: all 0.3s ease;
@@ -475,19 +471,27 @@ class AdminDashboardStandalone extends Component {
         
         <body class="h-full">
             <!-- Header -->
-            <header class="bg-white shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+            <header class="bg-white  border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center py-3">
                         <div class="flex items-center">
+
+                            <button class="mobileMenuToggle p-2 mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
+                            
+                            <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
+                            
                             <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-3">
                                 <i class="fas fa-shield-alt text-white text-xl"></i>
                             </div>
+
                             <div>
-                                <h1 class="text-2xl font-bold text-gray-900 heading">Administration Système</h1>
-                                <div class="flex items-center mt-1">
+                                <h1 class="text-2xl font-bold text-gray-900 heading hidden lg:block">Administration Système</h1>
+                                <div class="flex items-center mt-1 hidden lg:block">
                                     <span class="text-sm font-medium text-gray-700 mr-2"><?php echo htmlspecialchars($this->user['fonction']); ?></span>
                                     <span class="mx-2 text-gray-300">•</span>
-                                    <span class="text-sm text-gray-600"><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
+                                    <span class="text-sm text-gray-600 "><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
                                 </div>
                             </div>
                         </div>
@@ -553,7 +557,7 @@ class AdminDashboardStandalone extends Component {
 
             <div class="flex min-h-[calc(100vh-74px)]">
                 <!-- Sidebar -->
-                <aside class="sidebar w-64 text-black hidden md:block fixed top-[74px] left-0 h-[calc(100vh-74px)] z-40">
+                <aside id="sidebar" class="sidebar fixed top-[74px] left-0 h-[calc(100vh-74px)] w-64 z-40 transform transition-transform duration-300 ease-in-out -translate-x-full">
                     <div class="p-6 h-full overflow-y-auto">
                         <div class="flex items-center mb-8">
                             <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center mr-3">
@@ -563,21 +567,28 @@ class AdminDashboardStandalone extends Component {
                         </div>
                         
                         <nav class="space-y-2">
-                            <?php foreach([
-                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'active' => true, 'badge' => ''],
-                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs', 'badge' => '3'],
-                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'badge' => '245'],
-                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'badge' => '32'],
-                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'badge' => '12'],
-                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'badge' => '8'],
-                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'badge' => ''],
-                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'badge' => ''],
-                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'badge' => ''],
-                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'badge' => '2'],
-                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'badge' => ''],
-                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'badge' => '5']
-                            ] as $item): ?>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+
+  
+                        
+                           <?php foreach([
+                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url'=>'dashboard_standalone_fixed.php','badge' => ''],
+                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs','url'=>'gestion_utilisateur.php', 'badge' => '3'],
+                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'url'=>'gestion_etudiant.php', 'badge' => '245'],
+                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'url'=>'gestion_enseignant.php', 'badge' => '32'],
+                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'url'=>'gestion_classe.php', 'badge' => '12'],
+                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'url'=>'finances.php', 'badge' => '8'],
+                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '2'],
+                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '5']
+                            ] 
+                            as $item): ?>
+
+
+                            <a href="<?php echo $item['url'] ?? '#'; ?>"   class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+
                                 <i class="<?php echo $item['icon']; ?> w-5 mr-3 text-black"></i>
                                 <span class="flex-1 text-black"><?php echo $item['label']; ?></span>
                                 <?php if(!empty($item['badge'])): ?>
@@ -660,7 +671,6 @@ class AdminDashboardStandalone extends Component {
 
         body {
             font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(145deg, #f9fcff 0%, #f1f6fa 100%);
             color: var(--gray-900);
             padding: 2rem;
             line-height: 1.6;
@@ -697,26 +707,23 @@ class AdminDashboardStandalone extends Component {
         .premium-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 20px;
             box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
             transition: 0.3s;
-            border-top: 4px solid #3730a3;
+            border: 1px solid #e5e7eb;
         }
 
         .premium-card:hover {
             transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-            border-color: rgba(79, 70, 229, 0.2);
             background: white;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid #e5e7eb;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
@@ -743,29 +750,6 @@ class AdminDashboardStandalone extends Component {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .badge-li cence {
-            background: linear-gradient(145deg, #2563eb, #4f46e5);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-        }
-
-        .badge-master {
-            background: linear-gradient(145deg, #7c3aed, #a855f7);
-            color: white;
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
-        }
-
-        .badge-doctorat {
-            background: linear-gradient(145deg, #0f172a, #1e293b);
-            color: white;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
-        }
-
-        .badge-du {
-            background: linear-gradient(145deg, #b45309, #d97706);
-            color: white;
-            box-shadow: 0 4px 12px rgba(180, 83, 9, 0.25);
-        }
 
         .badge-success {
             background: linear-gradient(145deg, #10b981, #059669);
@@ -897,7 +881,7 @@ class AdminDashboardStandalone extends Component {
         .search-premium {
             background: white;
             border-radius: var(--border-radius-full);
-            padding: 0.4rem 0.4rem 0.4rem 1.5rem;
+            padding: 0 10px;
             border: 1.5px solid var(--gray-200);
             transition: all 0.2s ease;
             display: flex;
@@ -907,13 +891,12 @@ class AdminDashboardStandalone extends Component {
 
         .search-premium:focus-within {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
 
         .search-input-premium {
             border: none;
             background: transparent;
-            padding: 0.75rem 0;
+            padding: 0.3rem 0;
             font-size: 0.95rem;
             width: 100%;
         }
@@ -927,7 +910,7 @@ class AdminDashboardStandalone extends Component {
         .filter-chip-premium {
             display: inline-flex;
             align-items: center;
-            padding: 0.6rem 1.4rem;
+            padding: 0.2rem 1.4rem;
             background: white;
             border: 1.5px solid var(--gray-200);
             border-radius: var(--border-radius-full);
@@ -957,7 +940,7 @@ class AdminDashboardStandalone extends Component {
             border-radius: var(--border-radius-lg);
             padding: 1.75rem;
             transition: all 0.3s ;
-            border-left:4px solid chocolate;
+            border:1px solid gray;
         }
 
 
@@ -1039,7 +1022,7 @@ class AdminDashboardStandalone extends Component {
 
         .nav-elegant .nav-link {
             border: none;
-            padding: 0.75rem 1.75rem;
+            padding: 0.3rem 1.75rem;
             border-radius: var(--border-radius-full);
             color: var(--gray-600);
             font-weight: 600;
@@ -1079,28 +1062,22 @@ class AdminDashboardStandalone extends Component {
 
 
                 <!-- Main Content -->
-                <main class="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in mt-[74px] ml-[230px]">
+                <main class="mainContent flex-1 md:p-6 lg:p-1 animate-fade-in mt-[74px] ml-0 transition-all duration-300">
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4  w-100">
                         <div class="d-flex align-items-center gap-4">
-                            <div class="avatar-premium" style="width: 72px; height: 72px; border-radius: 24px;">
+                            <div class="avatar-premium">
                                 <i class="bi bi-building fs-2"></i>
                             </div>
 
                             <div class="">
                                 <div class="d-flex align-items-center gap-3 mb-2">
-                                    <h1 class="display-6 fw-bold mb-0">
+                                    <h1 class="text-lg fw-bold mb-0">
                                         <span class="text-gradient">Classes & Promotions</span>
                                     </h1>
-                                    <span class="badge-premium badge-licence bg-info shadow">
-                                        <i class="bi bi-stars"></i> 2025-2026
-                                    </span>
                                 </div>
                                 
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="d-flex align-items-center gap-2 text-secondary">
-                                        <i class="bi bi-building fs-6"></i> Faculté des Sciences
-                                    </span>
                                     <span class="d-flex align-items-center gap-2 text-secondary">
                                         <i class="bi bi-mortarboard fs-6"></i> 2 456 étudiants
                                     </span>
@@ -1116,7 +1093,7 @@ class AdminDashboardStandalone extends Component {
                                 <i class="bi bi-calendar-check text-primary"></i>
                                 <span>Année 2025-26</span>
                             </button>
-                            <button class="btn rounded-5 px-3 py-3 d-flex align-items-center gap-2" style="background: linear-gradient(145deg, var(--primary), var(--primary-dark)); color: white; border: none; box-shadow: 0 8px 20px rgba(79,70,229,0.3);">
+                            <button class="btn rounded-5 px-3 py-0 d-flex align-items-center gap-2" style="background: linear-gradient(145deg, var(--primary), var(--primary-dark)); color: white; border: none; box-shadow: 0 8px 20px rgba(79,70,229,0.3);">
                                 <i class="bi bi-plus-lg"></i>
                                 <span class="fw-bold">Nouvelle classe</span>
                             </button>
@@ -1124,77 +1101,71 @@ class AdminDashboardStandalone extends Component {
                     </div>
 
                     <!-- ========== STATISTIQUES AVANCÉES ========== -->
-                    <div class="stats-grid row py-2 shadow mb-3 ">
-                        <div class="col-3">
-                            <div class="stat-card bg-white rounded-4 p-3 d-flex align-items-center gap-2 ">
-                                <div class="stat-icon" style="background: linear-gradient(145deg, rgba(79,70,229,0.1), rgba(139,92,246,0.1)); color: var(--primary);">
-                                    <i class="bi bi-mortarboard-fill"></i>
-                                </div>
-
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                            <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-secondary text-uppercase small fw-bold tracking-wide">Effectif total</span>
-                                    <div class="d-flex align-items-baseline gap-2">
-                                        <h2 class="display-5 fw-bold mb-0" style="color: var(--gray-900);">2 456</h2>
-                                    </div>
-                                    <span class="text-secondary small">inscrits pédagogiques</span>
+                                    <p class="text-gray-500 text-sm text-uppercase">Total</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">2456</p>
+                                </div>
+                                <div class="py-2.5 px-2.5 bg-blue-500  rounded-3">
+                                    <i class="fas fa-users text-white text-xl"></i>
                                 </div>
                             </div>
                         </div>
 
-                        
-
-                        <div class="col-3">
-                            <div class="stat-card bg-white rounded-4 p-3 d-flex align-items-center gap-2  ">
-                                <div class="stat-icon" style="background: linear-gradient(145deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); color: var(--success);">
-                                    <i class="bi bi-diagram-3-fill"></i>
-                                </div>
+                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                            <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-secondary text-uppercase small fw-bold">Promotions</span>
-                                    <div class="d-flex align-items-baseline gap-3">
-                                        <h2 class="display-5 fw-bold mb-0" style="color: var(--gray-900);">24</h2>
-                                    
-                                    </div>
-                                    <span class="text-secondary small">dont 8 accréditées</span>
+                                    <p class="text-gray-500 text-sm text-uppercase">Promotions</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">47</p>
+                                </div>
+                                <div class="py-2.5 px-2.5 bg-green-500  rounded-3">
+                                    <i class="bi bi-diagram-3-fill fs-3 text-white text-xl"></i>
                                 </div>
                             </div>
+                             <span class="text-secondary small">dont 8 accréditées</span>
                         </div>
 
-                        <div class="col-3">
-                            <div class="stat-card bg-white rounded-4 p-3 d-flex align-items-center gap-2  ">
-                                <div class="stat-icon" style="background: linear-gradient(145deg, rgba(245,158,11,0.1), rgba(217,119,6,0.1)); color: var(--warning);">
-                                    <i class="bi bi-people-fill"></i>
-                                </div>
+                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                            <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-secondary text-uppercase small fw-bold">Groupes TD/TP</span>
-                                    <h2 class="display-5 fw-bold mb-0" style="color: var(--gray-900);">86</h2>
-                                    <span class="text-secondary small">moyenne 28 étudiants/groupe</span>
+                                    <p class="text-gray-500 text-sm text-uppercase">Groupes TD/TP</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">47</p>
                                 </div>
+                                <div class="py-2.5 px-2.5 bg-purple-500  rounded-3">
+                                    <i class="fas fa-clock fs-3 text-white text-xl"></i>
+                                </div>
+                                
                             </div>
+                            <span class="text-secondary small">moyenne 28 étudiants/groupe</span>
                         </div>
 
-                    <div class="col-3">
-                            <div class="stat-card bg-white rounded-4 p-3 d-flex align-items-center gap-2  ">
-                                <div class="stat-icon" style="background: linear-gradient(145deg, rgba(139,92,246,0.1), rgba(124,58,237,0.1)); color: var(--accent);">
-                                    <i class="bi bi-door-open-fill"></i>
-                                </div>
+                        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                            <div class="flex justify-between items-start">
                                 <div>
-                                    <span class="text-secondary text-uppercase small fw-bold">Salles dédiées</span>
-                                    <h2 class="display-5 fw-bold mb-0" style="color: var(--gray-900);">42</h2>
-                                    <span class="text-secondary small">sur 58 · taux 72%</span>
+                                    <p class="text-gray-500 text-sm text-uppercase">Salles dédiées</p>
+                                    <p class="text-2xl font-bold text-gray-800 mt-1">47</p>
+                                </div>
+                                <div class="py-2.5 px-2.5 bg-orange-500  rounded-3">
+                                    <i class="bi bi-door-open-fill fs-3 text-white text-xl"></i>
                                 </div>
                             </div>
-                    </div>
+                            <span class="text-secondary small">sur 58 · taux 72%</span>
+                        </div>
                     </div>
 
                     <!-- ========== BARRE D'OUTILS PREMIUM ========== -->
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-4 mb-2">
+
                         <div class="search-premium" style="width: 400px; max-width: 100%;">
                             <i class="bi bi-search text-secondary me-2"></i>
                             <input type="text" class="search-input-premium" placeholder="Rechercher une promotion, un groupe, une salle...">
-                            <span class="badge bg-light text-secondary px-4 py-2 rounded-5 fw-normal">
-                                <i class="bi bi-command"></i> F
+                            <span class="badge bg-light text-secondary px-4 py-0 rounded-5 fw-normal">
+                                <i class="bi bi-command"></i> 
                             </span>
                         </div>
+
                         <div class="d-flex gap-2 flex-wrap">
                             <button class="filter-chip-premium active">
                                 <i class="bi bi-grid-3x3-gap-fill me-2"></i>Toutes
@@ -1214,12 +1185,13 @@ class AdminDashboardStandalone extends Component {
 
                     <!-- ========== ONGLETS NAVIGATION ÉLÉGANTS ========== -->
 
-                    <ul class="nav nav-elegant mb-5 " id="pills-tab" role="tablist">
+                    <ul class="nav nav-elegant mb-2" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="pills-all-tab" data-bs-toggle="pill" data-bs-target="#pills-all" type="button" role="tab">
                                 <i class="bi bi-columns-gap me-2"></i>Vue d'ensemble
                             </button>
                         </li>
+
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-promos-tab" data-bs-toggle="pill" data-bs-target="#pills-promos" type="button" role="tab">
                                 <i class="bi bi-layers me-2"></i>Promotions
@@ -1264,7 +1236,7 @@ class AdminDashboardStandalone extends Component {
                             <div class="row g-4 mb-3 ">
                                 <!-- PROMO LICENCE 1 INFORMATIQUE -->
                                 <div class="col-xl-4 col-lg-6">
-                                    <div class="promo-card-premium  rounded-4 h-100 ">
+                                    <div class="promo-card-premium border border-gray-100 rounded-4 h-100 ">
                                         <div class="position-relative">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
                                                 <div class="">
@@ -1332,7 +1304,7 @@ class AdminDashboardStandalone extends Component {
 
                                 <!-- PROMO MASTER 2 DATA SCIENCE -->
                                 <div class="col-xl-4 col-lg-6">
-                                    <div class="promo-card-premium  rounded-4  h-100">
+                                    <div class="promo-card-premium border border-gray-100  rounded-4  h-100">
                                         
                                         <div class="position-relative" style="z-index: 2;">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -1397,7 +1369,7 @@ class AdminDashboardStandalone extends Component {
                                 <!-- PROMO LICENCE 3 GÉNIE CIVIL -->
                                 
                                 <div class="col-xl-4 col-lg-6">
-                                    <div class="promo-card-premium  rounded-4  h-100">
+                                    <div class="promo-card-premium border border-gray-100 rounded-4  h-100">
                                         <div class="position-relative" style="z-index: 2;">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
                                                 <div>
@@ -1473,7 +1445,7 @@ class AdminDashboardStandalone extends Component {
                             <div class="row g-4 mb-5  ">
                                 <!-- Groupe TD 1A -->
                                 <div class="col-lg-3 ">
-                                    <div class="glass-card p-4 d-flex flex-wrap gap-3 h-100">
+                                    <div class="glass-card p-4 d-flex flex-wrap gap-3 h-100 ">
                                         <div class="avatar-group" style="background: linear-gradient(145deg, #3b82f6, #2563eb);">
                                             L1-A
                                         </div>
@@ -1523,6 +1495,7 @@ class AdminDashboardStandalone extends Component {
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <h5 class="fw-semibold mb-1">Groupe Data Science</h5>
+
                                                     <div class="d-flex align-items-center gap-3 mb-2">
                                                         <span class="badge-master px-3 py-2" style="font-size: 0.7rem;">Master 2</span>
                                                         <span class="text-secondary small"><i class="bi bi-people"></i> 16 étudiants</span>
@@ -1773,43 +1746,60 @@ class AdminDashboardStandalone extends Component {
                         </div>
                     </div>
 
-                    <hr>
-                    <div class="d-flex flex-wrap justify-content-between align-items-center">
-                        <div class="d-flex align-items-center gap-4">
-                            <span class="small text-secondary">
-                                <i class="bi bi-building me-1"></i> Université Prestige · Direction des formations
-                            </span>
-                            <span class="small text-secondary">
-                                <i class="bi bi-arrow-repeat me-1"></i> Synchro: il y a 2 min
-                            </span>
-                        </div>
-                        <div class="d-flex gap-3">
-                            <span class="small text-secondary">
-                                <i class="bi bi-database"></i> 24 promotions · 86 groupes
-                            </span>
-                            <span class="small text-secondary">
-                                <i class="bi bi-download"></i> Exporter
-                            </span>
-                        </div>
-                    </div>
+                
 
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    // Activation des tabs Bootstrap
-    document.addEventListener('DOMContentLoaded', function() {
-        const triggerTabList = [].slice.call(document.querySelectorAll('#pills-tab button'));
-        triggerTabList.forEach(function(triggerEl) {
-            const tabTrigger = new bootstrap.Tab(triggerEl);
-            triggerEl.addEventListener('click', function(event) {
-                event.preventDefault();
-                tabTrigger.show();
-            });
-        });
-    });
-</script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const button = document.querySelector('.mobileMenuToggle');
+                    const sidebar = document.getElementById('sidebar');
+                    const main = document.querySelector('.mainContent');  // ou getElementsByClassName
+
+                    if (button && sidebar && main) {
+                        // Fonction qui initialise l'état selon la largeur de l'écran
+                        function setInitialState() {
+                            if (window.innerWidth >= 768) {
+                                // Bureau : sidebar visible, contenu décalé
+                                sidebar.classList.remove('-translate-x-full');
+                                main.classList.add('ml-[230px]');
+                            } else {
+                                // Mobile : sidebar cachée, contenu sans marge
+                                sidebar.classList.add('-translate-x-full');
+                                main.classList.remove('ml-[230px]');
+                            }
+                        }
+
+                        setInitialState();  // Applique l'état initial
+
+                        // Toggle au clic sur le bouton
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            sidebar.classList.toggle('-translate-x-full');
+                            // Sur bureau, on décale le main en même temps
+                            if (window.innerWidth >= 768) {
+                                main.classList.toggle('ml-[230px]');
+                            }
+                        });
+
+                        // Clic à l'extérieur sur mobile : ferme le sidebar
+                        document.addEventListener('click', function(e) {
+                            if (window.innerWidth < 768) {
+                                if (!sidebar.contains(e.target) && !button.contains(e.target)) {
+                                    sidebar.classList.add('-translate-x-full');
+                                }
+                            }
+                        });
+
+                        // Adaptation si la fenêtre est redimensionnée
+                        window.addEventListener('resize', function() {
+                            setInitialState();
+                        });
+                    }
+                });
+            </script>
 
 
                 </main>

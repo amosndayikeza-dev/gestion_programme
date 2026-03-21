@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="configu ration.css">
     
 </head>
 
@@ -287,6 +288,7 @@ class AdminDashboardStandalone extends Component {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Administration - Dashboard Système</title>
+            <link rel="stylesheet" href="configuration.css">
             
             <!-- Tailwind CSS -->
             <script src="https://cdn.tailwindcss.com"></script>
@@ -331,481 +333,32 @@ class AdminDashboardStandalone extends Component {
             <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
             
-            <style>
-                * {
-                    font-family: 'Inter', sans-serif;
-                }
-                
-                .heading {
-                    font-family: 'Inter', sans-serif;
-                    font-weight: 700;
-                }
-                
-                .mono {
-                    font-family: 'Roboto Mono', monospace;
-                }
-                
-                body {
-                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-                    min-height: 100vh;
-                    color: #000000;
-                    font-size: 14px;
-                }
-                
-                @keyframes fadeInUp {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                
-                @keyframes slideInRight {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(0);
-                    }
-                }
-                
-                @keyframes blink {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0.5; }
-                }
-                
-                .glass-card {
-                    background: rgba(255, 255, 255, 0.95);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                }
-                
-                .hover-lift {
-                    transition: all 0.3s ease;
-                }
-                
-                .hover-lift:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-                }
-                
-                .gradient-text {
-                    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                
-                .sidebar {
-                    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-                    color: #000000;
-                    border-right: 1px solid rgba(0, 0, 0, 0.1);
-                }
-                
-                .stat-card {
-                    position: relative;
-                    overflow: hidden;
-                }
-                
-                .stat-card::after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    width: 100px;
-                    height: 100px;
-                    background: linear-gradient(135deg, currentColor 0%, transparent 70%);
-                    opacity: 0.1;
-                    border-radius: 0 0 0 100px;
-                }
-                
-                .alert-high {
-                    border-left: 4px solid #ef4444;
-                    animation: pulse-subtle 2s infinite;
-                }
-                
-                .alert-medium {
-                    border-left: 4px solid #f59e0b;
-                }
-                
-                .alert-low {
-                    border-left: 4px solid #10b981;
-                }
-                
-                .progress-bar {
-                    height: 8px;
-                    border-radius: 4px;
-                    overflow: hidden;
-                    background: #e5e7eb;
-                }
-                
-                .progress-fill {
-                    height: 100%;
-                    border-radius: 4px;
-                    transition: width 1s ease-in-out;
-                }
-                
-                .server-status {
-                    position: relative;
-                }
-                
-                .server-status::before {
-                    content: '';
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 50%;
-                    background: #10b981;
-                    animation: blink 2s infinite;
-                }
-                
-                .server-critical::before {
-                    background: #ef4444;
-                    animation: blink 1s infinite;
-                }
-
-
-/**  ================================
-=====================================
-                MAIN
-==================================
-====================================
- */
-
-
-    <style>
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        
-        /* ===== CARTES STATISTIQUES ===== */
-        .stat-card {
-            transition: all 0.2s ease;
-        }
-        
-        .stat-card:hover {
-            box-shadow: 0 15px 30px rgba(0,0,0,0.04), 0 5px 12px rgba(0,0,0,0.02);
-            transform: translateY(-2px);
-        }
-        
-        .stat-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-        }
-        
-        .stat-number {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #0a1e2f;
-            line-height: 1.2;
-            margin-bottom: 6px;
-        }
-        
-        .stat-label {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #5e6f8c;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
-        .stat-badge {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 5px 14px;
-            border-radius: 50px;
-            background: #f1f5f9;
-            color: #2c3e5c;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        /* ===== BARRE D'OUTILS ===== */
-
-        
-        .search-input-group {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 50px;
-            padding: 8px 18px;
-            transition: all 0.2s;
-        }
-        
-        .search-input-group:focus-within {
-            border-color: #3b7c9c;
-            box-shadow: 0 0 0 3px rgba(59,124,156,0.08);
-        }
-        
-        .search-input-group i {
-            color: #94a3b8;
-            margin-right: 10px;
-        }
-        
-        .search-input-group input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            padding: 6px 0;
-            outline: none;
-            font-size: 0.95rem;
-        }
-        
-        .filter-select {
-            border-radius: 50px;
-            padding: 10px 32px 10px 18px;
-            font-size: 0.9rem;
-            color: #1e293b;
-            background-color: white;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2347566b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 12px;
-        }
-        .filter-select:focus{
-            border:none;
-        }
-        
-        .btn-action {
-            border-radius: 50px;
-            padding: 10px 22px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border: 1px solid #e2e8f0;
-            background: white;
-            color: #1e293b;
-            transition: all 0.15s;
-        }
-        
-        .btn-action:hover {
-            background: #f8fafc;
-            border-color: #cbd5e1;
-        }
-        
-        .btn-primary-custom {
-            background: #1e4a6b;
-            border-color: #1e4a6b;
-            color: white;
-        }
-        
-        .btn-primary-custom:hover {
-            background: #0f3b55;
-            border-color: #0f3b55;
-            color: white;
-        }
-        
-        /* ===== TABLEAU BOOTSTRAP PERSONNALISÉ ===== */
-
-        
-  
-        
-        .table-custom td {
-            vertical-align: middle;
-            color: #1e2a3a;
-            font-weight: 450;
-            border-bottom: 1px solid #edf1f6;
-            background: white;
-        }
-        
-        .table-custom tbody tr:hover td {
-            background-color: #fafdff;
-        }
-        
-        .student-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 1px solid rgba(30,74,107,0.1);
-        }
-
-        .student-image img{
-            width: 100%;
-            height:100%;
-            object-fit:cover;
-            border-radius:50%;
-        }
-       
-        .student-name {
-            font-weight: 650;
-            color: #0a1e2f;
-            margin-bottom: 4px;
-        }
-        
-        .student-email {
-            font-size: 0.75rem;
-            color: #6f7f94;
-        }
-        
-        .badge-custom {
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            display: inline-block;
-            background: #eef2f6;
-            color: #2d4356;
-            border: 1px solid #dce3eb;
-        }
-        
-        .badge-active {
-            background: #e2f3e9;
-            color: #16634a;
-            border-color: #c0e0d2;
-        }
-        
-        .badge-pending {
-            background: #fff5e6;
-            color: #9e6300;
-            border-color: #ffe3b7;
-        }
-        
-        .badge-inactive {
-            background: #f0f2f5;
-            color: #535e6b;
-            border-color: #dee3e9;
-        }
-        
-        .progress-thin {
-            width: 110px;
-            height: 6px;
-            background: #e6edf2;
-            border-radius: 50px;
-            overflow: hidden;
-        }
-        
-        .progress-bar-custom {
-            height: 6px;
-            background: linear-gradient(90deg, #2e6b8c, #1f4f6f);
-            border-radius: 50px;
-        }
-        
-        .action-icons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7f94;
-            background: transparent;
-            border: 1px solid transparent;
-            transition: all 0.15s;
-        }
-        
-        .action-btn:hover {
-            background: #f1f7fc;
-            border-color: #dce5ec;
-            color: #1e4a6b;
-        }
-        
-        /* ===== PAGINATION ===== */
-
-        .pagination-custom {
-            display: flex;
-            justify-content:end;
-            gap: 8px;
-        }
-        
-        .page-link-custom {
-            padding: 10px 18px;
-            border-radius: 12px;
-            background: white;
-            border: 1px solid #e2e8f0;
-            color: #2e4258;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.15s;
-            text-decoration: none;
-        }
-        
-        .page-link-custom:hover {
-            background: #f1f7fc;
-            border-color: #cbd5e1;
-        }
-        
-        .page-link-custom.active {
-            background: #1e4a6b;
-            border-color: #1e4a6b;
-            color: white;
-        }
-        
-        /* ===== SECTION SUIVI ===== */
-        
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #0a1e2f;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        canvas {
-            max-height: 200px;
-            width: 100% !important;
-        }
-        
-        /* ===== UTILITAIRES ===== */
-        .text-primary-dark {
-            color: #1e4a6b;
-        }
-        
-        .bg-soft-blue {
-            background: linear-gradient(145deg, #ecf6ff, #e2eff9);
-        }
-    </style>
-
-
-
-        
-            </style>
+            
         </head>
         
         <body class="h-full">
             <!-- Header -->
-            <header class="bg-white shadow-lg border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+            <header class="bg-white  border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center py-3">
                         <div class="flex items-center">
+
+                            <button class="mobileMenuToggle p-2 mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
+                            
+                            <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30 md:hidden"></div>
+                            
                             <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-3">
                                 <i class="fas fa-shield-alt text-white text-xl"></i>
                             </div>
+
                             <div>
-                                <h1 class="text-2xl font-bold text-gray-900 heading">Administration Système</h1>
-                                <div class="flex items-center mt-1">
+                                <h1 class="text-2xl font-bold text-gray-900 heading hidden lg:block">Administration Système</h1>
+                                <div class="flex items-center mt-1 hidden lg:block">
                                     <span class="text-sm font-medium text-gray-700 mr-2"><?php echo htmlspecialchars($this->user['fonction']); ?></span>
                                     <span class="mx-2 text-gray-300">•</span>
-                                    <span class="text-sm text-gray-600"><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
+                                    <span class="text-sm text-gray-600 "><?php echo htmlspecialchars($this->user['experience']); ?> d'expérience</span>
                                 </div>
                             </div>
                         </div>
@@ -819,7 +372,7 @@ class AdminDashboardStandalone extends Component {
                             
                             <!-- Notifications -->
                             <div class="relative">
-                                <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full">
+                                <button class="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full focus:outline-none">
                                     <i class="fas fa-bell text-xl"></i>
                                     <span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
                                 </button>
@@ -836,7 +389,7 @@ class AdminDashboardStandalone extends Component {
                                         <p class="text-xs text-gray-500">Administrateur Système</p>
                                     </div>
                                     <i class="fas fa-chevron-down text-gray-400"></i>
-                                </button>
+                                </button    >
                                 
                                 <!-- Dropdown Menu -->
                                 <div id="userMenu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
@@ -871,7 +424,7 @@ class AdminDashboardStandalone extends Component {
 
             <div class="flex min-h-[calc(100vh-74px)]">
                 <!-- Sidebar -->
-                <aside class="sidebar w-64 text-black hidden md:block fixed top-[74px] left-0 h-[calc(100vh-74px)] z-40">
+                <aside id="sidebar" class="sidebar fixed top-[74px] left-0 h-[calc(100vh-74px)] w-64 z-40 transform transition-transform duration-300 ease-in-out">
                     <div class="p-6 h-full overflow-y-auto">
                         <div class="flex items-center mb-8">
                             <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center mr-3">
@@ -881,21 +434,28 @@ class AdminDashboardStandalone extends Component {
                         </div>
                         
                         <nav class="space-y-2">
-                            <?php foreach([
-                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'active' => true, 'badge' => ''],
-                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs', 'badge' => '3'],
-                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'badge' => '245'],
-                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'badge' => '32'],
-                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'badge' => '12'],
-                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'badge' => '8'],
-                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'badge' => ''],
-                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'badge' => ''],
-                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'badge' => ''],
-                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'badge' => '2'],
-                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'badge' => ''],
-                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'badge' => '5']
-                            ] as $item): ?>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+
+  
+                        
+                           <?php foreach([
+                                ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url'=>'dashboard_standalone_fixed.php','badge' => ''],
+                                ['icon' => 'fas fa-users', 'label' => 'Gestion Utilisateurs','url'=>'gestion_utilisateur.php', 'badge' => '3'],
+                                ['icon' => 'fas fa-graduation-cap', 'label' => 'Élèves', 'url'=>'gestion_etudiant.php', 'badge' => '245'],
+                                ['icon' => 'fas fa-chalkboard-teacher', 'label' => 'Enseignants', 'url'=>'gestion_enseignant.php', 'badge' => '32'],
+                                ['icon' => 'fas fa-school', 'label' => 'Classes', 'url'=>'gestion_classe.php', 'badge' => '12'],
+                                ['icon' => 'fas fa-dollar-sign', 'label' => 'Finances', 'url'=>'finances.php', 'badge' => '8'],
+                                ['icon' => 'fas fa-chart-line', 'label' => 'Statistiques', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-cog', 'label' => 'Paramètres', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-server', 'label' => 'Serveur', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-lock', 'label' => 'Sécurité', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '2'],
+                                ['icon' => 'fas fa-database', 'label' => 'Base de données', 'url'=>'dashboard_standalone_fixed.php', 'badge' => ''],
+                                ['icon' => 'fas fa-file-alt', 'label' => 'Rapports', 'url'=>'dashboard_standalone_fixed.php', 'badge' => '5']
+                            ] 
+                            as $item): ?>
+
+
+                            <a href="<?php echo $item['url'] ?? '#'; ?>"   class="flex items-center px-4 py-3 rounded-lg hover:bg-black/10 transition-colors <?php echo ($item['active'] ?? false) ? 'bg-black/10 shadow-inner' : ''; ?>">
+
                                 <i class="<?php echo $item['icon']; ?> w-5 mr-3 text-black"></i>
                                 <span class="flex-1 text-black"><?php echo $item['label']; ?></span>
                                 <?php if(!empty($item['badge'])): ?>
@@ -933,649 +493,474 @@ class AdminDashboardStandalone extends Component {
                     <i class="fas fa-bars text-xl"></i>
                 </button>
 
+               
                 <!-- Main Content -->
-                <main class="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in mt-[74px] ml-[230px]">
-                  
-                
-                    <div class="container-fluid p-2 ps-4">
-                        <!-- HEADER AVEC BOOTSTRAP -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                <main class="mainContent flex-1 p-4 md:p-6 lg:p-8 px-12 animate-fade-in mt-[74px] ml-0 transition-all duration-300">
+                    <div class="container-fluid px-0">
+                        <!-- En-tête de section -->
+                        <div class="d-flex gap-3 flex-column flex-md-row justify-content-between align-items-md-center mb-4">
                             <div>
-                                <h1 class="display-6 fw-bold text-success" style="color: #0a1e2f; ">
-                                    <i class="fas fa-user-graduate me-3" style="color: #1e4a6b;"></i>
+                                <h2 class="h2 fw-900 text-dark mb-1">
+                                    <i class="fas fa-user-graduate me-2 text-blue-500"></i>
                                     Gestion des étudiants
-                                </h1>
-                                <p class="text-secondary-emphasis ms-1">
-                                    <i class="fas fa-database me-2" style="color: #5e7b96;"></i>
-                                    543 inscrits · Mise à jour 10:24
+                                </h2>
+                                    
+                                <p class="text-secondary-emphasis mb-0">
+                                    <i class="fas fa-database me-1"></i> 543 inscrits · Mise à jour 10:24
                                 </p>
                             </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="badge bg-white text-dark p-3 border rounded-4 shadow-sm">
+
+                            <div class="mt-3 mt-md-0 d-flex gap-2">
+                                <span class="badge bg-light text-dark p-3 border rounded-4 shadow-sm">
                                     <i class="fas fa-calendar-alt me-2 text-primary" style="color: #1e4a6b;"></i>
                                     2025-2026
                                 </span>
-                                <div class="dropdown">
-                                    <button class="btn btn-light rounded-4 border px-4 py-2 fw-semibold dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-user-circle me-2"></i>Admin
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- ROW STATISTIQUES - BOOTSTRAP GRID -->
-                        <div class="row d-flex align-items-center py-2 mb-4 ">
-                            <div class="col-xl-3 col-md-6  ">
-                                <div class="stat-card bg-white py-4 shadow rounded-4 h-100 d-flex gap-2 align-items-center px-2">
-                                    <div class="stat-icon bg-soft-blue">
-                                        <i class="fas fa-users" style="color: #1e4a6b;"></i>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="d-flex g-1  align-items-center">
-                                            <div class="stat-number"> 543</div>
-                                            <div class="stat-label">Étudiants actifs</div>
-                                        </div>
-                                        <div class="d-flex gap-3 align-items-center"> 
-                                            <span class="stat-badge">
-                                                <i class="fas fa-arrow-up text-success me-1"></i> +8,2%
-                                            </span>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 ">
-                                <div class="stat-card bg-white py-4 shadow rounded-4 h-100 d-flex gap-2 align-items-center px-2">
-                                    <div class="stat-icon bg-soft-blue">
-                                        <i class="fas fa-file-signature" style="color: #1f7a5c;"></i>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="d-flex g-1  align-items-center">
-                                            <div class="stat-number">324</div>
-                                            <div class="stat-label">Nouveaux 2025</div>
-                                        </div>
-                                        <div class="d-flex gap-3 align-items-center"> 
-                                            <span class="stat-badge">
-                                                <i class="fas fa-arrow-up text-success me-1"></i> +12,2%
-                                            </span>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 ">
-                                <div class="stat-card bg-white py-4 shadow rounded-4 h-100 d-flex gap-2 align-items-center px-2">
-                                    <div class="stat-icon bg-soft-blue">
-                                        <i class="fas fa-clock" style="color: #b45f4b;"></i>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="d-flex g-1  align-items-center">
-                                            <div class="stat-number">47</div>
-                                            <div class="stat-label">Dossiers incomplets</div>
-                                        </div>
-                                        <div class="d-flex gap-3 align-items-center"> 
-                                            <span class="stat-badge">
-                                                <i class="fas fa-flag me-1" style="color: #b45f4b;"></i> Action requise
-                                            </span>
-                                        </div>
-                                    </div>
-                                
-                                </div>
-                            </div>
-
-                            <div class="col-xl-3 col-md-6 ">
-                                <div class="stat-card bg-white py-4 shadow rounded-4 h-100 d-flex gap-2 align-items-center px-2">
-                                    <div class="stat-icon bg-soft-blue">
-                                        <i class="fas fa-clock" style="color: #b45f4b;"></i>
-                                    </div>
-
-                                    <div class="col">
-                                        <div class="d-flex g-1  align-items-center">
-                                            <div class="stat-number">87%</div>
-                                            <div class="stat-label">Taux de présence</div>
-                                        </div>
-                                        <div class="d-flex gap-3 align-items-center"> 
-                                            <span class="stat-badge">
-                                                <i class="fas fa-minus me-1 text-secondary"></i> -2 pts
-                                            </span>
-                                        </div>
-                                    </div>
-                                
-                                </div>
+                                <button class="px-2 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold">
+                                    <i class="fas fa-plus me-2"></i>Nouvel étudiant
+                                </button>
                             </div>
                             
                         </div>
-                        
-                        <!-- BARRE D'OUTILS - BOOTSTRAP ROW -->
-                        <div class="toolbar-card bg-white py-3 px-2 shadow mb-2 rounded-4">
-                            <div class="row  align-items-center">
-                                <div class="col-lg-5 col-md-6">
-                                    <div class="search-input-group">
-                                        <i class="fas fa-search"></i>
-                                        <input type="text" placeholder="Rechercher par nom, matricule ou email...">
+
+                        <!-- Cartes statistiques (row) -->
+                        <div class="grid grid-cols-6 gap-2">
+
+                            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card ">
+                                <div class="flex justify-between items-start">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <p class="text-muted small text-uppercase mb-1">Étudiants actifs</p>
+                                            <h3 class="fw-bold mb-0">543</h3>
+                                        </div>
+                                        
+                                        <div class="py-2.5 px-2.5 bg-blue-500  rounded-3">
+                                            <i class="fas fa-users text-white text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Dossiers incomplets</p>
+                                        <p class="text-2xl font-bold text-gray-800 mt-1">47</p>
+                                    </div>
+                                    <div class="py-2.5 px-2.5 bg-orange-500  rounded-3">
+                                        <i class="fas fa-clock fs-3 text-white text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Nouveaux 2025</p>
+                                        <p class="text-2xl font-bold text-gray-800 mt-1">324</p>
+                                    </div>
+                                    <div class="py-2.5 px-2.5 bg-green-700  rounded-3">
+                                        <i class="fas fa-file-signature fs-3 text-white text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card ">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Taux de présence</p>
+                                        <p class="text-2xl font-bold text-gray-800 mt-1">80%</p>
+                                    </div>
+                                    <div class="py-2.5 px-2.5 bg-purple-500  rounded-3">
+                                        <i class="fas fa-chart-line fs-3 text-white text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                             <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card ">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-gray-500 text-sm">Taux de présence</p>
+                                        <p class="text-2xl font-bold text-gray-800 mt-1">80%</p>
+                                    </div>
+                                    <div class="py-2.5 px-2.5 bg-purple-500  rounded-3">
+                                        <i class="fas fa-chart-line fs-3 text-white text-xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-100 hover-lift stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div class="card-body d-flex align-items-center">
+                                        <div>
+                                            <p class="text-muted small text-uppercase mb-1">Étudiants actifs</p>
+                                            <h3 class="fw-bold mb-0">543</h3>
+                                        </div>
+                                        
+                                        <div class="py-2.5 px-2.5 bg-blue-500  rounded-3">
+                                            <i class="fas fa-users text-white text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                        </div>
+
+                        <!-- Barre d'outils (recherche, filtres) -->
+                        <div class="card border-0  p-3">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-lg-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0 h-100"><i class="fas fa-search text-muted py-1"></i></span>
+                                        <input type="text" class="border border-start-0 focus:outline focus:outline-1 focus:outline-gray-300 ps-0 w-75 py-1" placeholder="Rechercher par nom, matricule ou email...">
                                     </div>
                                 </div>
 
-                                <div class="col-lg-7 col-md-6">
-                                    <div class="d-flex flex-wrap gap-3 justify-content-md-end ">
-                                        <select class="filter-select">
+                                <div class="col-lg-7">
+                                    <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                                        <select class="form-select w-auto">
                                             <option>Tous programmes</option>
                                             <option>Informatique</option>
                                             <option>Gestion</option>
                                             <option>Droit</option>
-                                            <option>Médecine</option>
-                                            <option>Sciences</option>
                                         </select>
-
-                                        <select class="filter-select">
+                                        <select class="form-select w-auto">
                                             <option>Tous statuts</option>
                                             <option>Actif</option>
                                             <option>En attente</option>
                                             <option>Inactif</option>
                                         </select>
-
-                                        <button class="btn-action">
-                                            <i class="fas fa-sliders-h me-2"></i>Filtres
-                                        </button>
-                                        <button class="btn-action btn-primary-custom">
-                                            <i class="fas fa-plus me-2"></i>Nouvel étudiant
-                                        </button>
+                                        <button class="btn btn-outline-secondary"><i class="fas fa-sliders-h me-2"></i>Filtres</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- TABLEAU DE GESTION - BOOTSTRAP -->
-                        <div class="rounded-4 p-0 shadow pt-2 ">
-                            <div class="table-responsive">
-                                <table class="table table-custom">
-                                    <thead>
-                                        <tr>
-                                            <th>Photo</th>
+
+                        <style>
+                        .table-custom th {
+                           color: #263B6A;      /* text-muted = gris Bootstrap */
+                            font-size: 0.8rem;  /* small = 14px si base 16px */
+                            text-transform: uppercase;
+                        }
+
+                        .table-custom td{
+                            color:#0D1A63;
+                        }
+
+                        </style>
+
+                        <!-- Tableau des étudiants -->
+                        <div class="card border-1 shadow-sm rounded-4 overflow-hidden mb-5">
+                            <div>
+                                <table class="table-custom table table-hover align-middle mb-0">
+                                    <thead >
+                                        <tr class="text-orange-500">
+                                            <th class="ps-4 text-orange-500">Photo</th>
                                             <th>Étudiant</th>
                                             <th>Matricule</th>
-                                            <th>Faculité</th>
+                                            <th>Faculté</th>
                                             <th>Année</th>
                                             <th>Progression</th>
                                             <th>Statut</th>
-                                            <th>Actions</th>
+                                            <th class="pe-4">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                         <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user-circle fs-3 text-secondary"></i>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
+                                            <td>
+                                                <div class="fw-semibold">Emma Chen</div>
+                                                <div class="small text-muted">emma.chen@universite.fr</div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">IA-2025-042</span>
+                                            </td>
                                             <td>INFORMATIQUE</td>
                                             <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
-                                                </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
-                                            </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td style="min-width: 120px;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress w-75 me-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
+                                                    <span class="small">78%</span>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
-                                            <td>INFORMATIQUE</td>
-                                            <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
-                                                </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
-                                            </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
+                                            <td><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Actif</span></td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-eye"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-envelope"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user-circle fs-3 text-secondary"></i>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
+                                            <td>
+                                                <div class="fw-semibold">Emma Chen</div>
+                                                <div class="small text-muted">emma.chen@universite.fr</div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">IA-2025-042</span>
+                                            </td>
                                             <td>INFORMATIQUE</td>
                                             <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
+                                            <td style="min-width: 120px;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress w-75 me-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span class="small">78%</span>
                                                 </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
                                             </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
+                                            <td><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Actif</span></td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-eye"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-envelope"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user-circle fs-3 text-secondary"></i>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
+                                            <td>
+                                                <div class="fw-semibold">Emma Chen</div>
+                                                <div class="small text-muted">emma.chen@universite.fr</div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">IA-2025-042</span>
+                                            </td>
                                             <td>INFORMATIQUE</td>
                                             <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
+                                            <td style="min-width: 120px;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress w-75 me-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span class="small">78%</span>
                                                 </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
                                             </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
+                                            <td><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Actif</span></td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-eye"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-envelope"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user-circle fs-3 text-secondary"></i>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
+                                            <td>
+                                                <div class="fw-semibold">Emma Chen</div>
+                                                <div class="small text-muted">emma.chen@universite.fr</div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">IA-2025-042</span>
+                                            </td>
                                             <td>INFORMATIQUE</td>
                                             <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
+                                            <td style="min-width: 120px;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress w-75 me-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span class="small">78%</span>
                                                 </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
                                             </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
+                                            <td><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Actif</span></td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-eye"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-envelope"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td class="ps-4">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-secondary bg-opacity-10 p-2" style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+                                                        <i class="fas fa-user-circle fs-3 text-secondary"></i>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
+                                            <td>
+                                                <div class="fw-semibold">Emma Chen</div>
+                                                <div class="small text-muted">emma.chen@universite.fr</div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold">IA-2025-042</span>
+                                            </td>
                                             <td>INFORMATIQUE</td>
                                             <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
-                                                </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
-                                            </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>
-                                                <div class="student-image ">
-                                                        <img src="obede.jpg" alt="student" >
-                                                </div>
-                                            </td>
-
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-
-                                                    <div>
-                                                        <div class="student-name">Emma Chen</div>
-                                                        <div class="student-email">emma.chen@universite.fr</div>
+                                            <td style="min-width: 120px;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress w-75 me-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
+                                                    <span class="small">78%</span>
                                                 </div>
                                             </td>
-                                            <td><span class="fw-semibold">IA-2025-042</span></td>
-                                            <td>INFORMATIQUE</td>
-                                            <td>BAC1</td>
-                                            <td>
-                                                <div class="progress-thin">
-                                                    <div class="progress-bar-custom" style="width: 78%;"></div>
-                                                </div>
-                                                <span class="text-secondary" style="font-size: 0.7rem;">78%</span>
-                                            </td>
-                                            <td><span class="badge-custom badge-active">Actif</span></td>
-                                            <td>
-                                                <div class="action-icons">
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-eye"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-pen-to-square"></i>
-                                                    </a>
-                                                    <a href="#" class="action-btn">
-                                                        <i class="fa-regular fa-envelope"></i>
-                                                    </a>
+                                            <td><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Actif</span></td>
+                                            <td class="pe-4">
+                                                <div class="d-flex gap-2">
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-eye"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="far fa-envelope"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
-
-                                        
-                                    
+                                       
                                     </tbody>
                                 </table>
                             </div>
-                            
-                            <!-- PAGINATION BOOTSTRAP -->
-
-                            <div class="px-4 py-3 border-top">
-                                <div class="pagination-custom">
-                                    <a href="#" class="page-link-custom">Précédent</a>
-                                    <a href="#" class="page-link-custom active">1</a>
-                                    <a href="#" class="page-link-custom">2</a>
-                                    <a href="#" class="page-link-custom">3</a>
-                                    <a href="#" class="page-link-custom">4</a>
-                                    <a href="#" class="page-link-custom">5</a>
-                                    <a href="#" class="page-link-custom">Suivant</a>
-                                </div>
+                            <!-- Pagination -->
+                            <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                                <span class="small text-muted">Affichage 1 à 7 sur 543 résultats</span>
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <li class="page-item disabled"><a class="page-link border-0" href="#">Précédent</a></li>
+                                        <li class="page-item active"><a class="page-link border-0 bg-primary" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">4</a></li>
+                                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">5</a></li>
+                                        <li class="page-item"><a class="page-link border-0 text-dark" href="#">Suivant</a></li>
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
-                        
-                        
-                        <!-- SECTION SUIVI - BOOTSTRAP ROW -->
-                        <div class="row g-4 mt-2">
-                            <div class="col-lg-6 ">
-                                <div class="chart-card rounded-4 p-3 shadow h-100 bg-warning">
-                                    <div class="chart-title ">
-                                        <i class="fas fa-chart-pie" style="color: #1e4a6b;"></i>
-                                        Répartition par programme
-                                    </div>
-                                    
-                                    <canvas id="programChart" class="w-100 "></canvas>
-                                    <div class="row mt-4 g-2">
-                                        <div class="col-6 d-flex gap-1 flex-column">
-                                            <div class="d-flex align-items-center gap-2  justify-content-start">
-                                                <span style="width: 12px; height: 12px; background: #1e4a6b; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Informatique</span>
-                                                <span class="">850</span>
-                                            </div>
 
-                                            <div class="d-flex align-items-center gap-2  justify-content-start">
-                                                <span style="width: 12px; height: 12px; background: #1f7a5c; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Gestion</span>
-                                                <span class="">620</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 mt-2">
-                                                <span style="width: 12px; height: 12px; background: #9e6300; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Droit</span>
-                                                <span class="">430</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span style="width: 12px; height: 12px; background: #b45f4b; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Médecine</span>
-                                                <span class="">380</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 mt-2">
-                                                <span style="width: 12px; height: 12px; background: #4a637b; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Sciences</span>
-                                                <span class="">263</span>
-                                            </div>
-                                            <div class="d-flex align-items-center gap-2 mt-2">
-                                                <span style="width: 12px; height: 12px; background: #8a7f8c; border-radius: 4px;"></span>
-                                                <span class="text-secondary">Total</span>
-                                                <span class="">2 543</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <!-- Graphiques (deux colonnes) -->
+                        <div class="row g-4">
                             <div class="col-lg-6">
-                                <div class="chart-card bg-info h-100 p-3 rounded-4">
-                                    <div class="chart-title">
-                                        <i class="fas fa-chart-line" style="color: #1e4a6b;"></i>
-                                        Évolution des inscriptions
+                                <div class="card border-0 shadow-sm rounded-4 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold mb-3"><i class="fas fa-chart-pie me-2" style="color: #1e4a6b;"></i>Répartition par programme</h5>
+                                        <canvas id="programChart" style="max-height: 200px;"></canvas>
+                                        <div class="row mt-4 small">
+                                            <div class="col-6">
+                                                <div class="d-flex align-items-center mb-2"><span class="badge me-2" style="background: #1e4a6b; width: 12px; height: 12px;"></span>Informatique <span class="ms-auto fw-bold">850</span></div>
+                                                <div class="d-flex align-items-center mb-2"><span class="badge me-2" style="background: #1f7a5c; width: 12px; height: 12px;"></span>Gestion <span class="ms-auto fw-bold">620</span></div>
+                                                <div class="d-flex align-items-center"><span class="badge me-2" style="background: #9e6300; width: 12px; height: 12px;"></span>Droit <span class="ms-auto fw-bold">430</span></div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="d-flex align-items-center mb-2"><span class="badge me-2" style="background: #b45f4b; width: 12px; height: 12px;"></span>Médecine <span class="ms-auto fw-bold">380</span></div>
+                                                <div class="d-flex align-items-center mb-2"><span class="badge me-2" style="background: #4a637b; width: 12px; height: 12px;"></span>Sciences <span class="ms-auto fw-bold">263</span></div>
+                                                <div class="d-flex align-items-center fw-bold border-top pt-1 mt-1"><span class="me-auto">Total</span>2 543</div>
+                                            </div>
+                                        </div>
                                     </div>
-
-                                    <canvas id="evolutionChart"></canvas>
-                                    
-                                    <div class="d-flex justify-content-between mt-4 px-2">
-                                        <div class="text-center">
-                                            <span class="text-secondary small">Sept</span>
-                                            <div class="fw-bold">1 240</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <span class="text-secondary small">Jan</span>
-                                            <div class="fw-bold">2 100</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <span class="text-secondary small">Juin</span>
-                                            <div class="fw-bold">2 543</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card border-0 shadow-sm rounded-4 h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title fw-bold mb-3"><i class="fas fa-chart-line me-2" style="color: #1e4a6b;"></i>Évolution des inscriptions</h5>
+                                        <canvas id="evolutionChart" style="max-height: 200px;"></canvas>
+                                        <div class="d-flex justify-content-between mt-4 small fw-bold">
+                                            <span>Sept: 1 240</span>
+                                            <span>Jan: 2 100</span>
+                                            <span>Juin: 2 543</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- ACTIONS RAPIDES -->
-                        <div class="d-flex gap-3 mt-4 pt-2 pb-4">
-                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2">
-                                <i class="fas fa-download me-2"></i>Exporter .CSV
-                            </button>
-                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2">
-                                <i class="fas fa-print me-2"></i>Imprimer
-                            </button>
-                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2">
-                                <i class="fas fa-bell me-2"></i>Alertes absences
-                            </button>
-                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2">
-                                <i class="fas fa-file-pdf me-2"></i>Rapport
-                            </button>
+
+                        <!-- Boutons d'actions rapides -->
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2"><i class="fas fa-download me-2"></i>Exporter .CSV</button>
+                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2"><i class="fas fa-print me-2"></i>Imprimer</button>
+                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2"><i class="fas fa-bell me-2"></i>Alertes absences</button>
+                            <button class="btn btn-outline-secondary rounded-5 px-4 py-2"><i class="fas fa-file-pdf me-2"></i>Rapport</button>
                         </div>
                     </div>
-    
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Graphique répartition
-                            new Chart(document.getElementById('programChart'), {
-                                type: 'pie',
-                                data: {
-                                    labels: ['Informatique', 'Gestion', 'Droit', 'Médecine', 'Sciences'],
-                                    datasets: [{
-                                        data: [850, 620, 430, 380, 263],
-                                        backgroundColor: ['#1e4a6b', '#1f7a5c', '#9e6300', '#b45f4b', '#4a637b'],
-                                        borderWidth: 1, 
-                                    }]
-                                },
-                                options: {
-                                    cutout: '65%',
-                                    responsive: true,
-                                    maintainAspectRatio: true,
-                                    plugins: {
-                                        legend: { display: false },
-                                        tooltip: {backgroundColor: 'rgba(255,255,255,0.8)',  titleColor: 'navy',  bodyColor: 'red',  borderColor: 'red', borderWidth: 1 }
-                                    }
-                                }
-                            });
-                            
-                            // Graphique évolution
-                            
-                            new Chart(document.getElementById('evolutionChart'), {
-                                type: 'line',
-                                data: {
-                                    labels: ['Sept', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin'],
-                                    datasets: [{
-                                        label: 'Inscriptions',
-                                        data: [1240, 1480, 1720, 1930, 2100, 2250, 2380, 2450, 2510, 2543],
-                                        borderColor: '#1e4a6b',
-                                        backgroundColor: 'rgba(30,74,107,0.02)',
-                                        borderWidth: 2.5,
-                                        pointBackgroundColor: '#1e4a6b',
-                                        pointBorderColor: 'white',
-                                        pointBorderWidth: 2,
-                                        pointRadius: 3,
-                                        pointHoverRadius: 5,
-                                        tension: 0.2,
-                                        
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: true,
-                                    plugins: { legend: { display: false } },
-                                    scales: {
-                                        y: { 
-                                            beginAtZero: false,
-                                            grid: { color: 'rgba(0,0,0,0.02)' }
-                                        },
-                                        x: { grid: { display: false } }
-                                    }
-                                }
-                            });
-                        });
-                    </script>
-                    
-   
-                     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
                 </main>
 
+                    <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const button = document.querySelector('.mobileMenuToggle');
+                                const sidebar = document.getElementById('sidebar');
+                                const main = document.querySelector('.mainContent');  // ou getElementsByClassName
 
+                                if (button && sidebar && main) {
+                                    // Fonction qui initialise l'état selon la largeur de l'écran
+                                    function setInitialState() {
+                                        if (window.innerWidth >= 768) {
+                                            // Bureau : sidebar visible, contenu décalé
+                                            sidebar.classList.remove('-translate-x-full');
+                                            main.classList.add('ml-[250px]');
+                                        } else {
+                                            // Mobile : sidebar cachée, contenu sans marge
+                                            sidebar.classList.add('-translate-x-full');
+                                            main.classList.remove('ml-[250px]');
+                                        }
+                                    }
+
+                                    setInitialState();  // Applique l'état initial
+
+                                    // Toggle au clic sur le bouton
+                                    button.addEventListener('click', function(e) {
+                                        e.preventDefault();
+                                        sidebar.classList.toggle('-translate-x-full');
+                                        // Sur bureau, on décale le main en même temps
+                                        if (window.innerWidth >= 768) {
+                                            main.classList.toggle('ml-[250px]');
+                                        }
+                                    });
+
+                                    // Clic à l'extérieur sur mobile : ferme le sidebar
+                                    document.addEventListener('click', function(e) {
+                                        if (window.innerWidth < 768) {
+                                            if (!sidebar.contains(e.target) && !button.contains(e.target)) {
+                                                sidebar.classList.add('-translate-x-full');
+                                            }
+                                        }
+                                    });
+
+                                    // Adaptation si la fenêtre est redimensionnée
+                                    window.addEventListener('resize', function() {
+                                        setInitialState();
+                                    });
+                                }
+                            });
+                    </script>
+    
             </div>
 
             <!-- Footer -->
