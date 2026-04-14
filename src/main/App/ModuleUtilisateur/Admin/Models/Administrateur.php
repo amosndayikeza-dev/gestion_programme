@@ -5,30 +5,30 @@ use App\ModuleUtilisateur\Models\Utilisateur;
 
 class Administrateur extends Utilisateur
 {
-    // === 1. PROPRIÉTÉS SPÉCIFIQUES (UNIQUEMENT celles de la table administrateurs) ===
-    private $idAdministrateur;        // id_administrateur (même que id_utilisateur)
-    private $niveauAcces;            // niveau_acces
-    private $departement;           // departement
-    private $datePriseFonction;     // date_prise_fonction
-    private $dateFinFonction;       // date_fin_fonction
-    private $permissionsSpeciales;  // permissions_speciales
-    private $dernierAudit;          // dernier_audit
-    private $adresseIpAutorisees;   // adresse_ip_autorisees
-    private $authentification2Facteurs; // authentification_2facteurs
-    private $cle2FA;               // cle_2fa
-    private $niveauAudit;          // niveau_audit
-    private $zoneIntervention;     // zone_intervention
-    private $superviseur;          // superviseur
+    
+    private $idAdministrateur;        
+    private $niveauAcces;            
+    private $departement;           
+    private $datePriseFonction;     
+    private $dateFinFonction;       
+    private $permissionsSpeciales;  
+    private $dernierAudit;          
+    private $adresseIpAutorisees;   
+    private $authentification2Facteurs; 
+    private $cle2FA;               
+    private $niveauAudit;          
+    private $zoneIntervention;
+    private $superviseur;
 
-    // === 2. CONSTRUCTEUR - TOUS LES PARAMÈTRES DU PARENT + SES PROPRES PARAMÈTRES ===
+    
     public function __construct(
-        // === PARAMÈTRES DU PARENT (UTILISATEUR) - TOUS ! ===
+
         $idUtilisateur = null,
         $nom = null,
         $prenom = null,
         $email = null,
         $motDePasse = null,
-        $role = 'administrateur',        // ⚠️ FORCÉ À 'administrateur'
+        $role = 'administrateur',
         $statut = 'actif',
         $telephone = null,
         $dateCreation = null,
